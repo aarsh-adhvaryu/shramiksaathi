@@ -1,0 +1,35 @@
+# Environment 
+.env 
+.env.* 
+!.env.example 
+ 
+# Python 
+.venv/ 
+venv/ 
+__pycache__/ 
+*.pyc 
+*.pyo 
+*.egg-info/ 
+ 
+# Adapters and training outputs 
+outputs/shramik-*/ 
+outputs/eval_logs/ 
+ 
+# IDE 
+.vscode/ 
+.idea/ 
+*.swp 
+.antigravity/ 
+ 
+# OS 
+.DS_Store 
+Thumbs.db 
+ 
+# Project clutter 
+.dpo_v*_checkpoint.json 
+.dpo_v*_incremental.jsonl 
+dpo_v*_generation.log 
+*_files.txt 
+structure.txt 
+output.txt 
+kb_doc_ids.txt 

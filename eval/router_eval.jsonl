@@ -1,0 +1,66 @@
+{"query": "bhai maine company left kia 3 month ho gaye, EPFO portal me form 19 submit nahi ho ra", "expected_domain": "pf"}
+{"query": "My UAN shows NOT SEEDED with aadhar... hr is not picking up phone", "expected_domain": "pf"}
+{"query": "how many days PF transfer takes? its showing pending at field office since 20 days", "expected_domain": "pf"}
+{"query": "Pichli company aur nayi company ka pf amount ek account me kaise merge kare online?", "expected_domain": "pf"}
+{"query": "tds kat liya mere PF claim se, 3 saal kaam kiya tha, amount 70 hazar tha", "expected_domain": "pf"}
+{"query": "Can I do 10C for pension withdrawal if my service is 9.5 years?", "expected_domain": "pf"}
+{"query": "employer ne pf deduct kiya march and april ka but epf passbook me zero bta raha hai", "expected_domain": "pf"}
+{"query": "KYC reject mara employer ne invalid name error bol ke", "expected_domain": "pf"}
+{"query": "PF partial advance lene ke lie form 31 bharna hai for illness", "expected_domain": "pf"}
+{"query": "kyc joint declaration pending with employer for DOB change", "expected_domain": "pf"}
+{"query": "what is the maximum amount i can get for PF advance house construction?", "expected_domain": "pf"}
+{"query": "my pension (eps) amount is locked, age is 52", "expected_domain": "pf"}
+{"query": "PF account merged but passbook balance not updating correctly", "expected_domain": "pf"}
+{"query": "salary slip dekha abhi, gross 22000 h aur ESI 165 rps kata h. correct hai ye?", "expected_domain": "payslip"}
+{"query": "kya bangalore me PT professional tax kata dena mandatory hai har month?", "expected_domain": "payslip"}
+{"query": "im working in a shop in mumbai min wage rules ke hisab se 14k milna chahiye, giving only 9000", "expected_domain": "payslip"}
+{"query": "where to check if the bonus calculation is proper? my basic is 15000", "expected_domain": "payslip"}
+{"query": "company deducting PF on overall gross salary instead of basic wage limit, in hand is very less now", "expected_domain": "payslip"}
+{"query": "mera basic salary reduce kar diya naye contract me pf add krne ke baad", "expected_domain": "payslip"}
+{"query": "is esi deducted on basic or gross amount?", "expected_domain": "payslip"}
+{"query": "minimum wage for skilled painter in delhi 2024", "expected_domain": "payslip"}
+{"query": "why professional tax in karnataka is 200 taking from my salary", "expected_domain": "payslip"}
+{"query": "bonus limit exceeded they say basic is above 21k", "expected_domain": "payslip"}
+{"query": "EPF matching contribution not added by company in my offer breakdown", "expected_domain": "payslip"}
+{"query": "boss fired me randomly yesterday over whatsapp, no warning letter nothing", "expected_domain": "labour"}
+{"query": "im pregnant 7 months, manager is saying only 12 weeks leave I will get not 26 weeks", "expected_domain": "labour"}
+{"query": "gratuity amount nahi de rahe, maine 4 years 8 months continuous kaam kiya before resigning", "expected_domain": "labour"}
+{"query": "notice period payout ka kya rule h? offer letter me 90 days likha tha, mai 30 days me jaa rha hu", "expected_domain": "labour"}
+{"query": "we work 10 hours daily in factory without overtime wages", "expected_domain": "labour"}
+{"query": "can I go to labour court against toxic employer retaining my relieving letter?", "expected_domain": "labour"}
+{"query": "retrenchment compensation under ID act for 3 years service", "expected_domain": "labour"}
+{"query": "misconduct pe firing hui, gratuity milega kya 6 saal baad?", "expected_domain": "labour"}
+{"query": "maternity leave deny ki HR ne kyuki probation period chal raha tha", "expected_domain": "labour"}
+{"query": "working in retail shop, forcing 11 hour shifts straight", "expected_domain": "labour"}
+{"query": "resignation not accepted by manager, what steps can i take?", "expected_domain": "labour"}
+{"query": "form 16 nhi diya ab tak IT return kaise bharu next week due date hai", "expected_domain": "tax"}
+{"query": "new tax scheme me 80C ka 1.5lakh insurance ka deduction claim kar sakte hai?", "expected_domain": "tax"}
+{"query": "house rent allowance claim krna hai, 15k rent paying in bangalore.. what is calculation?", "expected_domain": "tax"}
+{"query": "tds kat gya pure saal then they changed my regime without asking", "expected_domain": "tax"}
+{"query": "refund status checking on income tax portal shows failed due to bank account mismatch", "expected_domain": "tax"}
+{"query": "my salary is strictly 11 LPA, kitna tax aayega per month TDS under new regime 2024?", "expected_domain": "tax"}
+{"query": "standard deduction 50k is available in old or new tax regime?", "expected_domain": "tax"}
+{"query": "do i need landlord pan matching if rent is 12000 per month?", "expected_domain": "tax"}
+{"query": "tds form 16 part b not given fully to verify my tax slab", "expected_domain": "tax"}
+{"query": "itr 1 kaise file karein income 6 lakhs hai form 16 hai", "expected_domain": "tax"}
+{"query": "87A rebate kitna h agar income exactly 7 lakh hai", "expected_domain": "tax"}
+{"query": "salary se kitna EPF katega agar basic 18000 hai", "expected_domain": "payslip"}
+{"query": "meri company ne ESI band kar diya boli 22000 se above salary ho gayi", "expected_domain": "payslip"}
+{"query": "ek factory worker ko OT double rate milna chahiye ya 1.5x", "expected_domain": "labour"}
+{"query": "contract employees ko gratuity milti hai kya 5 saal ke baad?", "expected_domain": "labour"}
+{"query": "PF nikalne par TDS kitna lagega, service 4 saal hai", "expected_domain": "tax"}
+{"query": "crypto income pe kitna tax lagta hai india me 2024", "expected_domain": "tax"}
+{"query": "EPFO me online claim reject hua bank account mismatch", "expected_domain": "pf"}
+{"query": "kya form 19 aur 10C ek saath file kar sakte hain", "expected_domain": "pf"}
+{"query": "mere boss ne 3 saal me koi gratuity nahi diya, aur fire bhi kar diya", "expected_domain": "labour"}
+{"query": "kya HRA exemption milega agar ghar owner family member hai?", "expected_domain": "tax"}
+{"query": "ELSS investment pe 80C benefit milta hai kya new regime me", "expected_domain": "tax"}
+{"query": "ESI contribution employee side kitna percentage hota hai", "expected_domain": "payslip"}
+{"query": "labour court me case kaise karte hain wrongful termination ke liye", "expected_domain": "labour"}
+{"query": "NPS me invest karna chahiye ya PPF, tax benefit ke liye", "expected_domain": "tax"}
+{"query": "can employer deduct employer PF share from my salary CTC", "expected_domain": "pf"}
+{"query": "relieving letter nahi de raha company, kya legal action le sakta hu", "expected_domain": "labour"}
+{"query": "form 15G submit karna hai pf withdrawal ke liye, income nil hai", "expected_domain": "tax"}
+{"query": "my new company is not contributing EPF saying my basic is above 15000", "expected_domain": "payslip"}
+{"query": "EPFO grievance filed 20 days back no response, how to escalate", "expected_domain": "pf"}
+{"query": "Punjab minimum wage for semi-skilled worker 2024 kitna hai", "expected_domain": "payslip"}

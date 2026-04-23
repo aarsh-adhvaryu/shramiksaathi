@@ -1,0 +1,110 @@
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "employment_status": "unemployed"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal"}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "partial_withdrawal", "filled_slots": {"intent": "partial_withdrawal", "employment_status": "unemployed"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "partial_withdrawal", "filled_slots": {"intent": "partial_withdrawal"}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "transfer", "filled_slots": {"intent": "transfer", "uan_status": "active"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "transfer", "filled_slots": {"intent": "transfer"}, "expected_decision": "insufficient", "expected_missing_slot": "uan_status"}
+{"domain": "pf", "intent": "kyc_issue", "filled_slots": {"intent": "kyc_issue", "kyc_status": "complete"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "kyc_issue", "filled_slots": {"intent": "kyc_issue"}, "expected_decision": "insufficient", "expected_missing_slot": "kyc_status"}
+{"domain": "pf", "intent": "employer_complaint", "filled_slots": {"intent": "employer_complaint", "incident_type": "non_deposit"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "employer_complaint", "filled_slots": {"intent": "employer_complaint"}, "expected_decision": "insufficient", "expected_missing_slot": "incident_type"}
+{"domain": "pf", "intent": "tds_query", "filled_slots": {"intent": "tds_query", "service_years": 4}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "tds_query", "filled_slots": {"intent": "tds_query"}, "expected_decision": "insufficient", "expected_missing_slot": "service_years"}
+{"domain": "payslip", "intent": "check_deductions", "filled_slots": {"intent": "check_deductions", "basic_salary": 15000}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_deductions", "filled_slots": {"intent": "check_deductions"}, "expected_decision": "insufficient", "expected_missing_slot": "basic_salary"}
+{"domain": "payslip", "intent": "full_audit", "filled_slots": {"intent": "full_audit", "basic_salary": 15000}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "full_audit", "filled_slots": {"intent": "full_audit"}, "expected_decision": "insufficient", "expected_missing_slot": "basic_salary"}
+{"domain": "payslip", "intent": "verify_epf", "filled_slots": {"intent": "verify_epf", "basic_salary": 15000, "epf_deducted": 1800}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "verify_epf", "filled_slots": {"intent": "verify_epf", "basic_salary": 15000}, "expected_decision": "insufficient", "expected_missing_slot": "epf_deducted"}
+{"domain": "payslip", "intent": "verify_epf", "filled_slots": {"intent": "verify_epf", "epf_deducted": 1800}, "expected_decision": "insufficient", "expected_missing_slot": "basic_salary"}
+{"domain": "payslip", "intent": "verify_esi", "filled_slots": {"intent": "verify_esi", "gross_salary": 22000, "esi_deducted": 165}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "verify_esi", "filled_slots": {"intent": "verify_esi", "gross_salary": 22000}, "expected_decision": "insufficient", "expected_missing_slot": "esi_deducted"}
+{"domain": "payslip", "intent": "verify_esi", "filled_slots": {"intent": "verify_esi", "esi_deducted": 165}, "expected_decision": "insufficient", "expected_missing_slot": "gross_salary"}
+{"domain": "payslip", "intent": "check_minimum_wage", "filled_slots": {"intent": "check_minimum_wage", "gross_salary": 22000, "state": "Karnataka"}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_minimum_wage", "filled_slots": {"intent": "check_minimum_wage", "gross_salary": 22000}, "expected_decision": "insufficient", "expected_missing_slot": "state"}
+{"domain": "payslip", "intent": "check_minimum_wage", "filled_slots": {"intent": "check_minimum_wage", "state": "Karnataka"}, "expected_decision": "insufficient", "expected_missing_slot": "gross_salary"}
+{"domain": "labour", "intent": "gratuity", "filled_slots": {"intent": "gratuity", "employment_years": 6}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "gratuity", "filled_slots": {"intent": "gratuity"}, "expected_decision": "insufficient", "expected_missing_slot": "employment_years"}
+{"domain": "labour", "intent": "wrongful_termination", "filled_slots": {"intent": "wrongful_termination", "termination_reason": "resignation"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "wrongful_termination", "filled_slots": {"intent": "wrongful_termination"}, "expected_decision": "insufficient", "expected_missing_slot": "termination_reason"}
+{"domain": "labour", "intent": "maternity_benefit", "filled_slots": {"intent": "maternity_benefit", "is_pregnant": true}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "maternity_benefit", "filled_slots": {"intent": "maternity_benefit"}, "expected_decision": "insufficient", "expected_missing_slot": "is_pregnant"}
+{"domain": "labour", "intent": "overtime_pay", "filled_slots": {"intent": "overtime_pay", "employer_type": "factory"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "overtime_pay", "filled_slots": {"intent": "overtime_pay"}, "expected_decision": "insufficient", "expected_missing_slot": "employer_type"}
+{"domain": "tax", "intent": "tds_on_salary", "filled_slots": {"intent": "tds_on_salary", "annual_income": 900000}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "tds_on_salary", "filled_slots": {"intent": "tds_on_salary"}, "expected_decision": "insufficient", "expected_missing_slot": "annual_income"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 15000, "city_type": "metro"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 15000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "city_type": "metro"}, "expected_decision": "insufficient", "expected_missing_slot": "rent_paid"}
+{"domain": "tax", "intent": "deductions_80c", "filled_slots": {"intent": "deductions_80c", "tax_regime": "old_regime"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "deductions_80c", "filled_slots": {"intent": "deductions_80c"}, "expected_decision": "insufficient", "expected_missing_slot": "tax_regime"}
+{"domain": "tax", "intent": "tds_on_pf", "filled_slots": {"intent": "tds_on_pf", "pf_withdrawal_amount": 75000, "service_years": 4}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "tds_on_pf", "filled_slots": {"intent": "tds_on_pf", "pf_withdrawal_amount": 75000}, "expected_decision": "insufficient", "expected_missing_slot": "service_years"}
+{"domain": "tax", "intent": "tds_on_pf", "filled_slots": {"intent": "tds_on_pf", "service_years": 4}, "expected_decision": "insufficient", "expected_missing_slot": "pf_withdrawal_amount"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 5000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 8000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 10000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 12000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 15000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 18000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 20000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 22000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 25000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 30000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 35000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 40000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 45000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 50000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 55000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 60000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 65000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 70000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 75000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 80000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 85000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 90000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 95000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 100000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 105000}, "expected_decision": "insufficient", "expected_missing_slot": "city_type"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "months_unemployed": 1}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "months_unemployed": 2}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "months_unemployed": 3}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "months_unemployed": 4}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "months_unemployed": 5}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "months_unemployed": 6}, "expected_decision": "insufficient", "expected_missing_slot": "employment_status"}
+{"domain": "pf", "intent": "employer_complaint", "filled_slots": {"intent": "employer_complaint", "incident_type": "wrong_deduction", "employer_name": "Infosys"}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_minimum_wage", "filled_slots": {"intent": "check_minimum_wage", "gross_salary": 9500, "state": "Bihar"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "gratuity", "filled_slots": {"intent": "gratuity", "employment_years": 5, "last_drawn_salary": 30000}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "tds_on_pf", "filled_slots": {"intent": "tds_on_pf", "pf_withdrawal_amount": 75000, "service_years": 4}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "employment_status": "unemployed", "uan_status": "active", "kyc_status": "complete", "service_years": 7}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "full_withdrawal", "filled_slots": {"intent": "full_withdrawal", "employment_status": "unemployed", "uan_status": "active", "kyc_status": "complete", "service_years": 2}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "transfer", "filled_slots": {"intent": "transfer", "employment_status": "employed", "uan_status": "active", "kyc_status": "complete"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "partial_withdrawal", "filled_slots": {"intent": "partial_withdrawal", "employment_status": "employed", "service_years": 5}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "kyc_issue", "filled_slots": {"intent": "kyc_issue", "kyc_status": "rejected"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "tds_query", "filled_slots": {"intent": "tds_query", "service_years": 3, "pf_withdrawal_amount": 80000}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "employer_complaint", "filled_slots": {"intent": "employer_complaint", "incident_type": "non_deposit", "employer_name": "Wipro"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "employer_complaint", "filled_slots": {"intent": "employer_complaint", "incident_type": "wrong_deduction", "employer_name": "Reliance Retail"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "pension_withdrawal", "filled_slots": {"intent": "pension_withdrawal", "employment_status": "unemployed", "service_years": 10, "uan_status": "active"}, "expected_decision": "sufficient"}
+{"domain": "pf", "intent": "nomination_update", "filled_slots": {"intent": "nomination_update", "uan_status": "active", "kyc_status": "complete"}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "verify_epf", "filled_slots": {"intent": "verify_epf", "basic_salary": 18000, "epf_deducted": 2160}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "verify_epf", "filled_slots": {"intent": "verify_epf", "basic_salary": 12000, "epf_deducted": 1440}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "verify_esi", "filled_slots": {"intent": "verify_esi", "gross_salary": 19000, "esi_deducted": 142}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "verify_esi", "filled_slots": {"intent": "verify_esi", "gross_salary": 15000, "esi_deducted": 112}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_minimum_wage", "filled_slots": {"intent": "check_minimum_wage", "gross_salary": 16000, "state": "Kerala"}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_minimum_wage", "filled_slots": {"intent": "check_minimum_wage", "gross_salary": 10500, "state": "Gujarat"}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_deductions", "filled_slots": {"intent": "check_deductions", "gross_salary": 35000, "state": "Karnataka"}, "expected_decision": "sufficient"}
+{"domain": "payslip", "intent": "check_bonus", "filled_slots": {"intent": "check_bonus", "basic_salary": 14000, "gross_salary": 19000}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "gratuity", "filled_slots": {"intent": "gratuity", "employment_years": 6, "last_drawn_salary": 45000}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "gratuity", "filled_slots": {"intent": "gratuity", "employment_years": 4, "termination_reason": "death"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "wrongful_termination", "filled_slots": {"intent": "wrongful_termination", "termination_reason": "retrenchment", "employment_years": 3}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "wrongful_termination", "filled_slots": {"intent": "wrongful_termination", "termination_reason": "misconduct", "employment_years": 6}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "notice_period", "filled_slots": {"intent": "notice_period", "notice_period_days": 90, "termination_reason": "resignation"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "notice_period", "filled_slots": {"intent": "notice_period", "notice_period_days": 30, "termination_reason": "employer_terminated"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "maternity_benefit", "filled_slots": {"intent": "maternity_benefit", "is_pregnant": true, "employment_status": "employed"}, "expected_decision": "sufficient"}
+{"domain": "labour", "intent": "overtime_pay", "filled_slots": {"intent": "overtime_pay", "employer_type": "factory"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "tds_on_salary", "filled_slots": {"intent": "tds_on_salary", "annual_income": 1200000, "tax_regime": "new_regime"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "tds_on_salary", "filled_slots": {"intent": "tds_on_salary", "annual_income": 800000, "tax_regime": "old_regime"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "hra_exemption", "filled_slots": {"intent": "hra_exemption", "rent_paid": 20000, "city_type": "non_metro", "tax_regime": "old_regime"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "deductions_80c", "filled_slots": {"intent": "deductions_80c", "tax_regime": "old_regime", "section_80c_investments": 120000}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "refund_status", "filled_slots": {"intent": "refund_status"}, "expected_decision": "sufficient"}
+{"domain": "tax", "intent": "tds_on_pf", "filled_slots": {"intent": "tds_on_pf", "pf_withdrawal_amount": 60000, "service_years": 3}, "expected_decision": "sufficient"}
