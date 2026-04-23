@@ -63,13 +63,13 @@ TOP_P = 0.9
 
 DOMAIN_TARGETS = {
     "payslip": 40,
-    "tax":     35,
+    "tax": 35,
 }
 
 # Per-subdomain cap = min(abs_cap, n_docs_in_subdomain * multiplier)
 SUBDOMAIN_CAPS = {
     "payslip": {"abs_cap": 20, "per_doc": 10},
-    "tax":     {"abs_cap": 20, "per_doc": 10},
+    "tax": {"abs_cap": 20, "per_doc": 10},
 }
 
 # Circuit breaker: halt domain if reject rate exceeds this after warmup
