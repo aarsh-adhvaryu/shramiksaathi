@@ -62,18 +62,14 @@ TEMPERATURE = 0.6
 TOP_P = 0.9
 
 DOMAIN_TARGETS = {
-    "pf": 150,
-    "payslip": 100,
-    "labour": 80,
-    "tax": 70,
+    "payslip": 40,
+    "tax":     35,
 }
 
 # Per-subdomain cap = min(abs_cap, n_docs_in_subdomain * multiplier)
 SUBDOMAIN_CAPS = {
-    "pf": {"abs_cap": 40, "per_doc": 4},
-    "payslip": {"abs_cap": 40, "per_doc": 6},
-    "labour": {"abs_cap": 30, "per_doc": 8},
-    "tax": {"abs_cap": 25, "per_doc": 8},
+    "payslip": {"abs_cap": 20, "per_doc": 10},
+    "tax":     {"abs_cap": 20, "per_doc": 10},
 }
 
 # Circuit breaker: halt domain if reject rate exceeds this after warmup
@@ -211,7 +207,7 @@ RETRIEVED PASSAGES:
 SLOTS FILLED:
 {json.dumps(filled_slots, indent=2)}
 
-Produce the final answer now."""
+Produce the final answer now. IMPORTANT: every factual claim must include [DOC_ID] in brackets — no exceptions. If you cannot cite, omit the claim."""
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -981,6 +977,10 @@ def validate_response(response, passage_doc_ids):
     fabricated = cited - allowed
     if fabricated:
         return False, f"fabricated cites: {sorted(fabricated)[:3]}"
+
+    # Tool passage must be cited if present
+    if "TOOL_PAYSLIP_AUDIT" in allowed and "TOOL_PAYSLIP_AUDIT" not in cited:
+        return False, "tool passage not cited"
 
     # Verdict keyword
     if not any(kw in rl for kw in VERDICT_KEYWORDS):

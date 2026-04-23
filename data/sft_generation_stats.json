@@ -1,0 +1,58 @@
+{
+  "total": 306,
+  "train": 285,
+  "val": 21,
+  "by_domain": {
+    "pf": 150,
+    "labour": 64,
+    "tax": 66,
+    "payslip": 26
+  },
+  "by_intent": {
+    "full_withdrawal": 26,
+    "kyc_issue": 28,
+    "tds_query": 26,
+    "transfer": 34,
+    "employer_complaint": 22,
+    "partial_withdrawal": 14,
+    "wrongful_termination": 18,
+    "gratuity": 24,
+    "notice_period": 13,
+    "maternity_benefit": 9,
+    "deductions_80c": 17,
+    "hra_exemption": 14,
+    "refund_status": 14,
+    "tds_on_salary": 11,
+    "tds_on_pf": 10,
+    "verify_epf": 6,
+    "full_audit": 7,
+    "check_minimum_wage": 7,
+    "verify_esi": 6
+  },
+  "by_subdomain": {
+    "withdrawal": 40,
+    "kyc": 28,
+    "taxation": 26,
+    "transfer": 34,
+    "employer": 22,
+    "termination": 31,
+    "gratuity": 24,
+    "maternity": 9,
+    "deductions": 17,
+    "hra": 14,
+    "refund": 14,
+    "tds_salary": 11,
+    "tds_pf": 10,
+    "epf_deduction": 13,
+    "minimum_wage": 7,
+    "esi_deduction": 6
+  },
+  "reasoning_yes": 192,
+  "reasoning_eligible_true": 117,
+  "reasoning_eligible_false": 75,
+  "source": {
+    "run1_kept": 245,
+    "run2_kept": 61,
+    "run1_payslip_dropped": 43
+  }
+}

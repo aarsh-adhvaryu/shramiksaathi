@@ -1,0 +1,101 @@
+======================================================================
+ShramikSaathi — SFT Dataset Generator (Stage 1.1)
+======================================================================
+[KB] Loaded 311 docs
+       labour/gig_worker: 1
+       labour/gratuity: 3
+       labour/maternity: 1
+       labour/overtime: 2
+       labour/posh: 2
+       labour/termination: 9
+       payslip/bonuses: 1
+       payslip/epf_deduction: 2
+       payslip/esi_deduction: 1
+       payslip/minimum_wage: 15
+       payslip/professional_tax: 15
+       payslip/wage_structure: 1
+       pf/employer: 6
+       pf/grievance: 24
+       pf/international: 1
+       pf/kyc: 15
+       pf/nomination: 5
+       pf/pension: 69
+       pf/policy: 62
+       pf/taxation: 7
+       pf/transfer: 10
+       pf/uan: 13
+       pf/withdrawal: 28
+       tax/deductions: 6
+       tax/hra: 1
+       tax/refund: 3
+       tax/tds_pf: 1
+       tax/tds_salary: 7
+
+[Resume] 0 existing examples in .sft_incremental.jsonl
+Loading meta-llama/Llama-3.1-8B-Instruct ...
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.83s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.85s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.83s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.33s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.51s/it]
+Model loaded in 9.1s on cuda:0
+VRAM: 16.06 GB
+
+[payslip] Subdomain caps: {'epf_deduction': 20, 'esi_deduction': 10, 'minimum_wage': 20, 'professional_tax': 20}
+[payslip] Already have 0 examples
+  [payslip] 5/40 | attempts=8 pass=62% ETA=4min
+  [payslip] 10/40 | attempts=20 pass=50% ETA=4min
+  [payslip] 15/40 | attempts=24 pass=62% ETA=3min
+  [payslip] 20/40 | attempts=36 pass=56% ETA=2min
+  [payslip] 25/40 | attempts=52 pass=48% ETA=2min
+  [payslip] REJECT RATE 50% > 40% after 52 attempts — HALTING
+[payslip] Done: 26 saved | 52 attempts | 50% pass | 2.8min
+
+[tax] Subdomain caps: {'tds_salary': 20, 'tds_pf': 10, 'taxation': 0, 'hra': 10, 'deductions': 20, 'refund': 20}
+[tax] Already have 0 examples
+  [tax] 5/35 | attempts=8 pass=62% ETA=4min
+  [tax] 10/35 | attempts=16 pass=62% ETA=3min
+  [tax] 15/35 | attempts=20 pass=75% ETA=2min
+  [tax] 20/35 | attempts=24 pass=83% ETA=1min
+  [tax] 25/35 | attempts=32 pass=78% ETA=1min
+  [tax] 30/35 | attempts=40 pass=75% ETA=0min
+  [tax] 35/35 | attempts=44 pass=80% ETA=0min
+[tax] Done: 35 saved | 44 attempts | 80% pass | 3.0min
+
+======================================================================
+FINAL: 61 validated examples
+======================================================================
+
+✓ Train: 61 → /teamspace/studios/this_studio/shramiksaathi/data/sft_train.jsonl
+✓ Val:   0   → /teamspace/studios/this_studio/shramiksaathi/data/sft_val.jsonl
+✓ Stats: /teamspace/studios/this_studio/shramiksaathi/data/sft_generation_stats.json
+
+{
+  "total": 61,
+  "train": 61,
+  "val": 0,
+  "by_domain": {
+    "payslip": 26,
+    "tax": 35
+  },
+  "by_intent": {
+    "verify_epf": 6,
+    "full_audit": 7,
+    "check_minimum_wage": 7,
+    "verify_esi": 6,
+    "tds_on_salary": 9,
+    "refund_status": 9,
+    "deductions_80c": 7,
+    "tds_on_pf": 4,
+    "hra_exemption": 6
+  },
+  "by_subdomain": {
+    "epf_deduction": 13,
+    "minimum_wage": 7,
+    "esi_deduction": 6,
+    "tds_salary": 9,
+    "refund": 9,
+    "deductions": 7,
+    "tds_pf": 4,
+    "hra": 6
+  },
+  "reasoning_yes": 17,
+  "reasoning_eligible_true": 14,
+  "reasoning_eligible_false": 3
+}

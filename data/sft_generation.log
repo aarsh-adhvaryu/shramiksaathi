@@ -1,0 +1,154 @@
+
+--- Run started 2026-04-23 08:43:38 ---
+[reject] pf/kyc_issue: no citations
+[reject] pf/tds_query: too short
+[reject] pf/partial_withdrawal: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/tds_query: no citations
+[reject] pf/transfer: no citations
+[reject] pf/transfer: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/employer_complaint: fabricated cites: ['EMPLOYMENT_STATUS']
+[reject] pf/kyc_issue: no citations
+[reject] pf/partial_withdrawal: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/partial_withdrawal: no citations
+[reject] pf/tds_query: no citations
+[reject] pf/tds_query: no citations
+[reject] pf/transfer: no citations
+[reject] pf/full_withdrawal: no citations
+[reject] pf/partial_withdrawal: no citations
+[reject] pf/transfer: no citations
+[reject] pf/kyc_issue: no citations
+[reject] pf/kyc_issue: no citations
+[reject] pf/kyc_issue: no citations
+[reject] pf/tds_query: no verdict keyword
+[reject] pf/tds_query: too short
+[reject] pf/transfer: no citations
+[reject] pf/partial_withdrawal: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/tds_query: no verdict keyword
+[reject] pf/tds_query: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/partial_withdrawal: no citations
+[reject] pf/kyc_issue: fabricated cites: ['UAN_STATUS_INACTIVE']
+[reject] pf/tds_query: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/transfer: no citations
+[reject] pf/kyc_issue: no citations
+[reject] pf/transfer: no citations
+[reject] pf/tds_query: no verdict keyword
+[reject] pf/transfer: too short
+[reject] pf/tds_query: no verdict keyword
+[reject] pf/tds_query: fabricated cites: ['WD_FORM31_PARTICAL_PRACTICAL']
+[reject] pf/employer_complaint: no citations
+[reject] pf/kyc_issue: no citations
+[reject] pf/employer_complaint: no citations
+[reject] pf/employer_complaint: no citations
+[reject] payslip/check_minimum_wage: no verdict keyword
+[reject] payslip/full_audit: no citations
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/full_audit: no citations
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/verify_epf: no verdict keyword
+[reject] payslip/verify_epf: no verdict keyword
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: no verdict keyword
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no verdict keyword
+[reject] payslip/full_audit: no citations
+[reject] payslip/full_audit: no citations
+[reject] payslip/full_audit: refusal: 'no information available'
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: refusal: 'no information available'
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/full_audit: fabricated cites: ['EPF', 'ESI']
+[circuit-breaker] payslip: reject_rate=40.28%
+[reject] labour/notice_period: no citations
+[reject] labour/maternity_benefit: no citations
+[reject] labour/wrongful_termination: no citations
+[reject] labour/gratuity: no citations
+[reject] labour/gratuity: no citations
+[reject] labour/notice_period: fabricated cites: ['INDUSTRIAL_DISPUTES_ACT_S2', 'INDUSTRIAL_DISPUTES_ACT_S25', 'INDUSTRIAL_DISPUTES_ACT_S33']
+[reject] labour/maternity_benefit: no citations
+[reject] labour/maternity_benefit: no citations
+[reject] labour/gratuity: fabricated cites: ['GRATUITY_COURTING_4Y8M']
+[reject] labour/notice_period: no citations
+[reject] labour/notice_period: no verdict keyword
+[reject] labour/maternity_benefit: no citations
+[reject] labour/gratuity: no citations
+[reject] labour/maternity_benefit: no verdict keyword
+[reject] labour/gratuity: no citations
+[reject] labour/gratuity: no citations
+[reject] tax/refund_status: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/tds_on_salary: no citations
+[reject] tax/deductions_80c: fabricated cites: ['ITA_SECTION_80C_LIMIT']
+[reject] tax/hra_exemption: no citations
+[reject] tax/tds_on_salary: no citations
+[reject] tax/tds_on_pf: no citations
+[reject] tax/tds_on_salary: fabricated cites: ['TAX_ACT_S192']
+[reject] tax/refund_status: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/deductions_80c: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/refund_status: no citations
+[reject] tax/refund_status: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/tds_on_salary: refusal: 'insufficient information'
+[reject] tax/tds_on_salary: no citations
+[reject] tax/refund_status: no citations
+[reject] tax/deductions_80c: no citations
+[reject] tax/tds_on_pf: no citations
+[circuit-breaker] tax: reject_rate=40.38%
+
+--- Run started 2026-04-23 09:30:18 ---
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/verify_epf: tool passage not cited
+[reject] payslip/full_audit: tool passage not cited
+[reject] payslip/verify_epf: tool passage not cited
+[reject] payslip/full_audit: fabricated cites: ['EPF_ACT', 'ESI_NOT_APPLICABLE', 'KARNATAKA_PT_SLAB']
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/full_audit: tool passage not cited
+[reject] payslip/verify_epf: no verdict keyword
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/check_minimum_wage: no verdict keyword
+[reject] payslip/verify_epf: tool passage not cited
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/full_audit: no citations
+[reject] payslip/full_audit: no citations
+[reject] payslip/check_minimum_wage: no verdict keyword
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/verify_epf: no citations
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/check_minimum_wage: fabricated cites: ['MIN_WAGE_ACT_1948_S22']
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/check_minimum_wage: no citations
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/verify_esi: tool passage not cited
+[reject] payslip/verify_esi: tool passage not cited
+[circuit-breaker] payslip: reject_rate=50.00%
+[reject] tax/tds_on_salary: no citations
+[reject] tax/deductions_80c: fabricated cites: ['ITA_SECTION_80C']
+[reject] tax/tds_on_salary: no verdict keyword
+[reject] tax/refund_status: no citations
+[reject] tax/deductions_80c: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/hra_exemption: no citations
+[reject] tax/hra_exemption: no citations

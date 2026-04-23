@@ -1,0 +1,174 @@
+======================================================================
+ShramikSaathi — SFT Dataset Generator (Stage 1.1)
+======================================================================
+[KB] Loaded 311 docs
+       labour/gig_worker: 1
+       labour/gratuity: 3
+       labour/maternity: 1
+       labour/overtime: 2
+       labour/posh: 2
+       labour/termination: 9
+       payslip/bonuses: 1
+       payslip/epf_deduction: 2
+       payslip/esi_deduction: 1
+       payslip/minimum_wage: 15
+       payslip/professional_tax: 15
+       payslip/wage_structure: 1
+       pf/employer: 6
+       pf/grievance: 24
+       pf/international: 1
+       pf/kyc: 15
+       pf/nomination: 5
+       pf/pension: 69
+       pf/policy: 62
+       pf/taxation: 7
+       pf/transfer: 10
+       pf/uan: 13
+       pf/withdrawal: 28
+       tax/deductions: 6
+       tax/hra: 1
+       tax/refund: 3
+       tax/tds_pf: 1
+       tax/tds_salary: 7
+
+[Resume] 0 existing examples in .sft_incremental.jsonl
+Loading meta-llama/Llama-3.1-8B-Instruct ...
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.85s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.86s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.83s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.86s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.86s/it]
+Model loaded in 11.6s on cuda:0
+VRAM: 16.06 GB
+
+[pf] Subdomain caps: {'withdrawal': 40, 'transfer': 40, 'kyc': 40, 'uan': 40, 'taxation': 28, 'employer': 24, 'grievance': 40}
+[pf] Already have 0 examples
+  [pf] 5/150 | attempts=8 pass=62% ETA=14min
+  [pf] 10/150 | attempts=12 pass=83% ETA=9min
+  [pf] 15/150 | attempts=20 pass=75% ETA=10min
+  [pf] 20/150 | attempts=24 pass=83% ETA=8min
+  [pf] 25/150 | attempts=28 pass=89% ETA=7min
+  [pf] 30/150 | attempts=32 pass=94% ETA=7min
+  [pf] 35/150 | attempts=40 pass=88% ETA=7min
+  [pf] 40/150 | attempts=44 pass=91% ETA=6min
+  [pf] 45/150 | attempts=52 pass=87% ETA=7min
+  [pf] 50/150 | attempts=56 pass=89% ETA=6min
+  [pf] 55/150 | attempts=64 pass=86% ETA=6min
+  [pf] 60/150 | attempts=72 pass=83% ETA=6min
+  [pf] 65/150 | attempts=80 pass=81% ETA=5min
+  [pf] 70/150 | attempts=88 pass=80% ETA=5min
+  [pf] 75/150 | attempts=96 pass=78% ETA=5min
+  [pf] 80/150 | attempts=100 pass=80% ETA=5min
+  [pf] 85/150 | attempts=108 pass=79% ETA=5min
+  [pf] 90/150 | attempts=116 pass=78% ETA=4min
+  [pf] 95/150 | attempts=124 pass=77% ETA=4min
+  [pf] 100/150 | attempts=128 pass=78% ETA=3min
+  [pf] 105/150 | attempts=136 pass=77% ETA=3min
+  [pf] 110/150 | attempts=144 pass=76% ETA=3min
+  [pf] 115/150 | attempts=148 pass=78% ETA=2min
+  [pf] 120/150 | attempts=156 pass=77% ETA=2min
+  [pf] 125/150 | attempts=160 pass=78% ETA=2min
+  [pf] 130/150 | attempts=168 pass=77% ETA=1min
+  [pf] 135/150 | attempts=176 pass=77% ETA=1min
+  [pf] 140/150 | attempts=184 pass=76% ETA=1min
+  [pf] 145/150 | attempts=192 pass=76% ETA=0min
+  [pf] 150/150 | attempts=196 pass=77% ETA=0min
+[pf] Done: 150 saved | 196 attempts | 77% pass | 10.5min
+
+[payslip] Subdomain caps: {'epf_deduction': 12, 'esi_deduction': 6, 'minimum_wage': 40, 'professional_tax': 40}
+[payslip] Already have 0 examples
+  [payslip] 5/100 | attempts=8 pass=62% ETA=9min
+  [payslip] 10/100 | attempts=16 pass=62% ETA=9min
+  [payslip] 15/100 | attempts=24 pass=62% ETA=8min
+  [payslip] 20/100 | attempts=32 pass=62% ETA=8min
+  [payslip] 25/100 | attempts=40 pass=62% ETA=7min
+  [payslip] 30/100 | attempts=52 pass=58% ETA=8min
+  [payslip] 35/100 | attempts=60 pass=58% ETA=7min
+  [payslip] 40/100 | attempts=64 pass=62% ETA=6min
+  [payslip] REJECT RATE 40% > 40% after 72 attempts — HALTING
+[payslip] Done: 43 saved | 72 attempts | 60% pass | 4.5min
+
+[labour] Subdomain caps: {'gratuity': 24, 'termination': 30, 'maternity': 8}
+[labour] Already have 0 examples
+  [labour] 5/80 | attempts=8 pass=62% ETA=6min
+  [labour] 10/80 | attempts=16 pass=62% ETA=6min
+  [labour] 15/80 | attempts=20 pass=75% ETA=5min
+  [labour] 20/80 | attempts=28 pass=71% ETA=4min
+  [labour] 25/80 | attempts=36 pass=69% ETA=4min
+  [labour] 30/80 | attempts=40 pass=75% ETA=4min
+  [labour] 35/80 | attempts=48 pass=73% ETA=3min
+  [labour] 40/80 | attempts=52 pass=77% ETA=3min
+  [labour] 45/80 | attempts=60 pass=75% ETA=2min
+  [labour] 50/80 | attempts=64 pass=78% ETA=2min
+  [labour] 55/80 | attempts=72 pass=76% ETA=2min
+  [labour] 60/80 | attempts=76 pass=79% ETA=1min
+[labour] Done: 64 saved | 80 attempts | 80% pass | 4.0min
+
+[tax] Subdomain caps: {'tds_salary': 25, 'tds_pf': 8, 'taxation': 0, 'hra': 8, 'deductions': 25, 'refund': 24}
+[tax] Already have 0 examples
+  [tax] 5/70 | attempts=12 pass=42% ETA=9min
+  [tax] 10/70 | attempts=20 pass=50% ETA=7min
+  [tax] 15/70 | attempts=24 pass=62% ETA=5min
+  [tax] 20/70 | attempts=32 pass=62% ETA=5min
+  [tax] 25/70 | attempts=40 pass=62% ETA=4min
+  [tax] 30/70 | attempts=48 pass=62% ETA=4min
+  [tax] REJECT RATE 40% > 40% after 52 attempts — HALTING
+[tax] Done: 31 saved | 52 attempts | 60% pass | 3.0min
+
+======================================================================
+FINAL: 288 validated examples
+======================================================================
+
+✓ Train: 269 → /teamspace/studios/this_studio/shramiksaathi/data/sft_train.jsonl
+✓ Val:   19   → /teamspace/studios/this_studio/shramiksaathi/data/sft_val.jsonl
+✓ Stats: /teamspace/studios/this_studio/shramiksaathi/data/sft_generation_stats.json
+
+{
+  "total": 288,
+  "train": 269,
+  "val": 19,
+  "by_domain": {
+    "pf": 150,
+    "payslip": 43,
+    "labour": 64,
+    "tax": 31
+  },
+  "by_intent": {
+    "full_withdrawal": 26,
+    "kyc_issue": 28,
+    "tds_query": 26,
+    "transfer": 34,
+    "employer_complaint": 22,
+    "partial_withdrawal": 14,
+    "full_audit": 17,
+    "verify_epf": 7,
+    "verify_esi": 7,
+    "check_minimum_wage": 12,
+    "wrongful_termination": 18,
+    "gratuity": 24,
+    "notice_period": 13,
+    "maternity_benefit": 9,
+    "deductions_80c": 10,
+    "hra_exemption": 8,
+    "refund_status": 5,
+    "tds_on_salary": 2,
+    "tds_on_pf": 6
+  },
+  "by_subdomain": {
+    "withdrawal": 40,
+    "kyc": 28,
+    "taxation": 26,
+    "transfer": 34,
+    "employer": 22,
+    "epf_deduction": 24,
+    "esi_deduction": 7,
+    "minimum_wage": 12,
+    "termination": 31,
+    "gratuity": 24,
+    "maternity": 9,
+    "deductions": 10,
+    "hra": 8,
+    "refund": 5,
+    "tds_salary": 2,
+    "tds_pf": 6
+  },
+  "reasoning_yes": 175,
+  "reasoning_eligible_true": 103,
+  "reasoning_eligible_false": 72
+}
