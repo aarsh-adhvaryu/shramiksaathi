@@ -42,3 +42,4 @@ out/lora_v2/checkpoint-*/
 # Old DPO generator artifacts — will be regenerated in Stage 2
 data/.dataset_incremental.jsonl
 data/dataset_generation.log
+out/dpo_beta_*/
