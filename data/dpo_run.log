@@ -1,0 +1,112 @@
+======================================================================
+ShramikSaathi — Stage 2.1: DPO Dataset Generator (hybrid)
+======================================================================
+[KB] 311 docs
+[SFT] 244 accepted responses indexed for reuse
+
+[Resume] 0 existing pairs | dims: {}
+
+======================================================================
+PHASE 1: Template-based contrastive pairs (dims 1-3)
+======================================================================
+
+[pf] target 150
+  [pf] 10/150 | attempts=39 pass=26% [0.0s]
+  [pf] 20/150 | attempts=62 pass=32% [0.0s]
+  [pf] 30/150 | attempts=85 pass=35% [0.0s]
+  [pf] 40/150 | attempts=112 pass=36% [0.0s]
+  [pf] 50/150 | attempts=143 pass=35% [0.0s]
+  [pf] 60/150 | attempts=167 pass=36% [0.0s]
+  [pf] 70/150 | attempts=193 pass=36% [0.0s]
+  [pf] 80/150 | attempts=220 pass=36% [0.1s]
+  [pf] 90/150 | attempts=245 pass=37% [0.1s]
+  [pf] 100/150 | attempts=258 pass=39% [0.1s]
+  [pf] 110/150 | attempts=295 pass=37% [0.1s]
+  [pf] 120/150 | attempts=313 pass=38% [0.1s]
+  [pf] 130/150 | attempts=348 pass=37% [0.1s]
+  [pf] 140/150 | attempts=386 pass=36% [0.1s]
+  [pf] 150/150 | attempts=420 pass=36% [0.1s]
+[pf] Done: 150 pairs (420 attempts, 36% pass, 0.1s)
+
+[payslip] target 100
+  [payslip] 10/100 | attempts=27 pass=37% [0.0s]
+  [payslip] 20/100 | attempts=61 pass=33% [0.0s]
+  [payslip] 30/100 | attempts=83 pass=36% [0.0s]
+  [payslip] 40/100 | attempts=126 pass=32% [0.0s]
+  [payslip] 50/100 | attempts=151 pass=33% [0.0s]
+  [payslip] 60/100 | attempts=183 pass=33% [0.0s]
+  [payslip] 70/100 | attempts=252 pass=28% [0.1s]
+  [payslip] 80/100 | attempts=285 pass=28% [0.1s]
+  [payslip] 90/100 | attempts=334 pass=27% [0.1s]
+  [payslip] 100/100 | attempts=367 pass=27% [0.1s]
+[payslip] Done: 100 pairs (367 attempts, 27% pass, 0.1s)
+
+[labour] target 90
+  [labour] 10/90 | attempts=31 pass=32% [0.0s]
+  [labour] 20/90 | attempts=56 pass=36% [0.0s]
+  [labour] 30/90 | attempts=86 pass=35% [0.0s]
+  [labour] 40/90 | attempts=108 pass=37% [0.0s]
+  [labour] 50/90 | attempts=131 pass=38% [0.0s]
+  [labour] 60/90 | attempts=145 pass=41% [0.0s]
+  [labour] 70/90 | attempts=167 pass=42% [0.0s]
+[labour] Done: 70 pairs (168 attempts, 42% pass, 0.0s)
+
+[tax] target 60
+[tax] Done: 0 pairs (1 attempts, 0% pass, 0.0s)
+
+======================================================================
+PHASE 2: LLM refusal pairs (dim 4, target 80)
+======================================================================
+Loading meta-llama/Llama-3.1-8B-Instruct
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.73s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.76s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.76s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.28s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:05<00:00,  1.45s/it]
+Loaded in 9.7s on cuda:0
+  [refusal] 5/80 | oos=6 kbi=6 pass=42% [0.6min]
+  [refusal] 10/80 | oos=8 kbi=12 pass=50% [1.0min]
+  [refusal] 15/80 | oos=10 kbi=18 pass=54% [1.3min]
+  [refusal] 20/80 | oos=12 kbi=24 pass=56% [1.6min]
+  [refusal] 25/80 | oos=15 kbi=29 pass=57% [2.0min]
+  [refusal] 30/80 | oos=17 kbi=31 pass=62% [2.1min]
+  [refusal] 35/80 | oos=18 kbi=38 pass=62% [2.5min]
+  [refusal] 40/80 | oos=19 kbi=45 pass=62% [2.9min]
+  [refusal] 45/80 | oos=20 kbi=52 pass=62% [3.3min]
+  [refusal] 50/80 | oos=21 kbi=55 pass=66% [3.5min]
+[refusal] Done: 53 pairs (3.8min)
+
+======================================================================
+FINAL: 373 pairs
+======================================================================
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/dpo_pairs.jsonl
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/dpo_generation_stats.json
+{
+  "total": 373,
+  "by_domain": {
+    "pf": 165,
+    "payslip": 111,
+    "labour": 84,
+    "tax": 10,
+    "unknown": 3
+  },
+  "by_dim": {
+    "grounding": 110,
+    "verdict_correctness": 110,
+    "citation_discipline": 100,
+    "refusal_and_escalation": 53
+  },
+  "by_intent": {
+    "kyc_issue": 49,
+    "full_withdrawal": 99,
+    "tds_query": 2,
+    "verify_esi": 26,
+    "verify_epf": 68,
+    "check_minimum_wage": 6,
+    "gratuity": 40,
+    "maternity_benefit": 30,
+    "kb_insufficient": 50,
+    "out_of_scope": 3
+  },
+  "by_chosen_source": {
+    "template": 312,
+    "sft_reuse": 61
+  }
+}

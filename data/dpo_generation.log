@@ -1,0 +1,635 @@
+
+--- Run 2026-04-24 06:06:40 ---
+[reject-chosen] pf/grounding/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FAQ_TDS', 'FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORM_15G_INSTRUCTIONS']
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['NEWS_EPF_CLAIM_REJECTION_REASONS_2024']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FAQ_TDS', 'FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no citations
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no citations
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FAQ_CLAIM_113']
+[reject-chosen] pf/citation_discipline/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/grounding/full_withdrawal: chosen fabricated cites: ['FAQ_WD_022', 'FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['NEWS_EPF_CLAIM_REJECTION_REASONS_2024']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/kyc_issue: chosen no citations
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['NEWS_EPF_CLAIM_REJECTION_REASONS_2024']
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['FORM_15G_INSTRUCTIONS']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['ITA_SECTION_192A', 'NEWS_EPF_CLAIM_REJECTION_REASONS_2024']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['GAZETTE_TDS_AMDT_2022']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no citations
+[reject-chosen] pf/verdict_correctness/transfer: chosen no citations
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['ITA_SECTION_192A']
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['INOPERATIVE_ACCOUNTS']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['CASE_BHAVNA_BHATT_DELHI_HC_2018', 'FAQ_CLAIM_105']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/grounding/transfer: chosen no citations
+[reject-chosen] pf/grounding/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/full_withdrawal: chosen fabricated cites: ['FAQ_WD_022', 'FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/verdict_correctness/kyc_issue: chosen no citations
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/kyc_issue: chosen no citations
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORM_15G_INSTRUCTIONS']
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['ITA_SECTION_192A', 'NEWS_EPF_CLAIM_REJECTION_REASONS_2024']
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['FAQ_WD_022', 'FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['FAQ_CLAIM_122']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['FORM_31_INSTRUCTIONS']
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/full_withdrawal: chosen fabricated cites: ['FAQ_WD_021']
+[reject-chosen] pf/grounding/transfer: chosen no citations
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FAQ_CLAIM_113']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['INOPERATIVE_ACCOUNTS']
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['CASE_BHAVNA_BHATT_DELHI_HC_2018', 'FAQ_CLAIM_105']
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FAQ_CLAIM_113']
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/kyc_issue: chosen no citations
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FAQ_CLAIM_113']
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/grounding/tds_query: chosen too short
+[reject-chosen] pf/grounding/tds_query: chosen too short
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FAQ_CLAIM_113']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/grounding/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/full_withdrawal: chosen fabricated cites: ['CASE_BHAVNA_BHATT_DELHI_HC_2018', 'FAQ_CLAIM_105']
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/full_withdrawal: chosen fabricated cites: ['FAQ_CLAIM_105']
+[reject-chosen] pf/citation_discipline/transfer: chosen no citations
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/full_withdrawal: chosen fabricated cites: ['TDS_PRACTICAL_GUIDE_2024']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen no verdict keyword
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen too short
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['FAQ_TDS', 'FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/grounding/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no citations
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['ITA_SECTION_192A', 'NEWS_EPF_CLAIM_REJECTION_REASONS_2024']
+[reject-chosen] pf/grounding/transfer: chosen no citations
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/grounding/tds_query: chosen fabricated cites: ['FAQ_TDS', 'FORMS_REFERENCE_COMPLETE']
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen too short
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen too short
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/tds_query: chosen fabricated cites: ['CIRC_BUDGET_2024_PF']
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-rejected] pf/verdict_correctness/kyc_issue: rejected identical to chosen
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FORM_15G_INSTRUCTIONS']
+[reject-chosen] pf/grounding/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/verdict_correctness/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/transfer: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen no verdict keyword
+[reject-chosen] pf/citation_discipline/tds_query: chosen fabricated cites: ['FORM_31_INSTRUCTIONS']
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024', 'MIN_WAGE_TELANGANA_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-rejected] payslip/verdict_correctness/verify_epf: rejected verdict matches chosen
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KERALA_2024']
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_HARYANA_2024', 'MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KARNATAKA_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_PUNJAB_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_epf: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KERALA_2024']
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_HARYANA_2024', 'MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_epf: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_MADHYA_PRADESH_2024']
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_HARYANA_2024', 'MIN_WAGE_MADHYA_PRADESH_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_HARYANA_2024', 'MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_UTTAR_PRADESH_2024']
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_HARYANA_2024', 'MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024']
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KARNATAKA_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024', 'MIN_WAGE_TELANGANA_2024']
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024']
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_UTTAR_PRADESH_2024', 'MIN_WAGE_WEST_BENGAL_2024']
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-rejected] payslip/verdict_correctness/verify_esi: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_epf: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_UTTAR_PRADESH_2024']
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_HARYANA_2024', 'MIN_WAGE_MADHYA_PRADESH_2024']
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_UTTAR_PRADESH_2024']
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_epf: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KARNATAKA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KERALA_2024']
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024', 'MIN_WAGE_TELANGANA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KERALA_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_esi: rejected verdict matches chosen
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_PUNJAB_2024']
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KARNATAKA_2024']
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_UTTAR_PRADESH_2024']
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_epf: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-rejected] payslip/verdict_correctness/verify_esi: rejected verdict matches chosen
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_MAHARASHTRA_2024']
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_KERALA_2024']
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024']
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/citation_discipline/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_PUNJAB_2024']
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024', 'MIN_WAGE_HARYANA_2024']
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_DELHI_2024']
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_epf: chosen too short
+[reject-chosen] payslip/verdict_correctness/verify_esi: chosen too short
+[reject-chosen] payslip/citation_discipline/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_TAMIL_NADU_2024']
+[reject-chosen] payslip/grounding/verify_epf: chosen too short
+[reject-chosen] payslip/grounding/verify_esi: chosen too short
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen no verdict keyword
+[reject-chosen] payslip/grounding/check_minimum_wage: chosen fabricated cites: ['MIN_WAGE_UTTAR_PRADESH_2024', 'MIN_WAGE_WEST_BENGAL_2024']
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/maternity_benefit: rejected verdict matches chosen
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/citation_discipline/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/gratuity: rejected verdict matches chosen
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-chosen] labour/verdict_correctness/wrongful_termination: chosen no verdict keyword
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-rejected] labour/verdict_correctness/gratuity: rejected too short
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-chosen] labour/grounding/wrongful_termination: chosen no verdict keyword
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/kb_insufficient: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/kb_insufficient: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/kb_insufficient: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/kb_insufficient: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/out_of_scope: rejected too short
+[reject-rejected] refusal/kb_insufficient: rejected no citations
+[reject-rejected] refusal/kb_insufficient: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations
+[reject-rejected] refusal/out_of_scope: rejected no citations

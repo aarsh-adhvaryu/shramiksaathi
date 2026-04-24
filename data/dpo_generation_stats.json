@@ -1,0 +1,32 @@
+{
+  "total": 373,
+  "by_domain": {
+    "pf": 165,
+    "payslip": 111,
+    "labour": 84,
+    "tax": 10,
+    "unknown": 3
+  },
+  "by_dim": {
+    "grounding": 110,
+    "verdict_correctness": 110,
+    "citation_discipline": 100,
+    "refusal_and_escalation": 53
+  },
+  "by_intent": {
+    "kyc_issue": 49,
+    "full_withdrawal": 99,
+    "tds_query": 2,
+    "verify_esi": 26,
+    "verify_epf": 68,
+    "check_minimum_wage": 6,
+    "gratuity": 40,
+    "maternity_benefit": 30,
+    "kb_insufficient": 50,
+    "out_of_scope": 3
+  },
+  "by_chosen_source": {
+    "template": 312,
+    "sft_reuse": 61
+  }
+}
