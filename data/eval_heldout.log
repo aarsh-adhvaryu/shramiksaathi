@@ -1,0 +1,80 @@
+======================================================================
+Stage 1.3 — Held-out eval (Option A)
+======================================================================
+[Eval] 20 prompts
+[KB]   311 docs
+
+[Model] Loading base meta-llama/Llama-3.1-8B-Instruct in 4-bit
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.08s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.03s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:06<00:01,  1.99s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.44s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.65s/it]
+        Loaded in 11.1s | VRAM 5.70GB
+
+[Run]   Generating BASE responses...
+  [1/20] pf_01  cites=1  fab=0  verdict=True  [16.9s]
+  [2/20] pf_02  cites=2  fab=0  verdict=False  [16.5s]
+  [3/20] pf_03  cites=2  fab=0  verdict=True  [21.3s]
+  [4/20] pf_04  cites=2  fab=0  verdict=False  [14.3s]
+  [5/20] pf_05  cites=2  fab=0  verdict=False  [12.6s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [16.2s]
+  [7/20] payslip_02  cites=1  fab=0  verdict=False  [11.4s]
+  [8/20] payslip_03  cites=2  fab=0  verdict=True  [11.9s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [9.7s]
+  [10/20] payslip_05  cites=3  fab=0  verdict=True  [24.1s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [22.0s]
+  [12/20] labour_02  cites=1  fab=0  verdict=True  [15.1s]
+  [13/20] labour_03  cites=1  fab=0  verdict=True  [14.9s]
+  [14/20] labour_04  cites=3  fab=0  verdict=True  [22.5s]
+  [15/20] labour_05  cites=2  fab=0  verdict=True  [20.6s]
+  [16/20] tax_01  cites=1  fab=0  verdict=False  [11.3s]
+  [17/20] tax_02  cites=0  fab=0  verdict=True  [18.9s]
+  [18/20] tax_03  cites=2  fab=0  verdict=True  [17.5s]
+  [19/20] tax_04  cites=1  fab=0  verdict=True  [12.3s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [13.4s]
+
+[Model] Attaching LoRA from /teamspace/studios/this_studio/shramiksaathi/out/lora_v2
+
+[Run]   Generating LoRA responses...
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [29.6s]
+  [2/20] pf_02  cites=1  fab=0  verdict=False  [36.4s]
+  [3/20] pf_03  cites=2  fab=0  verdict=True  [39.1s]
+  [4/20] pf_04  cites=2  fab=0  verdict=False  [24.9s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [21.1s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [31.6s]
+  [7/20] payslip_02  cites=2  fab=0  verdict=True  [32.5s]
+  [8/20] payslip_03  cites=2  fab=0  verdict=True  [19.0s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [19.7s]
+  [10/20] payslip_05  cites=4  fab=0  verdict=False  [38.0s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [26.8s]
+  [12/20] labour_02  cites=1  fab=0  verdict=False  [27.8s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [31.2s]
+  [14/20] labour_04  cites=3  fab=0  verdict=True  [40.7s]
+  [15/20] labour_05  cites=2  fab=0  verdict=True  [35.4s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [23.7s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [29.4s]
+  [18/20] tax_03  cites=3  fab=0  verdict=True  [42.2s]
+  [19/20] tax_04  cites=1  fab=0  verdict=True  [21.6s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [38.3s]
+
+======================================================================
+SUMMARY (n=20)
+======================================================================
+Metric                                 BASE         LoRA          Δ
+citation_coverage                     0.950        1.000     +0.050
+fabrication_rate                      0.000        0.000     +0.000
+expected_cites_hit                    0.700        0.800     +0.100
+verdict_accuracy                      0.700        0.650     -0.050
+grounded_clean                        0.650        0.650     +0.000
+key_facts_mean                        0.650        0.675     +0.025
+fabrication_count                         0            0
+
+Per-domain grounded_clean:
+  pf          BASE 0.40  LoRA 0.40  Δ+0.00
+  payslip     BASE 0.60  LoRA 0.60  Δ+0.00
+  labour      BASE 1.00  LoRA 0.80  Δ-0.20
+  tax         BASE 0.60  LoRA 0.80  Δ+0.20
+
+[Save] Full results: /teamspace/studios/this_studio/shramiksaathi/data/eval_heldout_results.json
+[Save] Report: /teamspace/studios/this_studio/shramiksaathi/data/eval_heldout_report.md
+
+======================================================================
+Stage 1.3 complete.
+======================================================================

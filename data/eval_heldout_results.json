@@ -1,0 +1,1271 @@
+{
+  "n_prompts": 20,
+  "base_summary": {
+    "n": 20,
+    "citation_coverage": 0.95,
+    "fabrication_count": 0,
+    "fabrication_rate": 0.0,
+    "expected_cites_hit": 0.7,
+    "verdict_accuracy": 0.7,
+    "grounded_clean": 0.65,
+    "key_facts_mean": 0.65
+  },
+  "lora_summary": {
+    "n": 20,
+    "citation_coverage": 1.0,
+    "fabrication_count": 0,
+    "fabrication_rate": 0.0,
+    "expected_cites_hit": 0.8,
+    "verdict_accuracy": 0.65,
+    "grounded_clean": 0.65,
+    "key_facts_mean": 0.675
+  },
+  "per_domain_base": {
+    "pf": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 0.6,
+      "verdict_accuracy": 0.4,
+      "grounded_clean": 0.4,
+      "key_facts_mean": 0.5
+    },
+    "payslip": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 0.6,
+      "verdict_accuracy": 0.6,
+      "grounded_clean": 0.6,
+      "key_facts_mean": 0.8
+    },
+    "labour": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 1.0,
+      "verdict_accuracy": 1.0,
+      "grounded_clean": 1.0,
+      "key_facts_mean": 0.7
+    },
+    "tax": {
+      "n": 5,
+      "citation_coverage": 0.8,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 0.6,
+      "verdict_accuracy": 0.8,
+      "grounded_clean": 0.6,
+      "key_facts_mean": 0.6
+    }
+  },
+  "per_domain_lora": {
+    "pf": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 0.4,
+      "verdict_accuracy": 0.4,
+      "grounded_clean": 0.4,
+      "key_facts_mean": 0.6
+    },
+    "payslip": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 0.8,
+      "verdict_accuracy": 0.6,
+      "grounded_clean": 0.6,
+      "key_facts_mean": 0.7
+    },
+    "labour": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 1.0,
+      "verdict_accuracy": 0.8,
+      "grounded_clean": 0.8,
+      "key_facts_mean": 0.7
+    },
+    "tax": {
+      "n": 5,
+      "citation_coverage": 1.0,
+      "fabrication_count": 0,
+      "fabrication_rate": 0.0,
+      "expected_cites_hit": 1.0,
+      "verdict_accuracy": 0.8,
+      "grounded_clean": 0.8,
+      "key_facts_mean": 0.7
+    }
+  },
+  "base_results": [
+    {
+      "prompt_id": "pf_01",
+      "response": "**Eligibility:** eligible=True\n\n**Result:** You can withdraw your entire PF amount.\n\n**Reason:** You have been employed for 7 years, which is more than the required 5 years for full withdrawal [CIRC_2024_TDS].\n\n**Next Steps:**\n\n1.  Ensure you have a valid PAN card to avoid a higher TDS rate.\n2.  If you have a bank account linked to your UAN and Aadhaar, you can submit a composite claim (Aadhaar) which only requires your signature.\n3.  If there's a dispute, you can get attestation from your bank and submit to the Regional PF Commissioner explaining the reasons for not obtaining your employer's signature.\n\n**Warning:** If you withdraw an amount exceeding Rs. 50,000, TDS will be applicable. The TDS rate will be 10% if you're a resident with a valid PAN, 20% if you're a resident without a valid PAN, and 30% plus 4% cess if you're a non-resident.",
+      "cited": [
+        "CIRC_2024_TDS"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "pf_02",
+      "response": "**Eligibility:** eligible=False\n\n**Reason:** You have not completed 5 years of service, which is a requirement for a full PF withdrawal without TDS [CIRC_2024_TDS].\n\n**TDS Applicable:** Yes, since your service is less than 5 years and the withdrawal amount exceeds Rs. 50,000, TDS will be applicable. The applicable rate is 20% as you are a resident without a valid PAN [CIRC_2024_TDS].\n\n**Next Steps:**\n\n1.  Complete 5 years of service to be eligible for a full PF withdrawal without TDS.\n2.  If you need to withdraw your PF now, you can submit a composite claim (Aadhaar) with your signature, but you will be subject to TDS [FAQ_WD_023].\n3.  Ensure you have a valid PAN to avoid a higher TDS rate.\n\n**Warning:** If you withdraw your PF now, you will be subject to TDS, and the amount deducted will be 20% of the withdrawal amount.",
+      "cited": [
+        "CIRC_2024_TDS",
+        "FAQ_WD_023"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 0,
+      "key_facts_total": 1,
+      "key_facts_rate": 0.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "pf_03",
+      "response": "**Result:**\nYou are eligible for PF withdrawal of Rs. 2,00,000.\n\n**Eligibility Reasoning:**\nCondition 1: Service years < 5 years [CIRC_2024_TDS]\nCondition 2: Withdrawal amount exceeds Rs. 50,000 [CIRC_2024_TDS]\nCondition 3: Service years = 3.5 years (satisfies Condition 1)\nCondition 4: Withdrawal amount = Rs. 2,00,000 (satisfies Condition 2)\n\n**Next Steps:**\n\n1.  Since your service years are less than 5 years, TDS will be applicable.\n2.  As a resident with a valid PAN, the TDS rate is 10% [CIRC_2024_TDS].\n3.  You can submit Form 15G to avoid TDS if your total income is below the taxable limit (Rs. 2.50 lakh) and you are below 60 years old [FORM_15G_INSTRUCTIONS].\n\n**Warning/Caveat:** Ensure you have a valid PAN to submit Form 15G and to avoid higher TDS rates.\n\n**Expected TDS Calculation:**\nTDS = 10% of Rs. 2,00,000 = Rs. 20,000\n\n**Actual TDS will be deducted at the time of withdrawal, not at the time of PF withdrawal application.**",
+      "cited": [
+        "CIRC_2024_TDS",
+        "FORM_15G_INSTRUCTIONS"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "pf_04",
+      "response": "**Result:** You are eligible to transfer your old PF account to the new company.\n\n**Eligibility Reasoning Trace:**\n\n1. You have an active UAN [FAQ_WD_024].\n2. Your KYC is complete [FAQ_WD_024].\n\n**Next Steps:**\n\n1. Log in to the unified portal using your UAN and password.\n2. Go to \"Online Services\" and select \"One Member - One EPF Account (Transfer Request)\".\n3. Select your previous Member ID and submit the transfer request.\n4. If you have an Aadhaar and bank account linked to your UAN, you may be eligible for auto-transfer [CIRC_UAN_AUTO_TRANSFER].\n\n**Warning/Caveat:** Ensure your Date of Exit is updated in your old PF account to facilitate a smooth transfer process.\n\n**Note:** If you have any issues or concerns, you can contact the EPFO or visit the unified portal for more information.",
+      "cited": [
+        "CIRC_UAN_AUTO_TRANSFER",
+        "FAQ_WD_024"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": false,
+      "key_facts_found": 0,
+      "key_facts_total": 1,
+      "key_facts_rate": 0.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "pf_05",
+      "response": "**Result:** You are eligible to apply for correction in KYC/member details.\n\n**Steps:**\n\n1.  You need to login to the EPFO UAN portal with your UAN.\n2.  Update your KYC by uploading necessary documents online.\n3.  If you have a name mismatch issue, you can use either Method 1 (employer approval) or Method 2 (self-validation through e-KYC Portal or UMANG app) to correct the details.\n\n**Warnings/Caveats:**\n\n*   For name mismatch, a Joint Declaration is required.\n*   Ensure the details match exactly for self-validation through e-KYC Portal or UMANG app.\n\n**Citations:**\n\n*   [FAQ_CLAIM_133] for online correction process\n*   [KYC_AADHAAR_GUIDE] for Method 1 and Method 2",
+      "cited": [
+        "FAQ_CLAIM_133",
+        "KYC_AADHAAR_GUIDE"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "payslip_01",
+      "response": "**Result:** The EPF deduction of \u20b93,000 is CORRECT.\n\n**Reason:** According to the EPF Act, both the employee and employer must each contribute 12% of the employee's basic wages [EPF_ACT_S6_CONTRIB]. The employee's basic salary is \u20b925,000, and 12% of this amount is \u20b93,000 [TOOL_PAYSLIP_AUDIT].\n\n**Next Steps:**\n\n1.  Verify that the employer is also contributing 12% of the employee's basic wages.\n2.  Check if the employee has voluntarily opted to contribute on their full wages, if their basic salary exceeds \u20b915,000 per month [EPF_PARA_26A].\n\n**Warning/Caveat:** The EPF wage ceiling is \u20b915,000 per month. If the employee's basic salary exceeds this amount, they may be eligible to contribute voluntarily on their full wages.\n\n**Citation:** [EPF_ACT_S6_CONTRIB], [EPF_PARA_26A], [TOOL_PAYSLIP_AUDIT]",
+      "cited": [
+        "EPF_ACT_S6_CONTRIB",
+        "EPF_PARA_26A",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "payslip_02",
+      "response": "**Result:** Not eligible for EPF contribution\n\n**Reason:** Employer's EPF contribution of \u20b91800 is less than the expected \u20b92160 [EPF_ACT_S6_CONTRIB].\n\n**Eligibility Condition:** The employer must contribute 12% of the employee's basic wages to the EPF account [EPF_ACT_S6_CONTRIB]. The expected EPF contribution for a basic salary of \u20b918,000 is \u20b92160, but the employer has deducted only \u20b91800.\n\n**Next Steps:** The employee should discuss this with their employer to rectify the under-deduction.\n\n**Warning:** The employee may also want to check their ESI contribution, as the actual amount is not provided in the payslip audit result.",
+      "cited": [
+        "EPF_ACT_S6_CONTRIB"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": false,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "payslip_03",
+      "response": "**Result:** ESI deduction of \u20b9143 is correct.\n\n**Reasoning:** The ESI scheme applies to employees with a gross salary of \u20b921,000 or less [ESI_WAGE_LIMIT]. The employee's gross salary is \u20b919,000, which is within the eligible limit.\n\n**Steps:**\n\n1. Check the employee's gross salary to ensure it is within the ESI wage limit.\n2. Verify the ESI contribution rate, which is 0.75% of gross wages [TOOL_PAYSLIP_AUDIT].\n\n**Warning/Caveat:** The Professional Tax (PT) deduction cannot be computed as the state is not provided.\n\n**Eligibility:** Eligible (since the gross salary is within the ESI wage limit)\n\n**Next Steps:** No further action required.",
+      "cited": [
+        "ESI_WAGE_LIMIT",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "payslip_04",
+      "response": "**Result:** Not eligible for minimum wage\n\n**Reason:** Your gross salary of \u20b911000 is less than the minimum wage of \u20b914000 [MIN_WAGE_MAHARASHTRA_2024] for an unskilled worker in Maharashtra.\n\n**Next Steps:**\n\n1.  You should claim the difference between the minimum wage and your actual salary from your employer.\n2.  Your employer must pay you the difference as a part of your salary.\n\n**Warning:** Failure to pay the minimum wage is a criminal offence under Section 22 of the Minimum Wages Act [MIN_WAGE_MAHARASHTRA_2024].",
+      "cited": [
+        "MIN_WAGE_MAHARASHTRA_2024"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "payslip_05",
+      "response": "**Result:**\n\nEPF deduction of \u20b92,400 is **CORRECT** [EPF_ACT_S6_CONTRIB]. The employer's contribution to EPF is 12% of the employee's basic wages, which is \u20b92,400 [EPF_ACT_S6_CONTRIB].\n\nESI deduction of \u20b90 is **CORRECT** [ESI_WAGE_LIMIT]. The employee is not covered by ESI as their gross salary is \u20b928,000, which exceeds the threshold of \u20b921,000 [ESI_WAGE_LIMIT].\n\nProfessional Tax deduction of \u20b9150 is **CORRECT** [PROF_TAX_KARNATAKA]. The employer must deduct \u20b9150 as the employee's salary is \u20b928,000, which falls under the slab of \u20b915,000\u201329,999 [PROF_TAX_KARNATAKA].\n\n**Next Steps:**\n\n1. The EPF deduction of \u20b92,400 is correct and matches the expected amount.\n2. The ESI deduction of \u20b90 is correct as the employee is not covered by ESI.\n3. The Professional Tax deduction of \u20b9150 is correct and computed according to the Karnataka PT slab.\n\n**Warnings/Caveats:**\n\n* The employee's gross salary of \u20b928,000 exceeds the EPF wage ceiling of \u20b915,000 per month, but this does not affect the EPF deduction as the employee is still eligible for EPF [EPF_ACT_S6_CONTRIB].\n* The employee is not covered by ESI due to their gross salary exceeding the threshold of \u20b921,000 [ESI_WAGE_LIMIT].",
+      "cited": [
+        "EPF_ACT_S6_CONTRIB",
+        "ESI_WAGE_LIMIT",
+        "PROF_TAX_KARNATAKA"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_01",
+      "response": "**Eligibility:**\n\nYou are eligible for gratuity as you have completed more than 5 years of continuous service [GRATUITY_ACT_S4_ELIG].\n\n**Calculation:**\n\nTo calculate the gratuity, we need to use the formula: (Last Drawn Monthly Salary \u00d7 15 \u00d7 Years of Service) \u00f7 26.\n\nGiven your last drawn salary is Rs 45,000, and you have worked for 6 years 3 months, we need to convert the years to months. 6 years is 72 months, and adding 3 months, you have a total of 75 months.\n\nHowever, the formula requires years of service. To convert 75 months to years, we divide by 12: 75 months \u00f7 12 = 6.25 years.\n\nNow, let's calculate the gratuity:\n\n(45,000 \u00d7 15 \u00d7 6.25) \u00f7 26 = 28,359.62\n\n**Result:**\n\nYou are eligible for a gratuity of approximately Rs 28,359.62.\n\n**Next Steps:**\n\n1.  Check with your employer to confirm the gratuity amount and the payment process.\n2.  If your employer delays payment, you can claim simple interest at 10% per annum.\n\n**Warning:**\n\nThe maximum gratuity payable is \u20b920 Lakhs. If your calculated gratuity exceeds this amount, you will receive the maximum of \u20b920 Lakhs.",
+      "cited": [
+        "GRATUITY_ACT_S4_ELIG"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_02",
+      "response": "**Result:** Not eligible for 26 weeks of paid maternity leave.\n\n**Reason:** The user is not eligible for 26 weeks of paid maternity leave because she has not completed the required 80 days of actual work in the 12 months preceding the expected delivery [MATERNITY_BENEFIT_ACT_2017].\n\n**Eligibility Condition Trace:**\n- The user is pregnant (given).\n- The user has been working at a private IT firm for 3 years (given).\n- The user needs to have worked for 80 days in the 12 months preceding the expected delivery, which is not specified.\n\n**Next Steps:**\n1. Check the user's employment records to confirm the number of days worked in the 12 months preceding the expected delivery.\n2. If the user has worked for less than 80 days, she may be eligible for 12 weeks of paid maternity leave.\n\n**Warning/Caveat:** The user should confirm her eligibility with her employer and ensure she understands the company's maternity leave policy.",
+      "cited": [
+        "MATERNITY_BENEFIT_ACT_2017"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_03",
+      "response": "**Result:** You can buy out the notice period, but with certain conditions.\n\n**Eligibility:** eligible=True\n\n**Reasoning:** According to [NOTICE_PERIOD_BUYOUT_RULE], an employer may allow a 'notice buy-out' when an employee resigns and is unable or unwilling to serve the full notice period. The amount to be paid is calculated as (Basic + DA) \u00f7 30 \u00d7 remaining notice days.\n\n**Next Steps:**\n\n1.  Check your employment contract or standing orders to confirm the notice period specified.\n2.  Calculate the amount to be paid for the notice buy-out using the formula: (Basic + DA) \u00f7 30 \u00d7 remaining notice days.\n3.  Discuss the notice buy-out with your employer and come to an agreement on the terms.\n\n**Warning/Caveat:** The employer cannot withhold the full and final settlement solely because of a notice period dispute; any recovery must be through civil proceedings or agreed deduction from F&F.",
+      "cited": [
+        "NOTICE_PERIOD_BUYOUT_RULE"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_04",
+      "response": "**Eligibility:** eligible=True\n\n**Result:** You have several remedies for wrongful termination. Since you were fired without a notice period, you can consider the following options:\n\n1.  You can raise an industrial dispute before the Labour Commissioner, and if unresolved, before the Labour Court, which can award reinstatement with back wages [WRONGFUL_TERMINATION_REMEDIES].\n2.  You can file a complaint under the Industrial Disputes Act within 3 years of the wrongful termination [WRONGFUL_TERMINATION_REMEDIES].\n3.  If your employer is in an 'essential service', different notice requirements may apply [WRONGFUL_TERMINATION_REMEDIES].\n\n**Next Steps:**\n\n1.  Gather all relevant documents, including your offer letter or contract, to determine the notice period specified.\n2.  Check if your employer has certified standing orders that specify the notice period required for termination [STANDING_ORDERS_ACT_NOTICE_PERIOD].\n3.  If you believe your employer has wrongfully terminated you, consider filing a complaint with the Labour Commissioner or a civil suit for recovery of the relieving letter [RELIEVING_LETTER_LEGAL_OBLIGATION].\n\n**Warning:** Filing a complaint or lawsuit can be a lengthy and complex process. It is recommended that you consult with a legal expert or a labour rights organization for guidance.\n\n**Caveat:** The Industrial Disputes Act requires that you file a complaint within 3 years of the wrongful termination [WRONGFUL_TERMINATION_REMEDIES].",
+      "cited": [
+        "RELIEVING_LETTER_LEGAL_OBLIGATION",
+        "STANDING_ORDERS_ACT_NOTICE_PERIOD",
+        "WRONGFUL_TERMINATION_REMEDIES"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_05",
+      "response": "**Eligibility: False**\n\nYou are not eligible for gratuity as you have completed only 4 years and 245 days of service, which does not meet the minimum requirement of 5 years of continuous service [GRATUITY_ACT_S4_ELIG]. The Madras High Court ruling [GRATUITY_COURT_RULING_4Y8M] provides a judicial interpretation that an employee with 4 years and 240 days of service qualifies for gratuity, but this does not apply to your situation since you have not completed the required 5 years.\n\n**Why not eligible:** The Payment of Gratuity Act 1972 requires a minimum of 5 years of continuous service for gratuity to be payable. You have completed 4 years and 245 days, which is less than the required period.\n\n**Next steps:** You may consider reviewing your employment contract or consulting with your HR department to understand the company's gratuity policy. If you have any further questions or concerns, you may also consider reaching out to the Labour Department or a relevant authority for guidance.\n\n**Caveat:** The Madras High Court ruling [GRATUITY_COURT_RULING_4Y8M] is specific to certain conditions and may not be applicable in all cases. It's essential to consult the relevant laws and regulations for accurate information.",
+      "cited": [
+        "GRATUITY_ACT_S4_ELIG",
+        "GRATUITY_COURT_RULING_4Y8M"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_01",
+      "response": "**Result:** Not eligible for 80C deduction\n\n**Reason:** The new tax regime is the default for individuals from FY 2023-24 onward, and the 80C deduction is not available under this regime [FINANCE_ACT_2023_NEW_REGIME].\n\n**Condition Trace:** The user chose the new tax regime, and the new tax regime does not offer the 80C deduction.\n\n**Next Steps:** Consider other deductions available under the new tax regime, such as the standard deduction of \u20b950,000 or the tax rebate under Section 87A.\n\n**Warning/Caveat:** The new tax regime has different tax slabs and deductions compared to the old tax regime. It's essential to understand the new rules to optimize tax savings.",
+      "cited": [
+        "FINANCE_ACT_2023_NEW_REGIME"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "tax_02",
+      "response": "**Result:**\nHRA exemption of \u20b915,000 can be claimed.\n\n**Steps:**\n\n1. Calculate the exemption under Section 10(13A) of the Income Tax Act.\n2. The exemption is the minimum of three amounts:\n   - Actual HRA received from employer: \u20b915,000\n   - Rent paid minus 10% of basic salary: \u20b918,000 - (10% of \u20b940,000) = \u20b918,000 - \u20b94,000 = \u20b914,000\n   - 50% of basic salary for non-metro cities: 50% of \u20b940,000 = \u20b920,000\n3. Since \u20b914,000 is the minimum of the three amounts, the HRA exemption is \u20b914,000. However, the actual HRA received is \u20b915,000, which is higher than the calculated exemption. Therefore, the HRA exemption of \u20b915,000 can be claimed.\n\n**Warnings/Caveats:**\n\n* The HRA exemption is available only under the old tax regime. If the tax regime is new, HRA exemption cannot be claimed.\n* If rent paid exceeds \u20b91 lakh per annum, the landlord's PAN must be provided to the employer.",
+      "cited": [],
+      "fabricated": [],
+      "has_citation": false,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "tax_03",
+      "response": "**Result:** Your ITR refund is likely delayed due to a possible issue with your bank account or a mismatch in PAN-bank account details.\n\n**Eligibility:** eligible=True\n\n**Next Steps:**\n\n1. Check your bank account on the IT portal under 'My Profile > Bank Account' to ensure it is pre-validated.\n2. Verify that your bank account IFSC has not been changed or closed.\n3. If your PAN-bank account details are mismatched, pre-validate your bank account on the IT portal.\n\n**Warning/Caveat:** If your refund is not credited within 45 days of ITR processing, you can escalate through the steps mentioned in [ITR_REFUND_DELAY_GRIEVANCE].\n\n**Citations:**\n\n* Refund processing and delay: [ITR_REFUND_STATUS]\n* Bank account validation: [ITR_REFUND_STATUS]\n* PAN-bank account mismatch: [ITR_REFUND_STATUS]\n* Refund delay escalation: [ITR_REFUND_DELAY_GRIEVANCE]\n* Refund interest accrual: [ITR_REFUND_DELAY_GRIEVANCE]",
+      "cited": [
+        "ITR_REFUND_DELAY_GRIEVANCE",
+        "ITR_REFUND_STATUS"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_04",
+      "response": "**Result:**\nYou are eligible for TDS on PF withdrawal.\n\n**Reasoning:**\nSince your service years (3) are less than 5 years, and the withdrawal amount (\u20b9400,000) exceeds \u20b950,000, TDS is applicable.\n\n**TDS Percentage:**\nAs your PAN card is updated in UAN, the TDS rate is 10% [ITA_SECTION_192A_TDS_PF].\n\n**Next Steps:**\n1. Check if you have submitted Form 15G/15H, as this might exempt you from TDS.\n2. Ensure you have the necessary documents ready for the PF withdrawal process.\n\n**Caveat:**\nIf you had 5 or more years of service, the TDS would not apply.",
+      "cited": [
+        "ITA_SECTION_192A_TDS_PF"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_05",
+      "response": "**Result:** Not eligible to receive Form 16 for part-year salary immediately.\n\n**Eligibility:** eligible=False\n\n**Reason:** According to [FORM_16_OVERVIEW], Form 16 is issued by the employer by 15 June of the assessment year. Since you resigned in September, the assessment year has not started yet, and the employer is not required to issue Form 16 immediately.\n\n**Warning:** The employer can be penalised under Section 272A if they fail to issue Form 16. You can still file ITR using Form 26AS, pay slips, and bank statements.\n\n**Next Steps:** You can wait until the assessment year starts and the employer issues Form 16 by 15 June. If you need to file ITR before that, you can use Form 26AS, pay slips, and bank statements as alternatives.",
+      "cited": [
+        "FORM_16_OVERVIEW"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    }
+  ],
+  "lora_results": [
+    {
+      "prompt_id": "pf_01",
+      "response": "**Result:** You are eligible for full withdrawal of your PF amount.\n\n**Eligibility Reasoning Trace:**\n- You have been unemployed for 4 months [FAQ_WD_023].\n- You have completed 7 years of service [FAQ_WD_023].\n- Your UAN is active and KYC is complete [FAQ_WD_023].\n- You have not specified any other conditions that would affect your eligibility.\n\n**Steps:**\n\n1.  You can submit your withdrawal application without the employer's signature by getting attestation from the bank where you maintain your account and submitting it to the Regional PF Commissioner [FAQ_WD_023].\n2.  Alternatively, if you have activated your UAN and linked your bank account and Aadhaar, you can submit a composite claim (Aadhaar) which only requires your signature [FAQ_WD_023].\n3.  Since you have completed 7 years of service, no TDS will be applicable on your withdrawal [CIRC_2024_TDS].\n\n**Warnings/Caveats:** None.",
+      "cited": [
+        "CIRC_2024_TDS",
+        "FAQ_WD_023"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 0,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "pf_02",
+      "response": "**Result:** You are eligible to withdraw your PF partially.\n\n**Eligibility Reasoning Trace:**\n- You have been unemployed for 1 month, which is less than 2 months (typically considered for full withdrawal).\n- You have an active UAN and complete KYC.\n- You have completed 3 years of service.\n\n**Steps:**\n\n1.  You can submit a partial withdrawal application using the composite claim (Aadhaar) option, which only requires your signature.\n2.  Since you have been unemployed for less than 2 months, you may not be eligible for full withdrawal. However, you can withdraw a partial amount.\n3.  As you have an active UAN and complete KYC, you can proceed with the composite claim.\n\n**Warnings/Caveats:**\n- If you have any disputes with your employer regarding the claim form, you can get attestation from your bank and submit to the Regional PF Commissioner.\n- Be aware that TDS may be applicable if your withdrawal exceeds Rs.50,000 and you have less than 5 years of service. The applicable rate is 10% for resident with valid PAN, 20% for resident without valid PAN, and 30% plus 4% cess for non-resident. [CIRC_2024_TDS]",
+      "cited": [
+        "CIRC_2024_TDS"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "pf_03",
+      "response": "**Result:** TDS applicable on your PF withdrawal of Rs. 2,00,000.\n\n**Eligibility:** Not eligible for exemption from TDS.\n\n**Reasoning:** You have less than 5 years of service [CIRC_2024_TDS], and the withdrawal amount exceeds Rs. 50,000 [CIRC_2024_TDS].\n\n**TDS Calculation:**\n\n* Resident with valid PAN: 10% of Rs. 2,00,000 = Rs. 20,000\n* Resident without valid PAN: 20% of Rs. 2,00,000 = Rs. 40,000\n* Non-resident: 30% of Rs. 2,00,000 = Rs. 60,000 + 4% cess = Rs. 62,400\n\n**Next Steps:**\n\n1. Ensure you have a valid PAN to avoid a higher TDS rate.\n2. Submit Form 15G to your employer if you meet the eligibility criteria (age below 60 and total income below Rs. 2.50 lakh) [FORM_15G_INSTRUCTIONS]. However, note that this form is only applicable for income below Rs. 2.50 lakh, which may not be the case in your scenario.\n\n**Warning:** If you have any doubts or concerns, consult your employer or a tax professional for further guidance.",
+      "cited": [
+        "CIRC_2024_TDS",
+        "FORM_15G_INSTRUCTIONS"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "pf_04",
+      "response": "**Result:** Your PF account can be transferred to the new establishment on change of employment.\n\n**Eligibility:** Eligible (conditions met: UAN active [FAQ_WD_024], KYC complete [FAQ_WD_024])\n\n**Steps:**\n\n1.  Submit Form 13(R) or online transfer request through the member interface at the unified portal to transfer your PF account to the new establishment.\n2.  If you have an active UAN and Aadhaar+Bank seeded, you can also submit the transfer claim online using the member interface.\n\n**Warnings/Caveats:** Ensure your Date of Exit is updated in your previous account to facilitate the transfer process. If you have an active UAN and Aadhaar verification, your transfer may initiate automatically when the first month contribution is received in the new account from the new employer [CIRC_UAN_AUTO_TRANSFER].",
+      "cited": [
+        "CIRC_UAN_AUTO_TRANSFER",
+        "FAQ_WD_024"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "pf_05",
+      "response": "**Result:** KYC rejection ka samadhan karna hai.\n\n**Eligibility:** Eligible (kyunki aap UAN me login kar sakte hain)\n\n**Steps:**\n\n1. Aapko apne UAN me login karna hoga.\n2. Member portal par jaakar, Manage > KYC > Select Aadhaar > Enter Aadhaar number > Save karna hoga.\n3. Agar name mismatch hai, to Joint Declaration kiya jaana hoga.\n\n**Caveats:** Name mismatch ke liye Joint Declaration kiya jaana hoga, isliye aapko apne employer se saath me milna hoga. [KYC_AADHAAR_GUIDE]",
+      "cited": [
+        "KYC_AADHAAR_GUIDE"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": false,
+      "key_facts_found": 0,
+      "key_facts_total": 1,
+      "key_facts_rate": 0.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "payslip_01",
+      "response": "**EPF Deduction Verification**\n\n**Result:** The EPF deduction of \u20b93,000 is **CORRECT**.\n\n**Reasoning:** According to the EPF Act [EPF_ACT_S6_CONTRIB], both the employee and employer must each contribute 12% of the employee's basic wages. The wage ceiling for mandatory EPF/EPS contributions is \u20b915,000 per month [EPF_PARA_26A]. Since the basic salary is \u20b925,000, which is above the wage ceiling, the EPF deduction of \u20b93,000 matches the expected deduction of \u20b93,000 [TOOL_PAYSLIP_AUDIT].\n\n**Next Steps:**\n\n1. Verify the EPF contribution details with your employer to ensure it matches the expected deduction.\n2. Check if you have any other deductions or contributions that may be applicable.\n\n**Warning:** Since the basic salary is above \u20b915,000, you may be eligible to contribute on your full wages voluntarily. You can discuss this with your employer and submit a joint request to opt for voluntary contributions. [EPF_PARA_26A]",
+      "cited": [
+        "EPF_ACT_S6_CONTRIB",
+        "EPF_PARA_26A",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "payslip_02",
+      "response": "**Result:** EPF under-deducted by \u20b9360.\n\n**Eligibility:** Eligible for EPF contribution.\n\n**Reasoning:** The employer is deducting \u20b91800, which is less than the expected \u20b92160 (12% of \u20b918000) [EPF_ACT_S6_CONTRIB]. The statutory wage ceiling for EPF/EPS contributions is \u20b915000 per month [EPF_PARA_26A], and the employee's basic salary is \u20b918000, which exceeds this ceiling. However, the employee can voluntarily opt to contribute on their full wages by submitting a joint request with their employer [EPF_PARA_26A].\n\n**Next Steps:**\n\n1.  The employee should request their employer to increase the EPF deduction to \u20b92160 per month.\n2.  If the employee earns above \u20b915000 per month, they can submit a joint request with their employer to contribute on their full wages.\n\n**Warning/Caveat:** The employee's EPF contribution is under-deducted by \u20b9360, which may affect their retirement savings. It is recommended to rectify this issue as soon as possible.",
+      "cited": [
+        "EPF_ACT_S6_CONTRIB",
+        "EPF_PARA_26A"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": false,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "payslip_03",
+      "response": "**Result:** ESI deduction of \u20b9143 is CORRECT.\n\n**Eligibility:** Eligible (condition met)\n\n**Reasoning:** The ESI scheme applies to employees whose gross salary is \u20b921,000 per month or less [ESI_WAGE_LIMIT]. The user's gross salary is \u20b919,000, which is within the eligible limit.\n\n**Next Steps:**\n\n1.  Verify the state to check if the Professional Tax (PT) deduction is correct.\n2.  If the state is provided, re-run the payslip audit to check the PT deduction.\n\n**Warning/Caveat:** The PT deduction cannot be computed without the state information [TOOL_PAYSLIP_AUDIT].",
+      "cited": [
+        "ESI_WAGE_LIMIT",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "payslip_04",
+      "response": "**Result:** Not eligible for minimum wage\n\n**Reason:** Your gross salary of \u20b911000 is less than the statutory minimum wage of \u20b914000 [MIN_WAGE_MAHARASHTRA_2024] for an unskilled worker in Maharashtra.\n\n**Eligibility Condition:** The condition for eligibility is that the gross salary must be at least \u20b914000 per month for an unskilled worker in Maharashtra.\n\n**Next Steps:** You may consider discussing a salary increase with your employer to meet the statutory minimum wage requirements.\n\n**Warning/Caveat:** Paying below the minimum wage is a criminal offence under Section 22 of the Minimum Wages Act [MIN_WAGE_MAHARASHTRA_2024].",
+      "cited": [
+        "MIN_WAGE_MAHARASHTRA_2024"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "payslip_05",
+      "response": "**Result:**\n\nYour payslip audit is complete. Here are the results:\n\n* EPF deduction of \u20b92,400 is **CORRECT** [EPF_ACT_S6_CONTRIB]. The legal basis is 12% of basic \u20b920,000 = \u20b92,400/month [EPF_ACT_S6_CONTRIB].\n* ESI deduction of \u20b90 is **CORRECT** [ESI_WAGE_LIMIT]. The legal basis is that ESI is not applicable since your gross salary \u20b928,000 exceeds \u20b921,000 [ESI_WAGE_LIMIT].\n* Professional Tax deduction of \u20b90 is **INCORRECT**. The expected PT is \u20b9150/month [TOOL_PAYSLIP_AUDIT]. The legal basis is the Karnataka PT slab: salary \u2264 \u20b929,999 \u2192 \u20b9150/month [PROF_TAX_KARNATAKA].\n\n**Next Steps:**\n\n1. Your employer should deduct \u20b9150/month as Professional Tax from your salary.\n2. Please verify that your employer remits the deducted Professional Tax to the state government.\n\n**Warnings/Caveats:**\n\n* Since your gross salary is \u20b928,000, you are not eligible for ESI [ESI_WAGE_LIMIT].\n* The EPF deduction of \u20b92,400 is within the legal limit of 12% of basic \u20b920,000 [EPF_ACT_S6_CONTRIB].",
+      "cited": [
+        "EPF_ACT_S6_CONTRIB",
+        "ESI_WAGE_LIMIT",
+        "PROF_TAX_KARNATAKA",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "labour_01",
+      "response": "**Eligibility for Gratuity:**\nYou are eligible for gratuity as you have completed more than 5 years of continuous service [GRATUITY_ACT_S4_ELIG].\n\n**Calculation of Gratuity:**\nTo calculate the gratuity, we use the formula: (Last Drawn Monthly Salary \u00d7 15 \u00d7 Years of Service) \u00f7 26.\nGiven your last drawn salary is Rs 45,000 per month, the calculation is:\n(45,000 \u00d7 15 \u00d7 6) \u00f7 26 = Rs 32,615\n\n**Next Steps:**\n1. Check if your employer has paid gratuity within 30 days of becoming due.\n2. If not, calculate the interest payable at 10% per annum for any delay.\n3. Ensure your employer has paid the maximum gratuity of Rs 20 Lakhs.\n\n**Warning:** The employer must pay simple interest at 10% per annum for any delay in paying gratuity.",
+      "cited": [
+        "GRATUITY_ACT_S4_ELIG"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_02",
+      "response": "**Result:** You are eligible for 26 weeks of paid maternity leave.\n\n**Eligibility Reasoning:**\n- You are pregnant [MATERNITY_BENEFIT_ACT_2017].\n- You have been working at the private IT firm for 3 years, which meets the eligibility criteria.\n- You are entitled to 26 weeks of paid maternity leave for the first two live births [MATERNITY_BENEFIT_ACT_2017].\n\n**Next Steps:**\n1. Confirm your expected delivery date and calculate the 12 months preceding it to ensure you have 80 days of actual work.\n2. Discuss your eligibility and benefits with your HR or manager to ensure they are aware of your entitlement.\n3. If you have any concerns or issues, you can reach out to the Labour Department or a relevant authority for support.\n\n**Warning/Caveat:** Ensure you have a record of your 80 days of actual work in the 12 months preceding your expected delivery to avoid any issues with your maternity benefit claim.",
+      "cited": [
+        "MATERNITY_BENEFIT_ACT_2017"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "labour_03",
+      "response": "**Result:** You cannot immediately pay basic salary and buy out the 90-day notice period.\n\n**Eligibility:** eligible=False\n\n**Reasoning:** According to the Industrial Employment (Standing Orders) Act 1946 [STANDING_ORDERS_ACT_NOTICE_PERIOD], if the contract specifies a longer notice period (e.g., 90 days), that contractual period applies. In your case, the contract requires a 90-day notice period. Additionally, the notice buy-out rule [NOTICE_PERIOD_BUYOUT_RULE] states that an employer cannot withhold the full and final settlement solely because of a notice period dispute; any recovery must be through civil proceedings or agreed deduction from F&F.\n\n**Warning:** You may be required to serve the full 90-day notice period or face pay deduction for the shortfall. If you are unable or unwilling to serve the full notice period, you may need to negotiate with your employer to agree on a notice buy-out or seek civil proceedings to resolve the dispute.\n\n**Next Steps:** Review your employment contract and discuss with your employer to explore options for resolving the notice period dispute. If necessary, consider seeking legal advice to understand your rights and obligations.",
+      "cited": [
+        "NOTICE_PERIOD_BUYOUT_RULE",
+        "STANDING_ORDERS_ACT_NOTICE_PERIOD"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_04",
+      "response": "**Result:**\nYou are eligible to take action against your employer for wrongful termination.\n\n**Eligibility Reasoning:**\nYou were terminated by your employer without any notice period pay or warning, which is a wrongful termination [WRONGFUL_TERMINATION_REMEDIES].\n\n**Next Steps:**\n1.  You can raise an industrial dispute before the Labour Commissioner, and if unresolved, before the Labour Court, which can award reinstatement with back wages [WRONGFUL_TERMINATION_REMEDIES].\n2.  You can also approach the Labour Commissioner or file a civil suit for recovery of the relieving letter, as withholding it may be challenged as restraint of trade under Section 27 of the Indian Contract Act 1872 [RELIEVING_LETTER_LEGAL_OBLIGATION].\n3.  If you were a permanent workman, your employer may have breached the Industrial Employment (Standing Orders) Act 1946 by not providing the agreed notice period, which is typically 30 days [STANDING_ORDERS_ACT_NOTICE_PERIOD].\n\n**Warnings/Caveats:**\n- You must file a complaint under the Industrial Disputes Act within 3 years of the wrongful termination [WRONGFUL_TERMINATION_REMEDIES].\n- If your employer is in an 'essential service', different notice requirements may apply [WRONGFUL_TERMINATION_REMEDIES].\n- You may need to approach civil courts or the High Court if you are a managerial or supervisory employee [WRONGFUL_TERMINATION_REMEDIES].",
+      "cited": [
+        "RELIEVING_LETTER_LEGAL_OBLIGATION",
+        "STANDING_ORDERS_ACT_NOTICE_PERIOD",
+        "WRONGFUL_TERMINATION_REMEDIES"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "labour_05",
+      "response": "**Result:** Eligible for gratuity\n\n**Reasoning:** Based on the Madras High Court ruling [GRATUITY_COURT_RULING_4Y8M], an employee who completes 4 years and 240 days (or more) of service qualifies for gratuity. Since you have completed 4 years and 245 days, you meet this threshold.\n\n**Eligibility Condition:** The condition for gratuity eligibility is met when an employee completes 4 years and 240 days (or more) of service [GRATUITY_COURT_RULING_4Y8M].\n\n**Next Steps:**\n\n1.  Calculate your gratuity using the formula: (Last Drawn Monthly Salary \u00d7 15 \u00d7 Years of Service) \u00f7 26.\n2.  Ensure your employer pays gratuity within 30 days of becoming due and pays simple interest at 10% per annum for any delay [GRATUITY_ACT_S4_ELIG].\n3.  Review your employment contract to understand the terms and conditions related to gratuity.\n\n**Warning/Caveat:** Gratuity is payable only on termination of service, and the amount is subject to a maximum of \u20b920 Lakhs. If you have any doubts or concerns, consider consulting with a labour law expert.",
+      "cited": [
+        "GRATUITY_ACT_S4_ELIG",
+        "GRATUITY_COURT_RULING_4Y8M"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_01",
+      "response": "**Result:** Not eligible for 80C deduction\n\n**Reason:** You have chosen the new tax regime, which does not allow the 80C deduction [ITA_SECTION_80C].\n\n**Eligibility Condition:** The new tax regime is the default for individuals from FY 2023-24 onward, and the 80C deduction is not available under this regime [FINANCE_ACT_2023_NEW_REGIME].\n\n**Next Steps:** You can consider other tax-saving options available under the new tax regime, such as the standard deduction of \u20b950,000 and the tax rebate of up to \u20b925,000 under Section 87A if your total income does not exceed \u20b97 lakh.\n\n**Warning/Caveat:** It's essential to review the tax slabs and deductions available under the new tax regime to optimize your tax savings. Consult a tax professional if you have any further queries.",
+      "cited": [
+        "FINANCE_ACT_2023_NEW_REGIME",
+        "ITA_SECTION_80C"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": false,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": false
+    },
+    {
+      "prompt_id": "tax_02",
+      "response": "**Result:** HRA exemption of \u20b915,000 is available.\n\n**Steps:**\n\n1. Calculate the HRA exemption using the formula: minimum of actual HRA received, rent paid minus 10% of basic salary, and 40% of basic salary.\n2. Rent paid: \u20b918,000\n3. 10% of basic salary: \u20b94,000 (10% of \u20b940,000)\n4. 40% of basic salary: \u20b916,000 (40% of \u20b940,000)\n5. Actual HRA received: \u20b915,000\n6. HRA exemption: minimum of \u20b915,000, \u20b918,000 - \u20b94,000 = \u20b914,000, and \u20b916,000 [ITA_SECTION_10_13A]\n\n**Warnings/Caveats:** Ensure the landlord's PAN is provided to the employer if rent paid exceeds \u20b91 lakh per annum. This exemption is only available under the old tax regime. Employees under the new tax regime cannot claim HRA exemption. [ITA_SECTION_10_13A]",
+      "cited": [
+        "ITA_SECTION_10_13A"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 2,
+      "key_facts_total": 2,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_03",
+      "response": "**Result:** Your ITR refund is likely delayed due to a common issue.\n\n**Eligibility:** Eligible for refund (assuming no outstanding demand)\n\n**Reasoning Trace:** Since you don't have any outstanding demand, the refund should have been processed by now. However, the refund status shows processed but no money has been credited.\n\n**Steps to resolve:**\n\n1.  Check the refund status on the NSDL portal at tin.tin.nsdl.com to confirm the processing status.\n2.  Verify that your bank account is pre-validated on the IT portal under 'My Profile > Bank Account'. If not, pre-validate it to ensure the refund is credited correctly.\n3.  If the bank account IFSC has changed or closed, update it on the IT portal to avoid any issues.\n4.  If the refund is still not credited after 45 days, you can escalate the issue by raising a grievance on the e-filing portal under 'e-Nivaran / Grievance' with the processing reference number.\n\n**Warnings/Caveats:** Refunds are typically credited within 20\u201345 days of ITR processing [ITR_REFUND_STATUS]. If the refund is not credited within 45 days, you can escalate the issue through the steps mentioned above [ITR_REFUND_DELAY_GRIEVANCE]. Additionally, if there is an outstanding tax demand, the refund may be adjusted against it [ITR_REFUND_OUTSTANDING_DEMAND]. However, since you don't have any outstanding demand, this is not applicable in your case.",
+      "cited": [
+        "ITR_REFUND_DELAY_GRIEVANCE",
+        "ITR_REFUND_OUTSTANDING_DEMAND",
+        "ITR_REFUND_STATUS"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 1,
+      "key_facts_rate": 1.0,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_04",
+      "response": "**Result**\nYou are eligible for TDS on PF withdrawal.\n\n**TDS Percentage**\nThe TDS percentage for your PF withdrawal is 10% as you have provided a valid PAN card and your service period is less than 5 years [ITA_SECTION_192A_TDS_PF].\n\n**Next Steps**\n1. Submit your PF withdrawal claim to your employer or the EPFO.\n2. Ensure that your PAN card details are correctly updated in your UAN.\n\n**Warning/Caveat**\nNote that if your service period was 5 years or more, no TDS would have been applicable [ITA_SECTION_192A_TDS_PF]. Additionally, if you had not provided a valid PAN card, the TDS percentage would have been 20% [ITA_SECTION_192A_TDS_PF].",
+      "cited": [
+        "ITA_SECTION_192A_TDS_PF"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    },
+    {
+      "prompt_id": "tax_05",
+      "response": "**Result:** Not eligible for Form 16 for part-year salary\n\n**Eligibility Reasoning Trace:** \n- The user resigned in September, which is within the same financial year.\n- Form 16 is issued by the employer by 15 June of the assessment year.\n- Since the user resigned in September, the employer is not required to issue Form 16 for the part-year salary.\n\n**Answer:** According to the tax laws, an employer is not required to issue Form 16 for a part-year salary [FORM_16_OVERVIEW]. The employer's decision to provide Form 16 only in June of the next year is not in compliance with the tax laws, but it is not a violation of any specific rule. However, the employer can be penalised under Section 272A for failing to issue Form 16 [FORM_16_OVERVIEW].\n\n**Next Steps:**\n\n1.  Request the employer to provide a partial Form 16 or a separate document showing the TDS deposited and salary breakup for the part-year salary.\n2.  File the Income Tax Return (ITR-1 or ITR-2) using Form 26AS, pay slips, and bank statements as alternative documents.\n\n**Warning/Caveat:** The employer's delay in issuing Form 16 may cause inconvenience while filing the ITR. It is recommended to keep a record of all communication with the employer regarding the Form 16.",
+      "cited": [
+        "FORM_16_OVERVIEW"
+      ],
+      "fabricated": [],
+      "has_citation": true,
+      "has_fabrication": false,
+      "cited_expected_subset": true,
+      "verdict_present": true,
+      "key_facts_found": 1,
+      "key_facts_total": 2,
+      "key_facts_rate": 0.5,
+      "grounded_clean": true
+    }
+  ],
+  "prompts": [
+    {
+      "id": "pf_01",
+      "domain": "pf",
+      "intent": "full_withdrawal",
+      "query": "resign kiye 4 mahine ho gaye, UAN active hai, KYC complete hai. total 7 saal kaam kiya pf me. pura paisa nikal sakta hu?",
+      "passage_doc_ids": [
+        "FAQ_WD_023",
+        "CIRC_2024_TDS"
+      ],
+      "slots": {
+        "intent": "full_withdrawal",
+        "employment_status": "unemployed",
+        "months_unemployed": 4,
+        "service_years": 7,
+        "uan_status": "active",
+        "kyc_status": "complete"
+      },
+      "expected_verdict": "eligible",
+      "expected_cited_doc_ids": [
+        "FAQ_WD_023",
+        "CIRC_2024_TDS"
+      ],
+      "key_facts_required": [
+        "2 months",
+        "5 years"
+      ],
+      "notes": "eligible, no TDS because service exceeds 5 years"
+    },
+    {
+      "id": "pf_02",
+      "domain": "pf",
+      "intent": "full_withdrawal",
+      "query": "I resigned just last month, worked for 3 years total. UAN is active, KYC done. Can I withdraw my PF fully now?",
+      "passage_doc_ids": [
+        "FAQ_WD_023",
+        "CIRC_2024_TDS"
+      ],
+      "slots": {
+        "intent": "full_withdrawal",
+        "employment_status": "unemployed",
+        "months_unemployed": 1,
+        "service_years": 3,
+        "uan_status": "active",
+        "kyc_status": "complete"
+      },
+      "expected_verdict": "not eligible",
+      "expected_cited_doc_ids": [
+        "FAQ_WD_023"
+      ],
+      "key_facts_required": [
+        "2 months"
+      ],
+      "notes": "unemployment period less than 2 months"
+    },
+    {
+      "id": "pf_03",
+      "domain": "pf",
+      "intent": "tds_query",
+      "query": "pf withdraw kiya 2 lakh ka, total service 3.5 years thi. TDS kitna lagega?",
+      "passage_doc_ids": [
+        "CIRC_2024_TDS",
+        "FORM_15G_INSTRUCTIONS"
+      ],
+      "slots": {
+        "intent": "tds_query",
+        "pf_withdrawal_amount": 200000,
+        "service_years": 3
+      },
+      "expected_verdict": "conditional",
+      "expected_cited_doc_ids": [
+        "CIRC_2024_TDS"
+      ],
+      "key_facts_required": [
+        "5 years",
+        "TDS"
+      ],
+      "notes": "TDS applies: service < 5 years and amount > 50000"
+    },
+    {
+      "id": "pf_04",
+      "domain": "pf",
+      "intent": "transfer",
+      "query": "new company join kiya, old PF ka transfer karna hai. UAN active hai KYC done hai. kaise transfer hoga?",
+      "passage_doc_ids": [
+        "FAQ_WD_024",
+        "FORM_13_INSTRUCTIONS",
+        "CIRC_UAN_AUTO_TRANSFER"
+      ],
+      "slots": {
+        "intent": "transfer",
+        "uan_status": "active",
+        "kyc_status": "complete"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "FAQ_WD_024",
+        "FORM_13_INSTRUCTIONS"
+      ],
+      "key_facts_required": [
+        "Form 13"
+      ],
+      "notes": "standard transfer process"
+    },
+    {
+      "id": "pf_05",
+      "domain": "pf",
+      "intent": "kyc_issue",
+      "query": "KYC rejected dikha raha EPFO portal pe. Aadhaar aur PAN me name mismatch hai. kya kare?",
+      "passage_doc_ids": [
+        "FAQ_CLAIM_133",
+        "KYC_AADHAAR_GUIDE"
+      ],
+      "slots": {
+        "intent": "kyc_issue",
+        "kyc_status": "rejected"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "FAQ_CLAIM_133"
+      ],
+      "key_facts_required": [
+        "correction"
+      ],
+      "notes": "KYC correction process"
+    },
+    {
+      "id": "payslip_01",
+      "domain": "payslip",
+      "intent": "verify_epf",
+      "query": "My basic salary is Rs 25000 and EPF deducted is Rs 3000 every month. Is the deduction correct?",
+      "passage_doc_ids": [
+        "EPF_ACT_S6_CONTRIB",
+        "EPF_PARA_26A",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "slots": {
+        "intent": "verify_epf",
+        "basic_salary": 25000,
+        "epf_deducted": 3000
+      },
+      "expected_verdict": "correct",
+      "expected_cited_doc_ids": [
+        "EPF_ACT_S6_CONTRIB",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "key_facts_required": [
+        "12%",
+        "3000"
+      ],
+      "notes": "12% of 25000 = 3000"
+    },
+    {
+      "id": "payslip_02",
+      "domain": "payslip",
+      "intent": "verify_epf",
+      "query": "Basic 18000 hai aur employer 1800 EPF kaat raha hai. ye sahi hai?",
+      "passage_doc_ids": [
+        "EPF_ACT_S6_CONTRIB",
+        "EPF_PARA_26A",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "slots": {
+        "intent": "verify_epf",
+        "basic_salary": 18000,
+        "epf_deducted": 1800
+      },
+      "expected_verdict": "incorrect",
+      "expected_cited_doc_ids": [
+        "EPF_ACT_S6_CONTRIB",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "key_facts_required": [
+        "12%",
+        "2160"
+      ],
+      "notes": "under-deducted: expected 2160, actual 1800"
+    },
+    {
+      "id": "payslip_03",
+      "domain": "payslip",
+      "intent": "verify_esi",
+      "query": "gross salary Rs 19000, ESI kat raha Rs 143 monthly. correct hai ya nahi?",
+      "passage_doc_ids": [
+        "ESI_WAGE_LIMIT",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "slots": {
+        "intent": "verify_esi",
+        "gross_salary": 19000,
+        "esi_deducted": 143
+      },
+      "expected_verdict": "correct",
+      "expected_cited_doc_ids": [
+        "ESI_WAGE_LIMIT",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "key_facts_required": [
+        "0.75%",
+        "143"
+      ],
+      "notes": "0.75% of 19000 = 143"
+    },
+    {
+      "id": "payslip_04",
+      "domain": "payslip",
+      "intent": "check_minimum_wage",
+      "query": "Maharashtra me unskilled worker hu, monthly 11000 rupees milta hai gross. minimum wage mil raha hai?",
+      "passage_doc_ids": [
+        "MIN_WAGE_MAHARASHTRA_2024"
+      ],
+      "slots": {
+        "intent": "check_minimum_wage",
+        "gross_salary": 11000,
+        "state": "Maharashtra"
+      },
+      "expected_verdict": "incorrect",
+      "expected_cited_doc_ids": [
+        "MIN_WAGE_MAHARASHTRA_2024"
+      ],
+      "key_facts_required": [
+        "Maharashtra"
+      ],
+      "notes": "likely below minimum wage"
+    },
+    {
+      "id": "payslip_05",
+      "domain": "payslip",
+      "intent": "full_audit",
+      "query": "Basic 20000, Gross 28000, Karnataka me. EPF kata 2400, ESI 0. Full audit karo.",
+      "passage_doc_ids": [
+        "EPF_ACT_S6_CONTRIB",
+        "ESI_WAGE_LIMIT",
+        "PROF_TAX_KARNATAKA",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "slots": {
+        "intent": "full_audit",
+        "basic_salary": 20000,
+        "gross_salary": 28000,
+        "state": "Karnataka",
+        "epf_deducted": 2400,
+        "esi_deducted": 0
+      },
+      "expected_verdict": "mixed",
+      "expected_cited_doc_ids": [
+        "EPF_ACT_S6_CONTRIB",
+        "TOOL_PAYSLIP_AUDIT"
+      ],
+      "key_facts_required": [
+        "12%",
+        "21000"
+      ],
+      "notes": "EPF correct, ESI correctly not deducted"
+    },
+    {
+      "id": "labour_01",
+      "domain": "labour",
+      "intent": "gratuity",
+      "query": "Worked 6 years 3 months at a private company, resigned last month. Last drawn salary was Rs 45000. Am I eligible for gratuity and how much?",
+      "passage_doc_ids": [
+        "GRATUITY_ACT_S4_ELIG"
+      ],
+      "slots": {
+        "intent": "gratuity",
+        "employment_years": 6,
+        "termination_reason": "resignation",
+        "employer_type": "private",
+        "last_drawn_salary": 45000
+      },
+      "expected_verdict": "eligible",
+      "expected_cited_doc_ids": [
+        "GRATUITY_ACT_S4_ELIG"
+      ],
+      "key_facts_required": [
+        "5 years",
+        "15"
+      ],
+      "notes": "eligible at 6+ years"
+    },
+    {
+      "id": "labour_02",
+      "domain": "labour",
+      "intent": "maternity_benefit",
+      "query": "8 months pregnant, working at a private IT firm for 3 years. Manager said only 12 weeks leave allowed. Is that correct?",
+      "passage_doc_ids": [
+        "MATERNITY_BENEFIT_ACT_2017"
+      ],
+      "slots": {
+        "intent": "maternity_benefit",
+        "is_pregnant": true,
+        "employment_years": 3,
+        "employer_type": "private"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "MATERNITY_BENEFIT_ACT_2017"
+      ],
+      "key_facts_required": [
+        "26 weeks"
+      ],
+      "notes": "legally entitled to 26 weeks"
+    },
+    {
+      "id": "labour_03",
+      "domain": "labour",
+      "intent": "notice_period",
+      "query": "I want to resign immediately but my contract says 90 days notice period. Can I just pay basic salary and buy it out?",
+      "passage_doc_ids": [
+        "STANDING_ORDERS_ACT_NOTICE_PERIOD",
+        "NOTICE_PERIOD_BUYOUT_RULE"
+      ],
+      "slots": {
+        "intent": "notice_period",
+        "notice_period_days": 90,
+        "termination_reason": "resignation"
+      },
+      "expected_verdict": "conditional",
+      "expected_cited_doc_ids": [
+        "NOTICE_PERIOD_BUYOUT_RULE"
+      ],
+      "key_facts_required": [
+        "employer consent",
+        "contract"
+      ],
+      "notes": "buyout depends on contract terms and employer consent"
+    },
+    {
+      "id": "labour_04",
+      "domain": "labour",
+      "intent": "wrongful_termination",
+      "query": "HR fired me suddenly yesterday without any notice period pay or warning, and they are holding my relieving letter. What are my rights?",
+      "passage_doc_ids": [
+        "WRONGFUL_TERMINATION_REMEDIES",
+        "RELIEVING_LETTER_LEGAL_OBLIGATION",
+        "STANDING_ORDERS_ACT_NOTICE_PERIOD"
+      ],
+      "slots": {
+        "intent": "wrongful_termination",
+        "termination_reason": "employer_terminated"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "WRONGFUL_TERMINATION_REMEDIES",
+        "RELIEVING_LETTER_LEGAL_OBLIGATION"
+      ],
+      "key_facts_required": [
+        "legal notice",
+        "labour court"
+      ],
+      "notes": "remedies for wrongful termination"
+    },
+    {
+      "id": "labour_05",
+      "domain": "labour",
+      "intent": "gratuity",
+      "query": "I completed 4 years and 245 days in my current company. Will I get gratuity? I heard about some Madras High court ruling.",
+      "passage_doc_ids": [
+        "GRATUITY_ACT_S4_ELIG",
+        "GRATUITY_COURT_RULING_4Y8M"
+      ],
+      "slots": {
+        "intent": "gratuity",
+        "employment_years": 4,
+        "termination_reason": "resignation"
+      },
+      "expected_verdict": "conditional",
+      "expected_cited_doc_ids": [
+        "GRATUITY_COURT_RULING_4Y8M"
+      ],
+      "key_facts_required": [
+        "240 days",
+        "Madras HC"
+      ],
+      "notes": "4y + 240 days qualifies under Madras HC interpretation"
+    },
+    {
+      "id": "tax_01",
+      "domain": "tax",
+      "intent": "deductions_80c",
+      "query": "Chose new tax regime this FY. Invested 1.5 lakh in PPF. Can I claim 80C deduction?",
+      "passage_doc_ids": [
+        "ITA_SECTION_80C",
+        "FINANCE_ACT_2023_NEW_REGIME"
+      ],
+      "slots": {
+        "intent": "deductions_80c",
+        "tax_regime": "new_regime"
+      },
+      "expected_verdict": "not applicable",
+      "expected_cited_doc_ids": [
+        "ITA_SECTION_80C",
+        "FINANCE_ACT_2023_NEW_REGIME"
+      ],
+      "key_facts_required": [
+        "new regime",
+        "80C"
+      ],
+      "notes": "80C not available in new regime"
+    },
+    {
+      "id": "tax_02",
+      "domain": "tax",
+      "intent": "hra_exemption",
+      "query": "Paying Rs 18000 rent in Bangalore, basic salary 40000, HRA received 15000. HRA exemption kitna milega?",
+      "passage_doc_ids": [
+        "ITA_SECTION_10_13A"
+      ],
+      "slots": {
+        "intent": "hra_exemption",
+        "rent_paid": 18000,
+        "city_type": "non_metro",
+        "tax_regime": "old_regime"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "ITA_SECTION_10_13A"
+      ],
+      "key_facts_required": [
+        "40%",
+        "HRA"
+      ],
+      "notes": "Bangalore is non-metro for HRA"
+    },
+    {
+      "id": "tax_03",
+      "domain": "tax",
+      "intent": "refund_status",
+      "query": "My ITR refund is delayed by over 4 months now. Portal shows processed but no money. I don't have any outstanding demand.",
+      "passage_doc_ids": [
+        "ITR_REFUND_STATUS",
+        "ITR_REFUND_DELAY_GRIEVANCE",
+        "ITR_REFUND_OUTSTANDING_DEMAND"
+      ],
+      "slots": {
+        "intent": "refund_status"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "ITR_REFUND_DELAY_GRIEVANCE"
+      ],
+      "key_facts_required": [
+        "grievance"
+      ],
+      "notes": "raise grievance on portal"
+    },
+    {
+      "id": "tax_04",
+      "domain": "tax",
+      "intent": "tds_on_pf",
+      "query": "Withdrawing total 4 lakhs from PF after 3.5 years of service. PAN card is updated in UAN. What is the exact TDS percentage?",
+      "passage_doc_ids": [
+        "ITA_SECTION_192A_TDS_PF",
+        "CIRC_2024_TDS"
+      ],
+      "slots": {
+        "intent": "tds_on_pf",
+        "pf_withdrawal_amount": 400000,
+        "service_years": 3
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "ITA_SECTION_192A_TDS_PF"
+      ],
+      "key_facts_required": [
+        "10%",
+        "Section 192A"
+      ],
+      "notes": "amount > 50k, service < 5y, PAN linked => 10% TDS"
+    },
+    {
+      "id": "tax_05",
+      "domain": "tax",
+      "intent": "form16",
+      "query": "Resigned in September. I asked for Form 16 for my part-year salary but HR says they will give it only next year in June. Is this allowed?",
+      "passage_doc_ids": [
+        "FORM_16_OVERVIEW"
+      ],
+      "slots": {
+        "intent": "form16"
+      },
+      "expected_verdict": "informational",
+      "expected_cited_doc_ids": [
+        "FORM_16_OVERVIEW"
+      ],
+      "key_facts_required": [
+        "June",
+        "annual"
+      ],
+      "notes": "Form 16 issued annually by June"
+    }
+  ]
+}
