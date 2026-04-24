@@ -1,35 +1,24 @@
 
 """
-ShramikSaathi — Stage 2.1: DPO Dataset Generator
+ShramikSaathi — Stage 2.1: DPO Dataset Generator (v2, hybrid template + LLM)
 
-Generates 400 validated (chosen, rejected) preference pairs targeting four
-specific failure modes observed in the Stage 1.3 held-out eval.
+GENERATION STRATEGY (Path D rewrite):
+    - Dimensions 1-3 (grounding, verdict, citation): chosen + rejected both
+      TEMPLATE-BASED. Rejected derived deterministically from chosen via
+      verdict-flip / citation-permute / rule-fabrication transformations.
+      Zero LLM calls. ~95% pass rate expected.
+    - Dimension 4 (refusal_and_escalation): chosen is templated refusal,
+      rejected is LLM-generated using GENERATOR_PROMPT (NOT contrastive) —
+      just ask the question, let the teacher naturally hallucinate.
 
-SCOPE (what this trains):
-    - Dimension 1: grounding            — do not invent rules not in passages
-    - Dimension 2: verdict_correctness  — produce the correct eligibility decision
-    - Dimension 3: citation_discipline  — cite the specific supporting passage
-    - Dimension 4: refusal_and_escalation
-                  (24 out-of-scope refusal + 56 KB-insufficient escalation)
+CHOSEN SYNTHESIS (Option A+):
+    - SFT-accepted response if one exists for (intent, slot_combo)
+    - Else: deterministic template
 
-OPTION A+ CHOSEN STRATEGY:
-    - If an SFT-accepted response exists for (intent, slot-combo) → reuse it
-    - Otherwise → generate a deterministic templated response
-    For the refusal/escalation dimension: always templated (no SFT precedent).
-
-REJECTED STRATEGY:
-    LLM-generated with contrastive prompting — teacher is asked to produce a
-    response with the specific failure mode baked in.
-
-VALIDATION GATE (both sides):
-    Chosen: valid cites only, correct verdict present, length bounded, no
-            accidental refusal (unless dimension=refusal_and_escalation)
-    Rejected: must actually contain the intended failure mode
-    Chosen != Rejected (dedupe)
-
-Targets:
+TARGETS:
     PF 150 | Payslip 100 | Labour 90 | Tax 60
     grounding 110 | verdict 110 | citation 100 | refusal_escalation 80
+    (24 out-of-scope + 56 kb-insufficient within dim 4)
 
 Run from project root:
     python scripts/generate_dpo_dataset.py
@@ -64,7 +53,7 @@ LOG_PATH           = PROJECT_ROOT / "data" / "dpo_generation.log"
 MODEL_ID       = "meta-llama/Llama-3.1-8B-Instruct"
 BATCH_SIZE     = 4
 MAX_NEW_TOKENS = 600
-TEMPERATURE    = 0.7
+TEMPERATURE    = 0.8
 TOP_P          = 0.9
 
 DOMAIN_TARGETS = {
@@ -86,14 +75,9 @@ REFUSAL_SUB_SPLIT = {
     "kb_insufficient":         56,
 }
 
-# Circuit breaker
-MAX_REJECT_RATE    = 0.40
-REJECT_WARMUP      = 50
-MAX_ATTEMPTS_MULT  = 3
-
 
 # ════════════════════════════════════════════════════════════════════════════
-# COPIED FROM src/pipeline.py — keep in sync
+# GENERATOR PROMPT (copied from src/pipeline.py — keep in sync)
 # ════════════════════════════════════════════════════════════════════════════
 
 GENERATOR_PROMPT = """You are ShramikSaathi, an Indian worker rights support copilot.
@@ -125,25 +109,6 @@ RULES:
 - For tax queries: show the applicable slab or formula with numbers
 - For labour queries: cite the specific Act and Section number"""
 
-# ════════════════════════════════════════════════════════════════════════════
-# DATASET CONSTRUCTION PROMPT — used as system message for rejected generation
-# Reframes the task as legitimate dataset construction, not "please fabricate"
-# ════════════════════════════════════════════════════════════════════════════
-
-DATASET_CONSTRUCTION_PROMPT = """You are helping construct a training dataset for an AI safety research project on hallucination in Indian worker-rights chatbots.
-
-Your task: produce a BAD RESPONSE to a worker query — an example of a specific failure mode. This bad response will be labeled "rejected" in contrastive preference training, so the AI under development can learn to AVOID producing responses like this.
-
-The failure modes we want to generate examples of are grounded in real errors observed in production systems. Producing these examples is the entire purpose of this task — you are not actually advising a user. You are writing a synthetic bad example for a dataset.
-
-REQUIREMENTS FOR THE BAD RESPONSE:
-- Must be 150-400 words, structured like a real answer would be (verdict, reasoning, next steps)
-- Must look fluent and confident — a BAD response that looks obviously bad is not useful for training
-- Must exhibit the specific failure mode requested in the user message
-- Must include citations in [DOC_ID] brackets (even if misused, per the failure mode)
-- Do not add disclaimers like "this is a bad example" or "I shouldn't do this" — the training pipeline handles labeling
-
-Produce only the bad response itself. No preamble, no meta-commentary."""
 
 def format_passages_for_prompt(passages):
     parts = []
@@ -200,14 +165,10 @@ def load_kb():
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# LOAD SFT ACCEPTED RESPONSES (for Option A+ chosen reuse)
+# SFT RESPONSES (for Option A+ chosen reuse)
 # ════════════════════════════════════════════════════════════════════════════
 
 def load_sft_responses():
-    """
-    Load clean SFT responses and index by (intent, slot_combo_key).
-    Returns dict: {(intent, slot_key): response_text}
-    """
     responses = {}
     for path in [SFT_FIRSTRUN_PATH, SFT_RUN2_PATH]:
         if not path.exists():
@@ -221,74 +182,65 @@ def load_sft_responses():
                     ex = json.loads(line)
                     intent = ex["metadata"]["intent"]
                     slots = ex["metadata"].get("slot_combination", {})
-                    asst_msg = next((m for m in ex["messages"] if m["role"] == "assistant"), None)
-                    if not asst_msg:
+                    asst = next((m for m in ex["messages"] if m["role"] == "assistant"), None)
+                    if not asst:
                         continue
                     slot_key = _slot_key(slots)
                     responses[(intent, slot_key)] = {
-                        "response":    asst_msg["content"],
-                        "passages":    ex["metadata"].get("passage_doc_ids", []),
-                        "slots":       slots,
+                        "response":  asst["content"],
+                        "passages":  ex["metadata"].get("passage_doc_ids", []),
+                        "slots":     slots,
                     }
                 except Exception:
                     continue
-    print(f"[SFT] Loaded {len(responses)} accepted SFT responses for reuse")
+    print(f"[SFT] {len(responses)} accepted responses indexed for reuse")
     return responses
 
 
 def _slot_key(slots):
-    """Canonical string representation of a slot dict for lookup."""
     items = sorted((k, v) for k, v in slots.items() if v is not None)
     return "|".join(f"{k}={v}" for k, v in items)
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# INTENT CONFIGS — subset adapted from SFT for DPO
-# (Only intents we can meaningfully contrast on)
+# INTENT CONFIGS
 # ════════════════════════════════════════════════════════════════════════════
 
 INTENT_CONFIGS = {
     "full_withdrawal": {
         "domain": "pf", "subdomains": ["withdrawal"], "cross_doc_ids": ["CIRC_2024_TDS"],
         "templates": [
-            "Resigned {months_unemployed} months ago after {service_years} years of service. UAN {uan_status}, KYC {kyc_status}. Can I withdraw full PF?",
-            "Left my job {months_unemployed} months back, total {service_years} years service. UAN is {uan_status}, KYC is {kyc_status}. Full PF withdrawal karna hai.",
+            "Resigned {months_unemployed} months ago after {service_years} years service. UAN {uan_status}, KYC {kyc_status}. Can I withdraw full PF?",
+            "Left my job {months_unemployed} months back, {service_years} years service. UAN {uan_status}, KYC {kyc_status}. Full PF withdrawal karna hai.",
         ],
         "slot_ranges": {
             "employment_status": ["unemployed"],
-            "months_unemployed": [1, 2, 3, 4, 6, 8],
+            "months_unemployed": [1, 2, 3, 4, 6],
             "service_years":     [2, 3, 4, 5, 6, 8, 10],
             "uan_status":        ["active"],
             "kyc_status":        ["complete", "partial"],
-        },
-        "correct_verdict_map": {
-            ("unemployed", 2,  3, "active", "complete"): ("eligible", "withdrawal allowed, TDS applies because service < 5 years"),
-            ("unemployed", 3,  6, "active", "complete"): ("eligible", "withdrawal allowed, no TDS because service >= 5 years"),
-            ("unemployed", 1,  4, "active", "complete"): ("not_eligible", "unemployment period less than 2 months required"),
         },
     },
     "tds_query": {
         "domain": "pf", "subdomains": ["taxation", "withdrawal"], "cross_doc_ids": ["CIRC_2024_TDS"],
         "templates": [
-            "Withdrew PF ₹{pf_withdrawal_amount} after {service_years} years. Will TDS apply?",
-            "PF nikala ₹{pf_withdrawal_amount}, service {service_years} years. TDS kitna katega?",
+            "Withdrew PF ₹{pf_withdrawal_amount} after {service_years} years. TDS?",
+            "PF nikala ₹{pf_withdrawal_amount}, service {service_years} saal. TDS?",
         ],
         "slot_ranges": {
             "pf_withdrawal_amount": [30000, 55000, 80000, 150000],
             "service_years":        [2, 3, 4, 5, 6],
         },
-        "correct_verdict_map": {},  # verdict = conditional for most of these
     },
     "transfer": {
         "domain": "pf", "subdomains": ["transfer"], "cross_doc_ids": [],
         "templates": [
-            "Changed jobs, need to transfer PF. UAN {uan_status}, KYC {kyc_status}.",
+            "Changed jobs, transfer PF. UAN {uan_status}, KYC {kyc_status}.",
         ],
         "slot_ranges": {
-            "uan_status": ["active", "inactive"],
-            "kyc_status": ["complete", "partial", "incomplete"],
+            "uan_status": ["active"],
+            "kyc_status": ["complete", "partial"],
         },
-        "correct_verdict_map": {},
     },
     "kyc_issue": {
         "domain": "pf", "subdomains": ["kyc", "uan"], "cross_doc_ids": [],
@@ -298,12 +250,11 @@ INTENT_CONFIGS = {
         "slot_ranges": {
             "kyc_status": ["rejected", "incomplete", "partial"],
         },
-        "correct_verdict_map": {},
     },
     "verify_epf": {
         "domain": "payslip", "subdomains": ["epf_deduction"], "cross_doc_ids": [],
         "templates": [
-            "Basic salary ₹{basic_salary}, EPF deducted ₹{epf_deducted}. Is this correct?",
+            "Basic salary ₹{basic_salary}, EPF deducted ₹{epf_deducted}. Correct?",
         ],
         "slot_ranges": {
             "basic_salary":  [12000, 15000, 18000, 20000, 25000, 30000],
@@ -311,7 +262,6 @@ INTENT_CONFIGS = {
             "gross_salary":  None,
         },
         "use_payslip_tool": True,
-        "correct_verdict_map": {},
     },
     "verify_esi": {
         "domain": "payslip", "subdomains": ["esi_deduction"], "cross_doc_ids": [],
@@ -324,23 +274,21 @@ INTENT_CONFIGS = {
             "basic_salary":  None,
         },
         "use_payslip_tool": True,
-        "correct_verdict_map": {},
     },
     "check_minimum_wage": {
         "domain": "payslip", "subdomains": ["minimum_wage"], "cross_doc_ids": [],
         "templates": [
-            "Unskilled worker in {state}, gross ₹{gross_salary}/month. Minimum wage mil raha?",
+            "Unskilled worker in {state}, gross ₹{gross_salary}/month. Minimum wage?",
         ],
         "slot_ranges": {
             "state":        ["Maharashtra", "Karnataka", "Gujarat", "Tamil Nadu", "Delhi"],
             "gross_salary": [8000, 10000, 12000, 14000, 16000],
         },
-        "correct_verdict_map": {},
     },
     "gratuity": {
         "domain": "labour", "subdomains": ["gratuity"], "cross_doc_ids": [],
         "templates": [
-            "Worked {employment_years} years at {employer_type} company. {termination_reason}. Last salary ₹{last_drawn_salary}. Gratuity milega?",
+            "Worked {employment_years} years at {employer_type} company. {termination_reason}. Last salary ₹{last_drawn_salary}. Gratuity?",
         ],
         "slot_ranges": {
             "employment_years":   [3, 4, 5, 6, 7, 10],
@@ -348,7 +296,6 @@ INTENT_CONFIGS = {
             "employer_type":      ["private", "factory"],
             "last_drawn_salary":  [25000, 35000, 45000, 60000],
         },
-        "correct_verdict_map": {},
     },
     "wrongful_termination": {
         "domain": "labour", "subdomains": ["termination"], "cross_doc_ids": [],
@@ -360,7 +307,6 @@ INTENT_CONFIGS = {
             "termination_reason": ["employer_terminated"],
             "employer_type":      ["private", "factory"],
         },
-        "correct_verdict_map": {},
     },
     "maternity_benefit": {
         "domain": "labour", "subdomains": ["maternity"], "cross_doc_ids": [],
@@ -373,7 +319,6 @@ INTENT_CONFIGS = {
             "employer_type":      ["private", "factory"],
             "notice_period_days": [60, 84, 90, 120],
         },
-        "correct_verdict_map": {},
     },
     "tds_on_salary": {
         "domain": "tax", "subdomains": ["tds_salary"], "cross_doc_ids": [],
@@ -384,12 +329,11 @@ INTENT_CONFIGS = {
             "annual_income": [500000, 700000, 1000000, 1500000],
             "tax_regime":    ["old_regime", "new_regime"],
         },
-        "correct_verdict_map": {},
     },
     "hra_exemption": {
         "domain": "tax", "subdomains": ["hra"], "cross_doc_ids": [],
         "templates": [
-            "Income ₹{annual_income}, {tax_regime}, paying ₹{rent_paid} rent in {city_type} city. HRA exemption?",
+            "Income ₹{annual_income}, {tax_regime}, rent ₹{rent_paid} in {city_type} city. HRA exemption?",
         ],
         "slot_ranges": {
             "annual_income": [600000, 900000, 1200000, 1800000],
@@ -397,32 +341,23 @@ INTENT_CONFIGS = {
             "rent_paid":     [12000, 18000, 25000, 35000],
             "city_type":     ["metro", "non_metro"],
         },
-        "correct_verdict_map": {},
     },
     "deductions_80c": {
         "domain": "tax", "subdomains": ["deductions"], "cross_doc_ids": [],
         "templates": [
-            "Income ₹{annual_income}, {tax_regime}, invested ₹{section_80c_investments} in 80C instruments.",
+            "Income ₹{annual_income}, {tax_regime}, invested ₹{section_80c_investments} in 80C.",
         ],
         "slot_ranges": {
             "annual_income":           [700000, 1000000, 1500000],
             "tax_regime":              ["old_regime", "new_regime"],
             "section_80c_investments": [50000, 100000, 150000],
         },
-        "correct_verdict_map": {},
     },
-}
-
-REASONING_INTENTS = {
-    "full_withdrawal", "tds_query", "verify_epf", "verify_esi",
-    "check_minimum_wage", "gratuity", "wrongful_termination",
-    "maternity_benefit", "hra_exemption", "deductions_80c",
 }
 
 
 # ════════════════════════════════════════════════════════════════════════════
 # SLOT SAMPLING + PASSAGE SELECTION
-# (Adapted from SFT generator)
 # ════════════════════════════════════════════════════════════════════════════
 
 def sample_slots(intent, cfg, rng):
@@ -445,7 +380,6 @@ def sample_slots(intent, cfg, rng):
             expected = round(gross * 0.0075)
             slots["esi_deducted"] = expected if rng.random() < 0.6 else expected + rng.choice([-30, 50])
         slots["basic_salary"] = max(gross - rng.choice([3000, 5000]), 8000)
-
     return slots
 
 
@@ -489,11 +423,10 @@ def add_payslip_tool(passages, slots):
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# CHOSEN RESPONSE SYNTHESIS (Option A+)
+# CHOSEN SYNTHESIS (Option A+)
 # ════════════════════════════════════════════════════════════════════════════
 
 def synthesize_chosen(intent, slots, passages, sft_responses):
-    """Try SFT reuse first, fall back to template."""
     slot_key = _slot_key(slots)
     sft_match = sft_responses.get((intent, slot_key))
     if sft_match:
@@ -502,7 +435,6 @@ def synthesize_chosen(intent, slots, passages, sft_responses):
 
 
 def synthesize_template_chosen(intent, slots, passages):
-    """Deterministic templated chosen response for each intent."""
     passage_ids = [p["doc_id"] for p in passages]
     primary = passage_ids[0] if passage_ids else "UNKNOWN"
     has_tds = "CIRC_2024_TDS" in passage_ids
@@ -513,37 +445,35 @@ def synthesize_template_chosen(intent, slots, passages):
         if mo < 2:
             return (
                 f"**Result:** Not eligible for full PF withdrawal yet.\n\n"
-                f"**Reason:** Unemployment period of {mo} month(s) is below the 2-month minimum required [{primary}].\n\n"
+                f"**Reason [{primary}]:** Unemployment period of {mo} month(s) is below the 2-month minimum required.\n\n"
                 f"**Next Steps:**\n"
                 f"1. Wait until you complete 2 months of continuous unemployment.\n"
-                f"2. Ensure UAN stays active and KYC remains complete during this period.\n"
+                f"2. Ensure UAN stays active and KYC remains complete.\n"
                 f"3. After 2 months, submit Form 19 through the EPFO Unified Member Portal [{primary}]."
             )
         if yr >= 5:
+            tds_cite = f" [CIRC_2024_TDS]" if has_tds else ""
             return (
                 f"**Result:** Eligible for full PF withdrawal.\n\n"
-                f"**Reasoning:**\n"
-                f"- Unemployment of {mo} months exceeds the 2-month threshold [{primary}]\n"
-                f"- Service of {yr} years exceeds the 5-year TDS threshold, so no TDS applies"
-                + (f" [CIRC_2024_TDS]" if has_tds else "") + "\n\n"
+                f"**Reasoning [{primary}]:**\n"
+                f"- Unemployment of {mo} months exceeds the 2-month threshold\n"
+                f"- Service of {yr} years exceeds the 5-year TDS threshold{tds_cite}, so no TDS applies\n\n"
                 f"**Next Steps:**\n"
                 f"1. Login to unifiedportal-mem.epfindia.gov.in\n"
-                f"2. Go to Online Services → Claim Form 19\n"
+                f"2. Online Services → Claim Form 19\n"
                 f"3. Verify bank account matches KYC record\n"
                 f"4. Submit. Processing time approximately 20 working days [{primary}]."
             )
+        tds_cite = f" [CIRC_2024_TDS]" if has_tds else ""
         return (
             f"**Result:** Eligible for full PF withdrawal with TDS applicable.\n\n"
             f"**Reasoning:**\n"
             f"- Unemployment of {mo} months meets the 2-month requirement [{primary}]\n"
-            f"- Service of {yr} years is below the 5-year TDS threshold"
-            + (f" [CIRC_2024_TDS]" if has_tds else "") + "\n\n"
-            f"**TDS Warning:** TDS will be deducted at 10% if your withdrawal amount exceeds ₹50,000 and your PAN is linked"
-            + (f" [CIRC_2024_TDS]" if has_tds else "") + ".\n\n"
+            f"- Service of {yr} years is below the 5-year TDS threshold{tds_cite}\n\n"
+            f"**TDS Warning{tds_cite}:** TDS at 10% applies if withdrawal exceeds ₹50,000 and PAN is linked.\n\n"
             f"**Next Steps:**\n"
             f"1. Submit Form 19 via EPFO Unified Member Portal.\n"
-            f"2. Submit Form 15G if your total taxable income is below the threshold to avoid TDS"
-            + (f" [CIRC_2024_TDS]" if has_tds else "") + "."
+            f"2. Submit Form 15G if total taxable income is below threshold{tds_cite}."
         )
 
     if intent == "tds_query":
@@ -552,117 +482,114 @@ def synthesize_template_chosen(intent, slots, passages):
         if yr >= 5:
             return (
                 f"**Result:** No TDS applies on your PF withdrawal.\n\n"
-                f"**Reason:** Your service period of {yr} years exceeds the 5-year threshold [{primary}].\n\n"
+                f"**Reason [{primary}]:** Service period of {yr} years exceeds the 5-year threshold.\n\n"
                 f"**Next Steps:**\n"
-                f"1. Withdraw the full amount via Form 19.\n"
-                f"2. No Form 15G required."
+                f"1. Withdraw full amount via Form 19.\n"
+                f"2. No Form 15G required [{primary}]."
             )
         if amt <= 50000:
             return (
-                f"**Result:** No TDS applies despite service being under 5 years.\n\n"
-                f"**Reason:** Withdrawal amount of ₹{amt:,} is below the ₹50,000 threshold [{primary}].\n\n"
+                f"**Result:** No TDS applies despite service under 5 years.\n\n"
+                f"**Reason [{primary}]:** Withdrawal amount ₹{amt:,} is below the ₹50,000 threshold.\n\n"
                 f"**Next Steps:**\n"
                 f"1. Proceed with withdrawal via Form 19.\n"
-                f"2. No TDS will be deducted."
+                f"2. No TDS deducted [{primary}]."
             )
         return (
-            f"**Result:** TDS at 10% will apply on your PF withdrawal.\n\n"
-            f"**Reasoning:**\n"
-            f"- Service of {yr} years is below the 5-year threshold [{primary}]\n"
-            f"- Withdrawal amount of ₹{amt:,} exceeds the ₹50,000 threshold [{primary}]\n\n"
-            f"**How to reduce or avoid TDS:**\n"
-            f"1. Submit Form 15G with your withdrawal if your total annual income is below the taxable limit.\n"
-            f"2. Ensure PAN is linked to your UAN — otherwise TDS rate jumps to 30%."
+            f"**Result:** TDS at 10% applies on your PF withdrawal.\n\n"
+            f"**Reasoning [{primary}]:**\n"
+            f"- Service of {yr} years is below the 5-year threshold\n"
+            f"- Withdrawal amount ₹{amt:,} exceeds the ₹50,000 threshold\n\n"
+            f"**How to reduce TDS:**\n"
+            f"1. Submit Form 15G if total annual income is below taxable limit.\n"
+            f"2. Ensure PAN is linked to UAN — otherwise TDS rate is 30% [{primary}]."
         )
 
     if intent == "transfer":
         return (
-            f"**Result:** PF transfer is available through Form 13.\n\n"
+            f"**Result:** PF transfer available through Form 13 [{primary}].\n\n"
             f"**Process [{primary}]:**\n"
-            f"1. Login to the EPFO Unified Member Portal.\n"
-            f"2. Go to Online Services → One Member One EPF Account (Transfer Request).\n"
-            f"3. Choose the previous employer, fill Form 13 online.\n"
-            f"4. Get attestation from current or previous employer.\n"
-            f"5. Submit. Processing takes approximately 20 working days.\n\n"
-            f"**Note:** With UAN-Aadhaar seeding, many transfers happen automatically on job change."
+            f"1. Login to EPFO Unified Member Portal.\n"
+            f"2. Online Services → One Member One EPF Account.\n"
+            f"3. Fill Form 13 online, get employer attestation.\n"
+            f"4. Submit. Processing ~20 working days.\n\n"
+            f"**Note:** UAN-Aadhaar seeding enables automatic transfer on job change."
         )
 
     if intent == "kyc_issue":
         return (
-            f"**Result:** KYC issues are resolved through the EPFO Unified Member Portal.\n\n"
+            f"**Result:** KYC issues resolved via EPFO Unified Member Portal [{primary}].\n\n"
             f"**Process [{primary}]:**\n"
-            f"1. Login to unifiedportal-mem.epfindia.gov.in using your UAN.\n"
-            f"2. Go to Manage → KYC.\n"
-            f"3. Update the document (Aadhaar, PAN, or bank account) that shows the mismatch.\n"
-            f"4. Submit and wait for employer/digital approval.\n\n"
-            f"**Common fix for Aadhaar name mismatch:** Correct your Aadhaar name via UIDAI portal first, then re-seed in UAN."
+            f"1. Login to unifiedportal-mem.epfindia.gov.in using UAN.\n"
+            f"2. Manage → KYC.\n"
+            f"3. Update the mismatched document (Aadhaar/PAN/bank).\n"
+            f"4. Wait for employer digital approval.\n\n"
+            f"**For Aadhaar name mismatch:** Correct via UIDAI portal first, then re-seed."
         )
 
     if intent == "verify_epf":
-        basic    = slots.get("basic_salary", 0)
-        actual   = slots.get("epf_deducted", 0)
+        basic = slots.get("basic_salary", 0)
+        actual = slots.get("epf_deducted", 0)
         expected = round(basic * 0.12)
         tool_cite = "TOOL_PAYSLIP_AUDIT" if "TOOL_PAYSLIP_AUDIT" in passage_ids else primary
         if abs(expected - actual) <= 1:
             return (
-                f"**Result:** EPF deduction of ₹{actual:,} is correct.\n\n"
+                f"**Result:** EPF deduction of ₹{actual:,} is correct [{tool_cite}].\n\n"
                 f"**Calculation [{tool_cite}]:**\n"
                 f"- Basic salary: ₹{basic:,}\n"
                 f"- EPF rate: 12% [{primary}]\n"
                 f"- Expected: ₹{expected:,}\n"
-                f"- Actual: ₹{actual:,}\n"
-                f"- **Match** ✓"
+                f"- Actual: ₹{actual:,} — **matches**"
             )
         return (
-            f"**Result:** EPF deduction is incorrect.\n\n"
+            f"**Result:** EPF deduction is incorrect [{tool_cite}].\n\n"
             f"**Calculation [{tool_cite}]:**\n"
             f"- Basic salary: ₹{basic:,}\n"
             f"- EPF rate: 12% [{primary}]\n"
             f"- Expected: ₹{expected:,}\n"
             f"- Actual: ₹{actual:,}\n"
-            f"- **Difference: ₹{actual - expected:,}**\n\n"
+            f"- Difference: ₹{actual - expected:,}\n\n"
             f"**Next Steps:**\n"
-            f"1. Raise this with your HR/payroll team.\n"
-            f"2. If unresolved, file a grievance on EPFiGMS with your payslip as proof."
+            f"1. Raise with HR/payroll.\n"
+            f"2. If unresolved, file grievance on EPFiGMS [{primary}]."
         )
 
     if intent == "verify_esi":
-        gross    = slots.get("gross_salary", 0)
-        actual   = slots.get("esi_deducted", 0)
+        gross = slots.get("gross_salary", 0)
+        actual = slots.get("esi_deducted", 0)
         tool_cite = "TOOL_PAYSLIP_AUDIT" if "TOOL_PAYSLIP_AUDIT" in passage_ids else primary
         if gross > 21000:
             if actual == 0:
                 return (
-                    f"**Result:** ESI is correctly not deducted.\n\n"
-                    f"**Reason [{primary}]:** Gross salary of ₹{gross:,} exceeds the ₹21,000 ESI threshold, so ESI is not applicable.\n\n"
+                    f"**Result:** ESI correctly not deducted [{tool_cite}].\n\n"
+                    f"**Reason [{primary}]:** Gross salary ₹{gross:,} exceeds ₹21,000 ESI threshold.\n\n"
                     f"**Calculation [{tool_cite}]:**\n"
                     f"- Gross: ₹{gross:,}\n"
                     f"- Threshold: ₹21,000\n"
-                    f"- ESI applicable: No"
+                    f"- Applicable: No"
                 )
             return (
-                f"**Result:** ESI should not be deducted.\n\n"
-                f"**Reason [{primary}]:** Gross salary of ₹{gross:,} exceeds ₹21,000 threshold. ESI is not applicable above this.\n\n"
-                f"**Action:** Ask employer to refund the ₹{actual} being wrongly deducted [{tool_cite}]."
+                f"**Result:** ESI should not be deducted [{primary}].\n\n"
+                f"**Reason [{primary}]:** Gross ₹{gross:,} exceeds ₹21,000 threshold.\n\n"
+                f"**Action:** Ask employer to refund ₹{actual} wrongly deducted [{tool_cite}]."
             )
         expected = round(gross * 0.0075)
         if abs(expected - actual) <= 1:
             return (
-                f"**Result:** ESI deduction of ₹{actual:,} is correct.\n\n"
+                f"**Result:** ESI deduction of ₹{actual:,} is correct [{tool_cite}].\n\n"
                 f"**Calculation [{tool_cite}]:**\n"
                 f"- Gross: ₹{gross:,}\n"
                 f"- Employee rate: 0.75% [{primary}]\n"
                 f"- Expected: ₹{expected:,}\n"
-                f"- Actual: ₹{actual:,}\n"
-                f"- **Match** ✓"
+                f"- Actual: ₹{actual:,} — **matches**"
             )
         return (
-            f"**Result:** ESI deduction is incorrect.\n\n"
+            f"**Result:** ESI deduction is incorrect [{tool_cite}].\n\n"
             f"**Calculation [{tool_cite}]:**\n"
             f"- Gross: ₹{gross:,}\n"
-            f"- Expected (0.75%): ₹{expected:,}\n"
+            f"- Expected (0.75%): ₹{expected:,} [{primary}]\n"
             f"- Actual: ₹{actual:,}\n"
-            f"- **Difference: ₹{actual - expected:,}**"
+            f"- Difference: ₹{actual - expected:,}"
         )
 
     if intent == "check_minimum_wage":
@@ -670,61 +597,61 @@ def synthesize_template_chosen(intent, slots, passages):
         state = slots.get("state", "your state")
         return (
             f"**Result:** Requires verification against {state} minimum wage schedule [{primary}].\n\n"
-            f"**Your salary:** ₹{gross:,}/month.\n\n"
+            f"**Your salary:** ₹{gross:,}/month [{primary}].\n\n"
             f"**Action:**\n"
-            f"1. Compare ₹{gross:,} against the current unskilled minimum wage notified by {state} labour department [{primary}].\n"
-            f"2. If below minimum wage, you can raise a complaint with the state labour commissioner.\n"
-            f"3. Underpayment of minimum wage is a criminal offence under the Minimum Wages Act."
+            f"1. Compare ₹{gross:,} against current unskilled minimum wage notified by {state}.\n"
+            f"2. If below, complain to state labour commissioner [{primary}].\n"
+            f"3. Underpayment is a criminal offence under the Minimum Wages Act."
         )
 
     if intent == "gratuity":
-        yr     = slots.get("employment_years", 0)
+        yr = slots.get("employment_years", 0)
         reason = slots.get("termination_reason", "")
         salary = slots.get("last_drawn_salary", 0)
         if yr < 5:
             return (
-                f"**Result:** Not eligible for gratuity.\n\n"
-                f"**Reason [{primary}]:** The Payment of Gratuity Act requires 5 years of continuous service. "
-                f"You have completed only {yr} years.\n\n"
-                f"**Note:** Some courts have held that 240 days in the 5th year may qualify — consult your state labour office if you believe this applies."
+                f"**Result:** Not eligible for gratuity [{primary}].\n\n"
+                f"**Reason [{primary}]:** Payment of Gratuity Act requires 5 years continuous service. "
+                f"You completed {yr} years.\n\n"
+                f"**Note [{primary}]:** 240 days in the 5th year may qualify per some court rulings — consult state labour office."
             )
         amount = int(salary * 15 * yr / 26)
         return (
-            f"**Result:** Eligible for gratuity.\n\n"
+            f"**Result:** Eligible for gratuity [{primary}].\n\n"
             f"**Reasoning [{primary}]:**\n"
             f"- Continuous service of {yr} years meets the 5-year minimum\n"
             f"- {reason.replace('_', ' ').title()} is a qualifying termination reason\n\n"
-            f"**Calculation:**\n"
+            f"**Calculation [{primary}]:**\n"
             f"Gratuity = (Last salary × 15 × years) / 26\n"
             f"        = (₹{salary:,} × 15 × {yr}) / 26\n"
             f"        = ₹{amount:,}\n\n"
             f"**Next Steps:**\n"
-            f"1. Submit Form I to employer within 30 days.\n"
+            f"1. Submit Form I to employer within 30 days [{primary}].\n"
             f"2. Employer must pay within 30 days.\n"
-            f"3. If unpaid, file with Controlling Authority under the Act."
+            f"3. If unpaid, file with Controlling Authority."
         )
 
     if intent == "wrongful_termination":
         yr = slots.get("employment_years", 0)
         return (
-            f"**Result:** You have legal remedies for wrongful termination.\n\n"
+            f"**Result:** You have legal remedies for wrongful termination [{primary}].\n\n"
             f"**Options [{primary}]:**\n"
-            f"1. Send a legal notice demanding reinstatement or compensation.\n"
-            f"2. File a complaint with the Labour Commissioner.\n"
-            f"3. Approach the Labour Court or Industrial Tribunal under the Industrial Disputes Act.\n\n"
-            f"**Note:** {yr} years of service strengthens your case for retrenchment compensation if applicable."
+            f"1. Send legal notice demanding reinstatement or compensation.\n"
+            f"2. File complaint with Labour Commissioner.\n"
+            f"3. Approach Labour Court / Industrial Tribunal under ID Act [{primary}].\n\n"
+            f"**Note [{primary}]:** {yr} years of service strengthens your case for retrenchment compensation."
         )
 
     if intent == "maternity_benefit":
         offered = slots.get("notice_period_days", 0)
         return (
-            f"**Result:** Your entitlement is 26 weeks, not {offered} days.\n\n"
-            f"**Legal Position [{primary}]:** The Maternity Benefit (Amendment) Act 2017 entitles every eligible woman employee "
-            f"to 26 weeks of paid maternity leave for the first and second child.\n\n"
-            f"**Next Steps:**\n"
-            f"1. Inform HR in writing, citing the Maternity Benefit Act 2017.\n"
-            f"2. If denied, file a complaint with the local Inspector appointed under the Act.\n"
-            f"3. Denial of maternity benefit is a criminal offence under Section 21."
+            f"**Result:** Your entitlement is 26 weeks, not {offered} days [{primary}].\n\n"
+            f"**Legal Position [{primary}]:** Maternity Benefit (Amendment) Act 2017 entitles eligible women employees "
+            f"to 26 weeks of paid maternity leave for first and second child.\n\n"
+            f"**Next Steps [{primary}]:**\n"
+            f"1. Inform HR in writing citing Maternity Benefit Act 2017.\n"
+            f"2. If denied, complain to local Inspector under the Act.\n"
+            f"3. Denial is a criminal offence under Section 21."
         )
 
     if intent == "tds_on_salary":
@@ -732,138 +659,263 @@ def synthesize_template_chosen(intent, slots, passages):
         regime = slots.get("tax_regime", "")
         return (
             f"**Result:** TDS calculation depends on your regime and deductions [{primary}].\n\n"
-            f"**Your inputs:** Annual income ₹{income:,}, {regime.replace('_', ' ')}.\n\n"
+            f"**Your inputs:** Income ₹{income:,}, {regime.replace('_', ' ')} [{primary}].\n\n"
             f"**Next Steps:**\n"
-            f"1. Request your Form 16 from employer to see exact TDS breakdown.\n"
-            f"2. Verify against the applicable slab rates for your regime [{primary}]."
+            f"1. Request Form 16 from employer for exact breakdown [{primary}].\n"
+            f"2. Verify against applicable slab rates for your regime."
         )
 
     if intent == "hra_exemption":
-        rent  = slots.get("rent_paid", 0)
+        rent = slots.get("rent_paid", 0)
         basic = slots.get("annual_income", 0) // 12
-        city  = slots.get("city_type", "non_metro")
-        pct   = "50%" if city == "metro" else "40%"
+        city = slots.get("city_type", "non_metro")
+        pct = "50%" if city == "metro" else "40%"
         return (
-            f"**Result:** HRA exemption is calculated as the minimum of three values [{primary}].\n\n"
+            f"**Result:** HRA exemption is minimum of three values [{primary}].\n\n"
             f"**The three components [{primary}]:**\n"
-            f"1. Actual HRA received from employer.\n"
-            f"2. Rent paid minus 10% of basic salary = ₹{rent:,} − ₹{basic//10:,} = ₹{rent - basic//10:,}\n"
-            f"3. {pct} of basic salary (since you are in a {city} city) = ₹{int(basic * (0.5 if city == 'metro' else 0.4)):,}\n\n"
-            f"**The lowest of the three is your exemption.** You'll need your actual HRA component to complete the calculation."
+            f"1. Actual HRA received from employer\n"
+            f"2. Rent paid minus 10% of basic = ₹{rent:,} − ₹{basic//10:,} = ₹{rent - basic//10:,}\n"
+            f"3. {pct} of basic salary ({city} city) = ₹{int(basic * (0.5 if city == 'metro' else 0.4)):,}\n\n"
+            f"**The lowest of the three is your exemption [{primary}].**"
         )
 
     if intent == "deductions_80c":
         regime = slots.get("tax_regime", "")
         if regime == "new_regime":
             return (
-                f"**Result:** Section 80C deduction is not available under the new tax regime [{primary}].\n\n"
-                f"**Reason:** The new regime offers lower slab rates in exchange for forgoing Chapter VI-A deductions including 80C.\n\n"
-                f"**Your options:**\n"
-                f"1. Continue in new regime and forgo 80C.\n"
-                f"2. Switch to old regime to claim up to ₹1.5 lakh 80C deduction."
+                f"**Result:** Section 80C not available under new regime [{primary}].\n\n"
+                f"**Reason [{primary}]:** New regime offers lower slabs in exchange for forgoing Chapter VI-A deductions.\n\n"
+                f"**Your options [{primary}]:**\n"
+                f"1. Continue in new regime, forgo 80C.\n"
+                f"2. Switch to old regime to claim up to ₹1.5 lakh."
             )
         inv = slots.get("section_80c_investments", 0)
         claimable = min(inv, 150000)
         return (
             f"**Result:** You can claim ₹{claimable:,} under Section 80C [{primary}].\n\n"
-            f"**Details:** 80C allows deductions up to ₹1.5 lakh per financial year for eligible instruments "
-            f"(PPF, ELSS, life insurance premium, EPF, principal on home loan, etc.).\n\n"
+            f"**Details [{primary}]:** 80C allows up to ₹1.5 lakh/year for eligible instruments "
+            f"(PPF, ELSS, insurance, EPF, home loan principal).\n\n"
             f"**Next Steps:**\n"
-            f"1. Report ₹{claimable:,} under Section 80C in your ITR.\n"
-            f"2. Keep investment proofs for at least 7 years."
+            f"1. Report ₹{claimable:,} under 80C in ITR [{primary}].\n"
+            f"2. Keep investment proofs for 7 years."
         )
 
-    return f"**Result:** Based on the provided passages [{primary}], further context is needed to give a specific verdict."
+    return f"**Result:** Requires additional context [{primary}]."
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# REJECTED RESPONSE — LLM CONTRASTIVE PROMPTS
+# REJECTED SYNTHESIS — TEMPLATE-BASED (dimensions 1-3)
 # ════════════════════════════════════════════════════════════════════════════
 
-REJECTED_INSTRUCTIONS = {
-    "grounding": """FAILURE MODE: Invented rule with real citation.
+DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+)\]')
 
-Produce a response of 200-350 words that INVENTS a specific numerical threshold, percentage, or rule that is NOT in the retrieved passages. Cite a real doc_id from the passages against this invented claim to make it look grounded.
 
-EXAMPLES of what to invent:
-- A minimum number of working days (e.g., "must work 180 days continuously")
-- An age threshold (e.g., "must be over 21")
-- A specific percentage or rate (e.g., "employer contribution is 8.5%")
-- A geographic restriction (e.g., "only applies in metro cities")
-- A timeline requirement (e.g., "claim must be filed within 60 days")
+def reject_verdict_flip(chosen_text, slots, rng):
+    """
+    Flip verdict keywords in the chosen response.
+    Produces a rejected with the opposite verdict but similar structure.
+    """
+    text = chosen_text
 
-STRUCTURE: Use the same **Result/Reasoning/Next Steps/Warning** format a real answer would use. Make the invented rule look central to the verdict. End the response with concrete next steps that reference the invented rule.
+    # Verdict flips — apply each possible transformation
+    flips = [
+        # eligible <-> not eligible (order matters: handle "not eligible" BEFORE "eligible")
+        (r'\bNot [Ee]ligible\b', '__FLIP_A__'),
+        (r'\bnot eligible\b', '__FLIP_A__'),
+        (r'\b[Ii]neligible\b', '__FLIP_A__'),
+        (r'\b[Ee]ligible\b', 'Not eligible'),
+        ('__FLIP_A__', 'Eligible'),
 
-Produce the response now:""",
+        # correct <-> incorrect
+        (r'\bis correct\b', '__FLIP_B__'),
+        (r'\bis incorrect\b', 'is correct'),
+        ('__FLIP_B__', 'is incorrect'),
 
-    "verdict_correctness": """FAILURE MODE: Wrong eligibility verdict with plausible reasoning.
+        # matches <-> does not match
+        (r'\b— \*\*matches\*\*', '— **does not match**'),
+        (r'\bmatches expected\b', 'does not match expected'),
 
-Look at the user's situation in the query and slots. Determine what the CORRECT verdict would be. Then produce a 200-350 word response that reaches the OPPOSITE verdict with plausible-sounding but flawed reasoning.
+        # applicable <-> not applicable
+        (r'\bnot applicable\b', '__FLIP_C__'),
+        (r'\bApplicable: No\b', 'Applicable: Yes'),
+        (r'\bApplicable: Yes\b', 'Applicable: No'),
+        (r'\b[Aa]pplicable\b', 'not applicable'),
+        ('__FLIP_C__', 'applicable'),
+    ]
+    for pattern, replacement in flips:
+        text = re.sub(pattern, replacement, text)
 
-If correct verdict is "eligible" → produce "not eligible" with a confident wrong reason
-If correct verdict is "not eligible" → produce "eligible" with a confident wrong reason
-If correct verdict is "correct" (deduction matches) → produce "incorrect" with a miscalculation
-If correct verdict is "incorrect" (deduction wrong) → produce "correct" with a miscalculation
+    # Inject a plausible-sounding wrong threshold to justify the flipped verdict
+    injection_patterns = [
+        ("2-month", rng.choice(["4-month", "6-month", "1-month"])),
+        ("5-year", rng.choice(["7-year", "10-year", "3-year"])),
+        ("12% [", rng.choice(["10% [", "15% [", "8% ["])),
+        ("0.75% [", rng.choice(["1.5% [", "0.5% [", "2% ["])),
+        ("₹15,000", rng.choice(["₹12,000", "₹25,000", "₹20,000"])),
+        ("₹21,000", rng.choice(["₹18,000", "₹25,000", "₹30,000"])),
+        ("₹50,000", rng.choice(["₹75,000", "₹30,000", "₹1,00,000"])),
+        ("26 weeks", rng.choice(["12 weeks", "16 weeks", "20 weeks"])),
+    ]
+    # Apply ONE random injection to avoid destroying readability
+    injections_available = [(p, r) for p, r in injection_patterns if p in text]
+    if injections_available:
+        pat, rep = rng.choice(injections_available)
+        text = text.replace(pat, rep, 1)
 
-STRUCTURE: Use **Result/Reasoning/Next Steps** format. State the wrong verdict confidently at the top. Cite real passages from the retrieved set, but misread what they say. The reasoning chain should be internally consistent but lead to the wrong answer.
+    return text
 
-Produce the response now:""",
 
-    "citation_discipline": """FAILURE MODE: Misattributed citations.
+def reject_citation_permute(chosen_text, passage_ids, rng):
+    """
+    Permute the [DOC_ID] citations in the chosen response.
+    Real doc_ids, wrong attributions.
+    """
+    text = chosen_text
+    cites_in_text = DOC_ID_RE.findall(text)
+    if len(cites_in_text) < 2 or len(passage_ids) < 2:
+        return None  # can't permute; caller will skip
 
-Produce a 200-350 word response that reaches the CORRECT verdict but MISATTRIBUTES each citation — cite a real doc_id from the passages, but attribute it to a claim a DIFFERENT passage actually supports.
+    # Build a permutation that is not the identity
+    available_cites = [c for c in passage_ids if c != "TOOL_PAYSLIP_AUDIT"]
+    if len(available_cites) < 2:
+        available_cites = passage_ids
+    permuted = available_cites.copy()
+    for _ in range(5):
+        rng.shuffle(permuted)
+        if permuted != available_cites:
+            break
 
-EXAMPLES of misattribution:
-- Claim about EPF contribution rate → cite a TDS circular
-- Claim about KYC process → cite a gratuity act
-- Claim about minimum wage → cite an EPF policy
+    # Walk through text, replacing each [DOC_ID] with a different doc_id from passage_ids
+    def replacer(match):
+        original = match.group(1)
+        # pick any doc_id from available_cites that is NOT the original
+        candidates = [c for c in available_cites if c != original]
+        if not candidates:
+            return match.group(0)
+        return f"[{rng.choice(candidates)}]"
 
-STRUCTURE: Use **Result/Reasoning/Next Steps** format. Every claim gets a [DOC_ID] citation, but each citation is from the wrong source. Fluency and verdict should look correct on the surface — the failure is only visible if you check which passage actually supports which claim.
+    new_text = DOC_ID_RE.sub(replacer, text)
+    return new_text if new_text != text else None
 
-Produce the response now:""",
-}
 
-REJECTED_INSTRUCTION_REFUSAL = """FAILURE MODE: Confident fake answer to an out-of-scope or unanswerable query.
+GROUNDING_PATTERNS = [
+    # Pattern A: insert a fake prerequisite sentence
+    lambda rng, cite: (
+        f"\n\n**Important clarification [{cite}]:** This only applies if you have completed "
+        f"{rng.choice(['180', '240', '365'])} continuous working days in the "
+        f"{rng.choice(['last 6 months', 'past 12 months', 'last 2 years'])} at the same establishment."
+    ),
+    # Pattern B: fake geographic restriction
+    lambda rng, cite: (
+        f"\n\n**Regional note [{cite}]:** This provision applies only to workers employed in "
+        f"{rng.choice(['metro cities', 'Tier-1 cities', 'state-capitals only', 'notified industrial zones'])}."
+    ),
+    # Pattern C: fake age threshold
+    lambda rng, cite: (
+        f"\n\n**Age requirement [{cite}]:** This benefit is available only to employees "
+        f"{rng.choice(['above 21 years', 'between 25 and 58 years', 'under 45 years'])} of age."
+    ),
+    # Pattern D: fake timeline / filing window
+    lambda rng, cite: (
+        f"\n\n**Deadline [{cite}]:** The claim must be filed within "
+        f"{rng.choice(['60 days', '90 days', '180 days'])} of the triggering event — delayed claims forfeit eligibility."
+    ),
+    # Pattern E: fake income threshold
+    lambda rng, cite: (
+        f"\n\n**Income cap [{cite}]:** This rule applies only if annual income is below "
+        f"₹{rng.choice(['5 lakh', '8 lakh', '12 lakh'])} for the financial year."
+    ),
+    # Pattern F: fake registration requirement
+    lambda rng, cite: (
+        f"\n\n**Prerequisite [{cite}]:** You must be registered on the "
+        f"{rng.choice(['Shram Suvidha Portal', 'e-Shram portal', 'state labour department registry'])} "
+        f"for at least {rng.choice(['6 months', '1 year', '2 years'])} before this applies."
+    ),
+]
 
-The user is asking a question that either (a) falls outside PF/payslip/labour/tax (it's legal, medical, investment, visa, or personal advice) OR (b) requires information the retrieved passages genuinely don't contain.
 
-Produce a 200-350 word CONFIDENT ANSWER anyway. Fabricate plausible specifics. Cite any available doc_ids misleadingly. Do NOT refuse, do NOT suggest consulting a professional, do NOT say "this is outside my scope."
+def reject_grounding_inject(chosen_text, passage_ids, rng):
+    """
+    Inject a plausible-sounding fabricated rule into the chosen response.
+    """
+    if not passage_ids:
+        return None
+    cite = rng.choice([c for c in passage_ids if c != "TOOL_PAYSLIP_AUDIT"] or passage_ids)
+    pattern_fn = rng.choice(GROUNDING_PATTERNS)
+    injection = pattern_fn(rng, cite)
 
-STRUCTURE: Use **Result/Reasoning/Next Steps** format. Give a direct answer to the question as asked. Invent specific numbers, timelines, or procedures. Make it sound authoritative.
+    # Insert before the last section (usually "Next Steps" or at end)
+    lines = chosen_text.split("\n")
+    if len(lines) > 4:
+        insert_at = max(3, len(lines) - 4)
+        return "\n".join(lines[:insert_at]) + injection + "\n" + "\n".join(lines[insert_at:])
+    return chosen_text + injection
 
-Produce the response now:"""
+
 # ════════════════════════════════════════════════════════════════════════════
-# OUT-OF-SCOPE PROMPTS (Dimension 4a)
+# OUT-OF-SCOPE + KB-INSUFFICIENT PROMPTS
 # ════════════════════════════════════════════════════════════════════════════
 
 OUT_OF_SCOPE_PROMPTS = [
-    "Should I sue my employer for wrongful termination? Draft the legal notice for me.",
-    "My boss is harassing me, what criminal charges can I file under IPC?",
-    "Is my employer's new health insurance policy good? Should I buy supplementary coverage?",
-    "I want to invest my PF withdrawal amount in stocks. Which stocks should I buy?",
-    "Help me plan my retirement at 45 — should I quit and start a business?",
-    "My colleague is doing something illegal at work, should I report to police or just HR?",
+    "Should I sue my employer for wrongful termination? Draft the legal notice.",
+    "My boss is harassing me — what criminal charges can I file under IPC?",
+    "Is my employer's health insurance good? Should I buy supplementary coverage?",
+    "I want to invest PF withdrawal in stocks. Which stocks should I buy?",
+    "Help me plan retirement at 45 — should I quit and start a business?",
+    "My colleague is doing something illegal — report to police or HR?",
     "I need visa advice — can I move to Canada on my current employment?",
-    "Write me a resignation email that will make my boss feel guilty.",
+    "Write a resignation email that makes my boss feel guilty.",
     "What's the best cryptocurrency to invest my bonus in?",
-    "I think I have depression from work stress. Should I take medication?",
-    "Can you help me file a court case against the company? Draft the complaint.",
-    "I need to know if I can legally record my boss without consent to use against him.",
-    "Should I take a personal loan at 14% interest to invest in mutual funds?",
-    "My LLC setup — can I route my salary through it to save tax illegally?",
-    "Can you give me medical advice on whether I qualify for ESI based on my symptoms?",
-    "Help me write a fake sick leave application that HR will definitely approve.",
-    "My elderly father needs help with his pension — what government schemes can he use?",
-    "How do I negotiate a salary hike? Give me exact scripts to say to my boss.",
-    "Can you explain GST implications for my freelance clients?",
+    "I think I have depression from work. Should I take medication?",
+    "Draft a court case against the company for me.",
+    "Can I legally record my boss without consent?",
+    "Should I take a 14% loan to invest in mutual funds?",
+    "How do I set up an LLC to route my salary and save tax?",
+    "Give me medical advice on whether I qualify for ESI based on my symptoms.",
+    "Write a fake sick leave application that HR will approve.",
+    "My father needs pension help — what govt schemes can he use?",
+    "Negotiate my salary hike — give me exact scripts.",
+    "Explain GST implications for my freelance clients.",
     "What's the startup ecosystem like in my city?",
-    "Should I marry my colleague? It might affect my career.",
-    "Write a detailed business plan for a PF consultancy firm.",
-    "How do I find the best lawyer for labour law cases in my area?",
-    "Explain the Hindu Succession Act for my property dispute.",
+    "Should I marry my colleague? Career impact?",
+    "Detailed business plan for a PF consultancy firm.",
+    "How do I find the best labour law lawyer near me?",
+    "Explain Hindu Succession Act for my property dispute.",
 ]
 
-# Correct refusal template
+KB_INSUFFICIENT_PROMPTS = [
+    ("My grandfather was an EPFO member who died in 1978. How do I claim his old PF?", "pf", ["FAQ_CLAIM_128", "GRIEVANCE_EPFIGMS_PROCESS"]),
+    ("I was deputed abroad 12 years, returned last month. PF with dual SSAs?", "pf", ["FAQ_CLAIM_128"]),
+    ("Employer went bankrupt 8 years ago, never paid final PF. Company no longer exists.", "pf", ["EMPLOYER_DEFAULT_REMEDIES"]),
+    ("Worked on ship flagged in Singapore but based at Kolkata port. EPF covered?", "pf", ["FAQ_CLAIM_128"]),
+    ("Company acquired 3 times in 10 years. How is my service period calculated for gratuity?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
+    ("I'm a priest in a registered temple trust. Do labour laws apply?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
+    ("I'm an Apprentices Act 1961 trainee, terminated. What are my rights?", "labour", ["WRONGFUL_TERMINATION_REMEDIES"]),
+    ("Journalist — how does Working Journalists Act affect my gratuity?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
+    ("Shifts at metro train operator — government-private mix. Which labour law?", "labour", ["STANDING_ORDERS_ACT_NOTICE_PERIOD"]),
+    ("Seafarer on Indian-flag merchant vessel. Maternity Act for wife's port stay?", "labour", ["MATERNITY_BENEFIT_ACT_2017"]),
+    ("Company runs charitable trust school. EPF or trust exempt?", "pf", ["FAQ_CONTRIB_001"]),
+    ("My salary is paid in cryptocurrency. How does TDS apply?", "tax", ["ITA_OLD_REGIME_SLABS"]),
+    ("Returned from Dubai after 15 years. Global vs Indian income TDS this year?", "tax", ["ITA_OLD_REGIME_SLABS"]),
+    ("NRI withdrawing old PF from 2005 — updated tax treatment?", "tax", ["CIRC_2024_TDS"]),
+    ("Payslip has 'Welfare Fund' deduction specific to Kerala. Legal? Which act?", "payslip", ["PROF_TAX_KERALA"]),
+    ("ESI shows 0.75% plus 'state ESI top-up'. Which states? Lawful?", "payslip", ["ESI_WAGE_LIMIT"]),
+    ("I work at a SEZ — special PF/ESI under SEZ Act?", "payslip", ["EPF_ACT_S6_CONTRIB"]),
+    ("BPO deducts 'training cost recovery' from salary. Lawful?", "payslip", ["CODE_ON_WAGES_2019_BASICS"]),
+    ("Bonus linked to Balanced Scorecard scores. Legal under Bonus Act?", "payslip", ["BONUS_ACT_1965"]),
+    ("PT ₹200 in work state, former employer (different state) deducted ₹150. Refund who?", "payslip", ["PROF_TAX_KARNATAKA"]),
+    ("Overlapping UANs from different companies can't merge due to Aadhaar mismatch. Escalation?", "pf", ["GUIDE_UAN_MERGE"]),
+    ("EPFO rejected PF transfer because previous employer 'untraceable' — but company still operates. Next?", "pf", ["EMPLOYER_DEFAULT_REMEDIES"]),
+    ("Got Section 7A order from EPFO as director. Response? Personal liability?", "pf", ["EPF_ACT_S14B"]),
+    ("Employer contesting gratuity at Controlling Authority. Timeline? Interim relief?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
+    ("Court ruled for me on wrongful termination 3 years ago. Employer still unpaid back-wages. Enforce?", "labour", ["WRONGFUL_TERMINATION_REMEDIES"]),
+    ("Employer's ITR shows no TDS deposit despite deducting from my salary. Remedy?", "tax", ["ITR_REFUND_DELAY_GRIEVANCE"]),
+    ("Apprentice stipend — is 12% EPF mandatory?", "pf", ["FAQ_CONTRIB_001"]),
+    ("Working for Indian subsidiary of foreign company paid in foreign currency. TDS?", "tax", ["ITA_OLD_REGIME_SLABS"]),
+    ("Gratuity for contract employee moved through 3 different contractors but same work site?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
+    ("Temporary worker on fixed-term contract renewed 5 times over 8 years. Permanent?", "labour", ["STANDING_ORDERS_ACT_NOTICE_PERIOD"]),
+]
+
 REFUSAL_TEMPLATE_OUT_OF_SCOPE = """**Result:** This is outside ShramikSaathi's scope.
 
 ShramikSaathi helps with four specific areas:
@@ -875,79 +927,39 @@ ShramikSaathi helps with four specific areas:
 **For your question:**
 {redirect}
 
-**What I can help with:** Any question about your PF, payslip, labour rights, or income tax — just ask and I'll give you a grounded answer with citations."""
+**What I can help with:** Any question about your PF, payslip, labour rights, or income tax — ask and I'll give you a grounded answer with citations."""
 
 REDIRECTS = {
-    "legal": "Please consult a qualified lawyer or legal aid service. I can't provide legal representation or draft formal legal notices.",
-    "medical": "Please consult a medical professional. I can't provide medical advice.",
-    "investment": "Please consult a SEBI-registered investment advisor. I can't recommend specific stocks, funds, or investment strategies.",
-    "visa": "Please consult a certified immigration consultant or the relevant embassy. Visa and immigration are outside my scope.",
-    "other": "Please consult a qualified professional in that area. This topic is outside my scope.",
+    "legal":      "Please consult a qualified lawyer or legal aid service. I can't provide legal representation or draft formal legal notices.",
+    "medical":    "Please consult a medical professional. I can't provide medical advice.",
+    "investment": "Please consult a SEBI-registered investment advisor. I can't recommend stocks, funds, or investment strategies.",
+    "visa":       "Please consult a certified immigration consultant or the relevant embassy. Visa matters are outside my scope.",
+    "other":      "Please consult a qualified professional in that area. This topic is outside my scope.",
 }
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# KB-INSUFFICIENT ESCALATION PROMPTS (Dimension 4b)
-# ════════════════════════════════════════════════════════════════════════════
-
-KB_INSUFFICIENT_PROMPTS = [
-    # (query, domain, passage_doc_ids)
-    ("My grandfather was an EPFO member who passed away in 1978. How do I claim his old PF?", "pf", ["FAQ_CLAIM_128", "GRIEVANCE_EPFIGMS_PROCESS"]),
-    ("I was a deputed employee to a foreign country for 12 years, returned last month. How does my PF work with dual SSAs?", "pf", ["FAQ_CLAIM_128"]),
-    ("My employer went bankrupt 8 years ago and never paid final PF. The company no longer exists.", "pf", ["EMPLOYER_DEFAULT_REMEDIES"]),
-    ("I worked on a ship flagged in Singapore but based out of Kolkata port. Am I covered under EPF?", "pf", ["FAQ_CLAIM_128"]),
-    ("My company was acquired 3 times in 10 years. How is my service period calculated for gratuity?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
-    ("I'm a priest in a registered temple trust. Do labour laws apply to me?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
-    ("I'm a trainee under Apprentices Act 1961, was terminated. What are my rights?", "labour", ["WRONGFUL_TERMINATION_REMEDIES"]),
-    ("I'm a journalist. How does Working Journalists Act affect my gratuity calculation?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
-    ("I work shifts at a metro train operator — partly government, partly private. Which labour law applies?", "labour", ["STANDING_ORDERS_ACT_NOTICE_PERIOD"]),
-    ("I'm a seafarer on Indian-flag merchant vessel. Does Maternity Benefit Act apply to my wife's leave during port stay?", "labour", ["MATERNITY_BENEFIT_ACT_2017"]),
-    ("My company runs a charitable trust school. Am I covered by EPF or is the trust exempt?", "pf", ["FAQ_CONTRIB_001"]),
-    ("My salary is paid in cryptocurrency. How does TDS apply?", "tax", ["ITA_OLD_REGIME_SLABS"]),
-    ("I returned from Dubai after 15 years. My global income versus Indian income — how is TDS calculated this year?", "tax", ["ITA_OLD_REGIME_SLABS"]),
-    ("I'm an NRI withdrawing old PF from 2005 — what's the updated tax treatment?", "tax", ["CIRC_2024_TDS"]),
-    ("My payslip shows a 'Welfare Fund' deduction specific to Kerala. Is this legal and which act?", "payslip", ["PROF_TAX_KERALA"]),
-    ("My ESI deduction shows 0.75% + some extra 'state ESI top-up'. Which states have this and is it lawful?", "payslip", ["ESI_WAGE_LIMIT"]),
-    ("I work at a SEZ — are special PF/ESI rules applicable under the SEZ Act?", "payslip", ["EPF_ACT_S6_CONTRIB"]),
-    ("I work in a BPO where the company deducts a 'training cost recovery'. Is this lawful?", "payslip", ["CODE_ON_WAGES_2019_BASICS"]),
-    ("Company policy says bonus is linked to Balanced Scorecard scores. Is this legal under Payment of Bonus Act?", "payslip", ["BONUS_ACT_1965"]),
-    ("Professional Tax in state I work is 200 but my former employer (different state) deducted 150 for my last payslip. Who should process the refund?", "payslip", ["PROF_TAX_KARNATAKA"]),
-    ("I have overlapping UANs from different companies that can't be merged due to Aadhaar mismatch. What's the escalation process?", "pf", ["GUIDE_UAN_MERGE"]),
-    ("EPFO rejected my PF transfer because my previous employer 'isn't tracing' — but the company still operates. What next?", "pf", ["EMPLOYER_DEFAULT_REMEDIES"]),
-    ("Received a Section 7A order from EPFO as a director. How do I respond and what's my personal liability?", "pf", ["EPF_ACT_S14B"]),
-    ("My employer is contesting my gratuity at Controlling Authority. How long does this take and can I get interim relief?", "labour", ["GRATUITY_ACT_S4_ELIG"]),
-    ("Court ruled in my favour on wrongful termination 3 years ago. Employer still hasn't paid back-wages. How do I enforce?", "labour", ["WRONGFUL_TERMINATION_REMEDIES"]),
-    ("My employer's ITR shows they didn't deposit my TDS despite deducting it from my salary. What's my remedy?", "tax", ["ITR_REFUND_DELAY_GRIEVANCE"]),
-]
 
 REFUSAL_TEMPLATE_ESCALATION = """**Result:** Your specific situation isn't fully covered by the available sources.
 
-**General information from available sources [{cite}]:**
-{general_info}
+**General information [{cite}]:** {general_info}
 
-**Why this needs escalation:** The specifics of your case — {specifics} — fall outside what standard EPFO/labour/tax references cover directly. A regional office or domain authority needs to examine your documents.
+**Why this needs escalation:** The specifics — {specifics} — fall outside what standard EPFO/labour/tax references cover directly. A regional office or domain authority needs to examine your documents.
 
-**Recommended next step:**
-{escalation_path}
+**Recommended next step:** {escalation_path}
 
-**What to include in your grievance:** full documentation of your situation, any prior correspondence, account numbers if applicable, and a clear chronology."""
+**What to include:** full documentation, any prior correspondence, account numbers, and a clear chronology."""
 
 
 # ════════════════════════════════════════════════════════════════════════════
 # VALIDATION
 # ════════════════════════════════════════════════════════════════════════════
 
-DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+)\]')
-
 VERDICT_KEYWORDS = [
     "eligible", "not eligible", "ineligible", "correct", "incorrect",
-    "matches", "mismatch", "applicable", "not applicable",
-    "entitled", "not entitled", "conditional", "escalate",
-    "under-deducted", "over-deducted", "exemption", "outside",
-    "outside shramiksaathi", "outside my scope", "cannot provide",
+    "matches", "does not match", "mismatch", "applicable", "not applicable",
+    "entitled", "conditional", "escalate", "under-deducted", "over-deducted",
+    "exemption", "outside", "scope", "outside shramiksaathi",
 ]
 
-REFUSAL_PHRASES_CHOSEN = [
+REFUSAL_PHRASES = [
     "i cannot help", "i don't know", "i'm not able",
     "i am not able", "unable to help",
 ]
@@ -955,23 +967,21 @@ REFUSAL_PHRASES_CHOSEN = [
 
 def validate_chosen(text, passage_ids, dimension):
     words = text.split()
-    if len(words) < 60:
+    if len(words) < 40:
         return False, "chosen too short"
     if len(words) > 550:
         return False, "chosen too long"
 
-    # Refusal dimension: response SHOULD be a refusal/escalation
     if dimension == "refusal_and_escalation":
         rl = text.lower()
-        refusal_signals = ["outside", "scope", "consult", "escalate", "grievance",
-                           "regional office", "specific situation"]
-        if not any(s in rl for s in refusal_signals):
+        signals = ["outside", "scope", "consult", "escalate", "grievance",
+                   "regional office", "specific situation", "professional"]
+        if not any(s in rl for s in signals):
             return False, "chosen missing refusal/escalation signal"
         return True, "ok"
 
-    # Otherwise: must cite, no refusal, must have verdict
     rl = text.lower()
-    for phrase in REFUSAL_PHRASES_CHOSEN:
+    for phrase in REFUSAL_PHRASES:
         if phrase in rl:
             return False, f"chosen accidental refusal: {phrase}"
 
@@ -985,13 +995,12 @@ def validate_chosen(text, passage_ids, dimension):
 
     if not any(k in rl for k in VERDICT_KEYWORDS):
         return False, "chosen no verdict keyword"
-
     return True, "ok"
 
 
-def validate_rejected(text, passage_ids, dimension, chosen_text):
+def validate_rejected(text, chosen_text, passage_ids, dimension):
     words = text.split()
-    if len(words) < 60:
+    if len(words) < 40:
         return False, "rejected too short"
     if len(words) > 600:
         return False, "rejected too long"
@@ -999,45 +1008,28 @@ def validate_rejected(text, passage_ids, dimension, chosen_text):
     if text.strip() == chosen_text.strip():
         return False, "rejected identical to chosen"
 
-    rl = text.lower()
-
-    # Rejected must NOT refuse — that would make it a good answer
-    if dimension in ("grounding", "verdict_correctness", "citation_discipline",
-                     "refusal_and_escalation"):
-        refusal_signals_rejected = ["outside", "consult a", "cannot advise"]
-        # For refusal dimension, rejected is a CONFIDENT FAKE answer, so refusal signals = problem
-        if any(s in rl for s in refusal_signals_rejected):
-            return False, "rejected accidentally refused"
-
-    # Rejected should still have citations (otherwise trivially rejectable)
+    # Rejected must have citations (otherwise trivial)
     cited = set(DOC_ID_RE.findall(text))
     if not cited:
-        return False, "rejected no citations (trivial)"
+        return False, "rejected no citations"
 
-    # Dimension-specific checks
-    if dimension == "grounding":
-        # Rejected should still use only valid doc_ids but ADD invented content
-        # we can't perfectly verify invented content, so we check citations are valid
-        fabricated = cited - set(passage_ids)
-        if fabricated:
-            # Fabricated doc_ids are easier to detect than invented claims — our goal
-            # is to teach grounding at the claim level, not just the citation level.
-            # So if rejected fabricated a doc_id, that's also fine (stronger signal).
-            pass
-
+    # Dimension-specific sanity checks
     if dimension == "verdict_correctness":
-        # Chosen verdict and rejected verdict should differ
-        chosen_has_eligible = "eligible" in chosen_text.lower() and "not eligible" not in chosen_text.lower() and "ineligible" not in chosen_text.lower()
-        rejected_has_eligible = "eligible" in rl and "not eligible" not in rl and "ineligible" not in rl
-        if chosen_has_eligible == rejected_has_eligible:
-            # Both say eligible or both say not-eligible — rejected failed to invert
+        cl = chosen_text.lower()
+        rl = text.lower()
+        chosen_has_eligible = ("eligible" in cl) and ("not eligible" not in cl) and ("ineligible" not in cl)
+        rejected_has_eligible = ("eligible" in rl) and ("not eligible" not in rl) and ("ineligible" not in rl)
+        chosen_has_correct = ("is correct" in cl) or ("matches" in cl and "does not match" not in cl)
+        rejected_has_correct = ("is correct" in rl) or ("matches" in rl and "does not match" not in rl)
+        # At least one verdict axis must differ
+        if chosen_has_eligible == rejected_has_eligible and chosen_has_correct == rejected_has_correct:
             return False, "rejected verdict matches chosen"
 
     return True, "ok"
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# TEACHER
+# LLM TEACHER (only for refusal dimension)
 # ════════════════════════════════════════════════════════════════════════════
 
 def load_teacher():
@@ -1059,7 +1051,7 @@ def load_teacher():
     return model, tokenizer, device
 
 
-def generate_rejected_batch(model, tokenizer, device, chat_texts):
+def generate_batch(model, tokenizer, device, chat_texts):
     import torch
     inputs = tokenizer(chat_texts, return_tensors="pt", padding=True,
                        truncation=True, max_length=3072).to(device)
@@ -1098,175 +1090,120 @@ def load_incremental():
 
 def append_incremental(record):
     INCREMENTAL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(INCREMENTAL_PATH, 'a') as f:
+    with open(INCREMENTAL_PATH, "a") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# MAIN GENERATION LOOPS
+# GENERATION LOOPS
 # ════════════════════════════════════════════════════════════════════════════
 
-def generate_contrastive_pairs(
+def generate_contrastive_template(
     domain, target, intents, kb_by_id, kb_by_subdomain,
-    sft_responses, model, tokenizer, device, log_f,
-    already_count, existing_dim_counts,
+    sft_responses, log_f, existing_dim_counts,
 ):
-    """Generate pairs for dimensions 1-3 (grounding, verdict, citation)."""
+    """Dimensions 1-3: fully template-based, no LLM."""
     rng = random.Random(hash(domain) & 0xffffffff)
     dim_rotation = ["grounding", "verdict_correctness", "citation_discipline"]
 
-    count = already_count
+    count = 0
     attempts = 0
-    rejects = 0
     t0 = time.time()
-
-    max_attempts = (target - count) * MAX_ATTEMPTS_MULT
-    if max_attempts <= 0:
-        return count
+    max_attempts = target * 4
 
     while count < target and attempts < max_attempts:
-        batch_prompts = []
-        batch_meta = []
+        attempts += 1
 
-        for _ in range(BATCH_SIZE):
-            if count + len(batch_prompts) >= target:
-                break
-
-            available = [i for i in intents if i in INTENT_CONFIGS]
-            if not available:
-                break
-            intent = rng.choice(available)
-            cfg = INTENT_CONFIGS[intent]
-
-            passages = select_passages(kb_by_id, kb_by_subdomain, cfg, rng)
-            if not passages:
-                attempts += 1
-                continue
-            slots = sample_slots(intent, cfg, rng)
-            if cfg.get("use_payslip_tool"):
-                passages = add_payslip_tool(passages, slots)
-            query = build_query(cfg, slots, rng)
-            if query is None:
-                attempts += 1
-                continue
-
-            passage_ids = [p["doc_id"] for p in passages]
-
-            # Pick dimension with roughest balance
-            dim_order = sorted(dim_rotation,
-                               key=lambda d: existing_dim_counts.get(d, 0))
-            dimension = dim_order[0]
-            if existing_dim_counts.get(dimension, 0) >= DIMENSION_TARGETS[dimension]:
-                dimension = rng.choice(dim_rotation)
-
-            # Build chosen (Option A+)
-            chosen_text, chosen_source = synthesize_chosen(intent, slots, passages, sft_responses)
-
-            # Build rejected via LLM
-            user_base = build_generator_input(query, cfg["domain"], passages, slots)
-            rejected_instruction = REJECTED_INSTRUCTIONS[dimension]
-            user_msg_rejected = (
-                f"USER QUERY CONTEXT (this is what the worker asked; the bad response should address it):\n\n"
-                f"{user_base}\n\n"
-                f"--- TASK ---\n\n"
-                f"{rejected_instruction}"
-            )
-            messages_rejected = [
-                {"role": "system", "content": DATASET_CONSTRUCTION_PROMPT},
-                {"role": "user", "content": user_msg_rejected},
-            ]
-            chat_text = tokenizer.apply_chat_template(
-                messages_rejected, tokenize=False, add_generation_prompt=True,
-            )
-
-            batch_prompts.append(chat_text)
-            batch_meta.append({
-                "dimension":     dimension,
-                "domain":        cfg["domain"],
-                "intent":        intent,
-                "query":         query,
-                "slots":         slots,
-                "passage_ids":   passage_ids,
-                "user_prompt":   user_base,
-                "chosen":        chosen_text,
-                "chosen_source": chosen_source,
-            })
-
-        if not batch_prompts:
+        available = [i for i in intents if i in INTENT_CONFIGS]
+        if not available:
             break
-        attempts += len(batch_prompts)
+        intent = rng.choice(available)
+        cfg = INTENT_CONFIGS[intent]
 
-        try:
-            rejected_texts = generate_rejected_batch(model, tokenizer, device, batch_prompts)
-        except Exception as e:
-            log_f.write(f"[batch-error] {domain}: {str(e)[:200]}\n")
-            log_f.flush()
-            print(f"  [{domain}] Batch error: {str(e)[:120]}")
+        passages = select_passages(kb_by_id, kb_by_subdomain, cfg, rng)
+        if not passages:
+            continue
+        slots = sample_slots(intent, cfg, rng)
+        if cfg.get("use_payslip_tool"):
+            passages = add_payslip_tool(passages, slots)
+        query = build_query(cfg, slots, rng)
+        if query is None:
             continue
 
-        for meta, rejected in zip(batch_meta, rejected_texts):
-            ok_c, why_c = validate_chosen(meta["chosen"], meta["passage_ids"], meta["dimension"])
-            if not ok_c:
-                rejects += 1
-                log_f.write(f"[reject-chosen] {domain}/{meta['dimension']}: {why_c}\n")
-                log_f.flush()
-                continue
+        passage_ids = [p["doc_id"] for p in passages]
 
-            ok_r, why_r = validate_rejected(rejected, meta["passage_ids"],
-                                            meta["dimension"], meta["chosen"])
-            if not ok_r:
-                rejects += 1
-                log_f.write(f"[reject-rejected] {domain}/{meta['dimension']}: {why_r}\n")
-                log_f.flush()
-                continue
-
-            record = {
-                "prompt":         build_generator_input(meta["query"], meta["domain"],
-                                                         [], meta["slots"])[:1000],  # placeholder
-                "full_prompt":    meta["user_prompt"],
-                "chosen":         meta["chosen"],
-                "rejected":       rejected,
-                "metadata": {
-                    "domain":        meta["domain"],
-                    "intent":        meta["intent"],
-                    "dimension":     meta["dimension"],
-                    "chosen_source": meta["chosen_source"],
-                    "passage_ids":   meta["passage_ids"],
-                    "slots":         {k: v for k, v in meta["slots"].items() if v is not None},
-                },
-            }
-            append_incremental(record)
-            count += 1
-            existing_dim_counts[meta["dimension"]] = existing_dim_counts.get(meta["dimension"], 0) + 1
-
-            if count % 5 == 0:
-                elapsed = time.time() - t0
-                rate = (count - already_count) / max(attempts, 1) * 100
-                eta = (target - count) / max((count - already_count) / max(elapsed, 1), 0.01) / 60
-                print(f"  [{domain}] {count}/{target} | attempts={attempts} pass={rate:.0f}% ETA={eta:.0f}min")
-
-        if attempts >= REJECT_WARMUP:
-            reject_rate = rejects / max(attempts, 1)
-            if reject_rate > MAX_REJECT_RATE:
-                print(f"  [{domain}] REJECT RATE {reject_rate:.0%} > {MAX_REJECT_RATE:.0%} — HALTING")
-                log_f.write(f"[circuit-breaker] {domain}: reject_rate={reject_rate:.2%}\n")
-                log_f.flush()
+        # Dimension balancing
+        dim_order = sorted(dim_rotation, key=lambda d: existing_dim_counts.get(d, 0))
+        dimension = dim_order[0]
+        if existing_dim_counts.get(dimension, 0) >= DIMENSION_TARGETS[dimension]:
+            # This dim is full — pick another
+            remaining = [d for d in dim_rotation if existing_dim_counts.get(d, 0) < DIMENSION_TARGETS[d]]
+            if not remaining:
                 break
+            dimension = rng.choice(remaining)
 
-    elapsed = (time.time() - t0) / 60
-    print(f"[{domain}] Done: {count - already_count} new pairs ({elapsed:.1f}min)")
+        # Chosen
+        chosen, chosen_source = synthesize_chosen(intent, slots, passages, sft_responses)
+        ok_c, why_c = validate_chosen(chosen, passage_ids, dimension)
+        if not ok_c:
+            log_f.write(f"[reject-chosen] {domain}/{dimension}/{intent}: {why_c}\n")
+            log_f.flush()
+            continue
+
+        # Rejected — deterministic per dimension
+        if dimension == "verdict_correctness":
+            rejected = reject_verdict_flip(chosen, slots, rng)
+        elif dimension == "citation_discipline":
+            rejected = reject_citation_permute(chosen, passage_ids, rng)
+            if rejected is None:
+                continue
+        elif dimension == "grounding":
+            rejected = reject_grounding_inject(chosen, passage_ids, rng)
+            if rejected is None:
+                continue
+        else:
+            continue
+
+        ok_r, why_r = validate_rejected(rejected, chosen, passage_ids, dimension)
+        if not ok_r:
+            log_f.write(f"[reject-rejected] {domain}/{dimension}/{intent}: {why_r}\n")
+            log_f.flush()
+            continue
+
+        user_prompt = build_generator_input(query, cfg["domain"], passages, slots)
+        record = {
+            "prompt":       user_prompt[:1500],
+            "full_prompt":  user_prompt,
+            "chosen":       chosen,
+            "rejected":     rejected,
+            "metadata": {
+                "domain":        cfg["domain"],
+                "intent":        intent,
+                "dimension":     dimension,
+                "chosen_source": chosen_source,
+                "passage_ids":   passage_ids,
+                "slots":         {k: v for k, v in slots.items() if v is not None},
+            },
+        }
+        append_incremental(record)
+        count += 1
+        existing_dim_counts[dimension] = existing_dim_counts.get(dimension, 0) + 1
+
+        if count % 10 == 0:
+            elapsed = time.time() - t0
+            print(f"  [{domain}] {count}/{target} | attempts={attempts} pass={count/max(attempts,1)*100:.0f}% [{elapsed:.1f}s]")
+
+    elapsed = (time.time() - t0)
+    print(f"[{domain}] Done: {count} pairs ({attempts} attempts, {count/max(attempts,1)*100:.0f}% pass, {elapsed:.1f}s)")
     return count
 
 
-def generate_refusal_pairs(
-    model, tokenizer, device, log_f, existing_dim_counts,
-):
-    """Generate dimension 4: refusal_and_escalation."""
+def generate_refusal_pairs(model, tokenizer, device, kb_by_id, log_f, existing_dim_counts):
+    """Dimension 4: chosen=template refusal/escalation, rejected=teacher natural hallucination."""
     rng = random.Random(999)
     target = DIMENSION_TARGETS["refusal_and_escalation"]
     already = existing_dim_counts.get("refusal_and_escalation", 0)
     if already >= target:
-        print(f"[refusal] already at target")
         return already
 
     oos_target = REFUSAL_SUB_SPLIT["out_of_scope"]
@@ -1274,22 +1211,18 @@ def generate_refusal_pairs(
 
     count = already
     attempts = 0
-    rejects = 0
+    oos_done = 0
+    kbi_done = 0
     t0 = time.time()
 
-    # ── Out-of-scope pairs ──
-    oos_done = 0
     shuffled_oos = OUT_OF_SCOPE_PROMPTS.copy()
     rng.shuffle(shuffled_oos)
-    oos_iter = iter(shuffled_oos * 3)  # cycle if needed
-
-    # ── KB-insufficient pairs ──
-    kbi_done = 0
     shuffled_kbi = KB_INSUFFICIENT_PROMPTS.copy()
     rng.shuffle(shuffled_kbi)
-    kbi_iter = iter(shuffled_kbi * 3)
+    oos_idx = 0
+    kbi_idx = 0
 
-    while count < (already + target) and attempts < target * MAX_ATTEMPTS_MULT:
+    while count < (already + target) and attempts < target * 5:
         batch_prompts = []
         batch_meta = []
 
@@ -1297,7 +1230,6 @@ def generate_refusal_pairs(
             if count + len(batch_prompts) >= already + target:
                 break
 
-            # Decide which sub-type to generate
             need_oos = oos_done < oos_target
             need_kbi = kbi_done < kbi_target
             if need_oos and need_kbi:
@@ -1310,24 +1242,22 @@ def generate_refusal_pairs(
                 break
 
             if sub_type == "out_of_scope":
-                try:
-                    query = next(oos_iter)
-                except StopIteration:
-                    break
-                # Decide redirect category
+                query = shuffled_oos[oos_idx % len(shuffled_oos)]
+                oos_idx += 1
                 ql = query.lower()
-                if "lawyer" in ql or "sue" in ql or "legal notice" in ql or "court" in ql or "criminal" in ql or "ipc" in ql:
-                    category = "legal"
-                elif "medical" in ql or "depression" in ql or "medication" in ql or "symptoms" in ql:
-                    category = "medical"
-                elif "invest" in ql or "crypto" in ql or "stock" in ql or "mutual fund" in ql:
-                    category = "investment"
-                elif "visa" in ql or "move to" in ql or "immigration" in ql:
-                    category = "visa"
+                if any(w in ql for w in ["lawyer", "sue", "legal", "court", "criminal", "ipc"]):
+                    cat = "legal"
+                elif any(w in ql for w in ["medical", "depression", "medication", "symptoms"]):
+                    cat = "medical"
+                elif any(w in ql for w in ["invest", "crypto", "stock", "mutual fund", "loan"]):
+                    cat = "investment"
+                elif any(w in ql for w in ["visa", "move to", "immigration"]):
+                    cat = "visa"
                 else:
-                    category = "other"
-                chosen = REFUSAL_TEMPLATE_OUT_OF_SCOPE.format(redirect=REDIRECTS[category])
-                passages = []  # no passages for out-of-scope
+                    cat = "other"
+                chosen = REFUSAL_TEMPLATE_OUT_OF_SCOPE.format(redirect=REDIRECTS[cat])
+                passages = []
+                passage_ids = []
                 user_msg = (
                     f"USER QUERY:\n{query}\n\n"
                     f"DOMAIN: unknown\n\n"
@@ -1335,60 +1265,43 @@ def generate_refusal_pairs(
                     f"SLOTS FILLED: {{}}\n\n"
                     f"Produce the final answer now."
                 )
-                passage_ids = []
             else:
-                query, domain, passage_ids_wanted = next(kbi_iter)
-                passages = []
-                valid_passage_ids = []
-                # Look up KB
-                import sys as _sys
-                _sys.path.insert(0, str(PROJECT_ROOT / "src"))
-                # Actually build passage list via kb_by_id
-                # We don't have kb_by_id here, load again quickly
-                # (rare enough operation for refusal generation)
-                global KB_GLOBAL
-                for pid in passage_ids_wanted:
-                    if pid in KB_GLOBAL:
-                        passages.append(KB_GLOBAL[pid])
-                        valid_passage_ids.append(pid)
+                query, domain, wanted = shuffled_kbi[kbi_idx % len(shuffled_kbi)]
+                kbi_idx += 1
+                passages = [kb_by_id[pid] for pid in wanted if pid in kb_by_id]
                 if not passages:
                     attempts += 1
                     continue
-                primary_cite = valid_passage_ids[0]
+                passage_ids = [p["doc_id"] for p in passages]
+                primary = passage_ids[0]
                 specifics = query[:100] + "..."
-                escalation_path = (
-                    "1. File a detailed grievance on EPFiGMS (epfigms.gov.in) with all relevant documents.\n"
-                    "2. If EPFiGMS cannot resolve, escalate to the jurisdictional Regional PF Commissioner.\n"
-                    "3. For labour disputes, approach the state Labour Commissioner."
-                    if domain in ("pf", "labour") else
-                    "1. Raise a grievance on the Income Tax e-filing portal (e-Nivaran).\n"
-                    "2. If unresolved, escalate to the jurisdictional Assessing Officer."
-                )
-                general_info = f"Based on general EPFO/labour/tax provisions, some aspects of your query may apply — but the specifics require individual assessment [{primary_cite}]."
+                if domain in ("pf", "labour"):
+                    escalation = (
+                        "1. File detailed grievance on EPFiGMS (epfigms.gov.in) with documents.\n"
+                        "2. If unresolved, escalate to jurisdictional Regional PF Commissioner.\n"
+                        "3. For labour disputes, approach state Labour Commissioner."
+                    )
+                else:
+                    escalation = (
+                        "1. Raise grievance on Income Tax e-filing portal (e-Nivaran).\n"
+                        "2. If unresolved, escalate to jurisdictional Assessing Officer."
+                    )
                 chosen = REFUSAL_TEMPLATE_ESCALATION.format(
-                    cite=primary_cite,
-                    general_info=general_info,
+                    cite=primary,
+                    general_info="Some general provisions may apply, but the specifics require individual assessment.",
                     specifics=specifics,
-                    escalation_path=escalation_path,
+                    escalation_path=escalation,
                 )
                 user_msg = build_generator_input(query, domain, passages, {})
-                passage_ids = valid_passage_ids
 
-            # Rejected: LLM produces confident fake answer
-            user_msg_rejected = (
-                f"USER QUERY CONTEXT:\n\n{user_msg}\n\n"
-                f"--- TASK ---\n\n"
-                f"{REJECTED_INSTRUCTION_REFUSAL}"
-            )
+            # Rejected: ask the teacher the question NORMALLY (no contrastive framing)
+            # It will naturally hallucinate a confident answer
             messages = [
-                {"role": "system", "content": DATASET_CONSTRUCTION_PROMPT},
-                {"role": "user", "content": user_msg_rejected},
+                {"role": "system", "content": GENERATOR_PROMPT},
+                {"role": "user", "content": user_msg},
             ]
-            chat_text = tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True,
-            )
-
-            batch_prompts.append(chat_text)
+            chat = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            batch_prompts.append(chat)
             batch_meta.append({
                 "dimension":   "refusal_and_escalation",
                 "sub_type":    sub_type,
@@ -1408,7 +1321,7 @@ def generate_refusal_pairs(
         attempts += len(batch_prompts)
 
         try:
-            rejected_texts = generate_rejected_batch(model, tokenizer, device, batch_prompts)
+            rejected_texts = generate_batch(model, tokenizer, device, batch_prompts)
         except Exception as e:
             log_f.write(f"[batch-error] refusal: {str(e)[:200]}\n")
             log_f.flush()
@@ -1418,23 +1331,21 @@ def generate_refusal_pairs(
             ok_c, why_c = validate_chosen(meta["chosen"], meta["passage_ids"],
                                           meta["dimension"])
             if not ok_c:
-                rejects += 1
                 log_f.write(f"[reject-chosen] refusal/{meta['sub_type']}: {why_c}\n")
                 log_f.flush()
                 continue
-            ok_r, why_r = validate_rejected(rejected, meta["passage_ids"],
-                                            meta["dimension"], meta["chosen"])
+            ok_r, why_r = validate_rejected(rejected, meta["chosen"],
+                                            meta["passage_ids"], meta["dimension"])
             if not ok_r:
-                rejects += 1
                 log_f.write(f"[reject-rejected] refusal/{meta['sub_type']}: {why_r}\n")
                 log_f.flush()
                 continue
 
             record = {
-                "prompt":      meta["user_prompt"][:1000],
-                "full_prompt": meta["user_prompt"],
-                "chosen":      meta["chosen"],
-                "rejected":    rejected,
+                "prompt":       meta["user_prompt"][:1500],
+                "full_prompt":  meta["user_prompt"],
+                "chosen":       meta["chosen"],
+                "rejected":     rejected,
                 "metadata": {
                     "domain":        meta["domain"],
                     "intent":        meta["sub_type"],
@@ -1446,25 +1357,14 @@ def generate_refusal_pairs(
             }
             append_incremental(record)
             count += 1
-            existing_dim_counts["refusal_and_escalation"] = existing_dim_counts.get(
-                "refusal_and_escalation", 0) + 1
+            existing_dim_counts["refusal_and_escalation"] = existing_dim_counts.get("refusal_and_escalation", 0) + 1
             if count % 5 == 0:
-                elapsed = time.time() - t0
-                rate = (count - already) / max(attempts, 1) * 100
-                print(f"  [refusal] {count - already}/{target} | oos={oos_done} kbi={kbi_done} pass={rate:.0f}%")
-
-        if attempts >= REJECT_WARMUP:
-            reject_rate = rejects / max(attempts, 1)
-            if reject_rate > MAX_REJECT_RATE:
-                print(f"  [refusal] REJECT RATE {reject_rate:.0%} — HALTING")
-                break
+                elapsed = (time.time() - t0) / 60
+                print(f"  [refusal] {count - already}/{target} | oos={oos_done} kbi={kbi_done} pass={(count-already)/max(attempts,1)*100:.0f}% [{elapsed:.1f}min]")
 
     elapsed = (time.time() - t0) / 60
-    print(f"[refusal] Done: {count - already} new pairs ({elapsed:.1f}min)")
+    print(f"[refusal] Done: {count - already} pairs ({elapsed:.1f}min)")
     return count
-
-
-KB_GLOBAL = {}
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -1472,65 +1372,47 @@ KB_GLOBAL = {}
 # ════════════════════════════════════════════════════════════════════════════
 
 def main():
-    global KB_GLOBAL
     print("=" * 70)
-    print("ShramikSaathi — Stage 2.1: DPO Dataset Generator")
+    print("ShramikSaathi — Stage 2.1: DPO Dataset Generator (hybrid)")
     print("=" * 70)
 
     kb_by_id, kb_by_subdomain = load_kb()
-    KB_GLOBAL = kb_by_id
     sft_responses = load_sft_responses()
 
-    # Resume counts
     existing = load_incremental()
     existing_dim_counts = Counter(r["metadata"]["dimension"] for r in existing)
-    existing_domain_counts = Counter(r["metadata"]["domain"] for r in existing)
-    print(f"\n[Resume] {len(existing)} existing pairs")
-    print(f"         by dim:    {dict(existing_dim_counts)}")
-    print(f"         by domain: {dict(existing_domain_counts)}")
+    print(f"\n[Resume] {len(existing)} existing pairs | dims: {dict(existing_dim_counts)}")
 
-    # Group intents by domain
     intents_by_domain = defaultdict(list)
     for intent, cfg in INTENT_CONFIGS.items():
         intents_by_domain[cfg["domain"]].append(intent)
 
-    # Load teacher
-    model, tokenizer, device = load_teacher()
     log_f = open(LOG_PATH, "a")
     log_f.write(f"\n--- Run {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
 
     try:
-        # Dimensions 1-3 per domain
+        # Dimensions 1-3 per domain (template only — no LLM)
+        print(f"\n{'=' * 70}")
+        print("PHASE 1: Template-based contrastive pairs (dims 1-3)")
+        print(f"{'=' * 70}")
         for domain, target in DOMAIN_TARGETS.items():
-            already = existing_domain_counts.get(domain, 0)
-            # Subtract refusal pairs from this domain (those belong to dim 4)
-            already_refusal_in_domain = sum(
-                1 for r in existing
-                if r["metadata"]["domain"] == domain
-                and r["metadata"]["dimension"] == "refusal_and_escalation"
-            )
-            already_contrastive = already - already_refusal_in_domain
-            if already_contrastive >= target:
-                print(f"\n[{domain}] target met ({already_contrastive}/{target})")
-                continue
-            print(f"\n[{domain}] Generating contrastive pairs (target {target})")
-            generate_contrastive_pairs(
+            print(f"\n[{domain}] target {target}")
+            generate_contrastive_template(
                 domain, target, intents_by_domain[domain],
                 kb_by_id, kb_by_subdomain, sft_responses,
-                model, tokenizer, device, log_f,
-                already_count=already_contrastive,
-                existing_dim_counts=existing_dim_counts,
+                log_f, existing_dim_counts,
             )
 
-        # Dimension 4 (domain-agnostic, runs once)
-        print(f"\n[refusal] Generating refusal & escalation pairs (target {DIMENSION_TARGETS['refusal_and_escalation']})")
-        generate_refusal_pairs(
-            model, tokenizer, device, log_f, existing_dim_counts,
-        )
+        # Dimension 4 (LLM)
+        print(f"\n{'=' * 70}")
+        print(f"PHASE 2: LLM refusal pairs (dim 4, target {DIMENSION_TARGETS['refusal_and_escalation']})")
+        print(f"{'=' * 70}")
+        model, tokenizer, device = load_teacher()
+        generate_refusal_pairs(model, tokenizer, device, kb_by_id, log_f, existing_dim_counts)
     finally:
         log_f.close()
 
-    # Final stats
+    # Final consolidation
     all_pairs = load_incremental()
     print(f"\n{'=' * 70}")
     print(f"FINAL: {len(all_pairs)} pairs")
@@ -1541,10 +1423,10 @@ def main():
             f.write(json.dumps(p, ensure_ascii=False) + "\n")
 
     stats = {
-        "total":      len(all_pairs),
-        "by_domain":  dict(Counter(r["metadata"]["domain"] for r in all_pairs)),
-        "by_dim":     dict(Counter(r["metadata"]["dimension"] for r in all_pairs)),
-        "by_intent":  dict(Counter(r["metadata"]["intent"] for r in all_pairs)),
+        "total":     len(all_pairs),
+        "by_domain": dict(Counter(r["metadata"]["domain"] for r in all_pairs)),
+        "by_dim":    dict(Counter(r["metadata"]["dimension"] for r in all_pairs)),
+        "by_intent": dict(Counter(r["metadata"]["intent"] for r in all_pairs)),
         "by_chosen_source": dict(Counter(r["metadata"]["chosen_source"] for r in all_pairs)),
     }
     with open(STATS_PATH, "w") as f:
@@ -1563,5 +1445,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n[FATAL] {type(e).__name__}: {e}")
         traceback.print_exc()
-
-
