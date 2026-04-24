@@ -125,6 +125,25 @@ RULES:
 - For tax queries: show the applicable slab or formula with numbers
 - For labour queries: cite the specific Act and Section number"""
 
+# ════════════════════════════════════════════════════════════════════════════
+# DATASET CONSTRUCTION PROMPT — used as system message for rejected generation
+# Reframes the task as legitimate dataset construction, not "please fabricate"
+# ════════════════════════════════════════════════════════════════════════════
+
+DATASET_CONSTRUCTION_PROMPT = """You are helping construct a training dataset for an AI safety research project on hallucination in Indian worker-rights chatbots.
+
+Your task: produce a BAD RESPONSE to a worker query — an example of a specific failure mode. This bad response will be labeled "rejected" in contrastive preference training, so the AI under development can learn to AVOID producing responses like this.
+
+The failure modes we want to generate examples of are grounded in real errors observed in production systems. Producing these examples is the entire purpose of this task — you are not actually advising a user. You are writing a synthetic bad example for a dataset.
+
+REQUIREMENTS FOR THE BAD RESPONSE:
+- Must be 150-400 words, structured like a real answer would be (verdict, reasoning, next steps)
+- Must look fluent and confident — a BAD response that looks obviously bad is not useful for training
+- Must exhibit the specific failure mode requested in the user message
+- Must include citations in [DOC_ID] brackets (even if misused, per the failure mode)
+- Do not add disclaimers like "this is a bad example" or "I shouldn't do this" — the training pipeline handles labeling
+
+Produce only the bad response itself. No preamble, no meta-commentary."""
 
 def format_passages_for_prompt(passages):
     parts = []
@@ -762,18 +781,57 @@ def synthesize_template_chosen(intent, slots, passages):
 # ════════════════════════════════════════════════════════════════════════════
 
 REJECTED_INSTRUCTIONS = {
-    "grounding": """Write a response to the user query that INVENTS A PLAUSIBLE RULE OR THRESHOLD that is NOT in the passages. For example, invent a specific number of days, a specific percentage, or an eligibility requirement that sounds right but isn't actually in the retrieved passages. Cite real doc_ids from the passages against the invented claim. The response must look confident and well-structured. Produce 150-400 words.""",
+    "grounding": """FAILURE MODE: Invented rule with real citation.
 
-    "verdict_correctness": """Write a response that reaches the OPPOSITE eligibility decision from the correct one. If the user is eligible, confidently say they are not. If they are not eligible, confidently say they are. Cite the real passages and produce a fluent answer with reasoning — the reasoning should be plausible but lead to the wrong verdict. Produce 150-400 words.""",
+Produce a response of 200-350 words that INVENTS a specific numerical threshold, percentage, or rule that is NOT in the retrieved passages. Cite a real doc_id from the passages against this invented claim to make it look grounded.
 
-    "citation_discipline": """Write a response that cites real doc_ids from the passages but MISATTRIBUTES them — put each citation against a claim that a different passage actually supports. For example, cite a TDS circular when the claim is about KYC, or cite a gratuity act when discussing PF withdrawal. The surface looks grounded but citations don't match claims. Produce 150-400 words.""",
+EXAMPLES of what to invent:
+- A minimum number of working days (e.g., "must work 180 days continuously")
+- An age threshold (e.g., "must be over 21")
+- A specific percentage or rate (e.g., "employer contribution is 8.5%")
+- A geographic restriction (e.g., "only applies in metro cities")
+- A timeline requirement (e.g., "claim must be filed within 60 days")
+
+STRUCTURE: Use the same **Result/Reasoning/Next Steps/Warning** format a real answer would use. Make the invented rule look central to the verdict. End the response with concrete next steps that reference the invented rule.
+
+Produce the response now:""",
+
+    "verdict_correctness": """FAILURE MODE: Wrong eligibility verdict with plausible reasoning.
+
+Look at the user's situation in the query and slots. Determine what the CORRECT verdict would be. Then produce a 200-350 word response that reaches the OPPOSITE verdict with plausible-sounding but flawed reasoning.
+
+If correct verdict is "eligible" → produce "not eligible" with a confident wrong reason
+If correct verdict is "not eligible" → produce "eligible" with a confident wrong reason
+If correct verdict is "correct" (deduction matches) → produce "incorrect" with a miscalculation
+If correct verdict is "incorrect" (deduction wrong) → produce "correct" with a miscalculation
+
+STRUCTURE: Use **Result/Reasoning/Next Steps** format. State the wrong verdict confidently at the top. Cite real passages from the retrieved set, but misread what they say. The reasoning chain should be internally consistent but lead to the wrong answer.
+
+Produce the response now:""",
+
+    "citation_discipline": """FAILURE MODE: Misattributed citations.
+
+Produce a 200-350 word response that reaches the CORRECT verdict but MISATTRIBUTES each citation — cite a real doc_id from the passages, but attribute it to a claim a DIFFERENT passage actually supports.
+
+EXAMPLES of misattribution:
+- Claim about EPF contribution rate → cite a TDS circular
+- Claim about KYC process → cite a gratuity act
+- Claim about minimum wage → cite an EPF policy
+
+STRUCTURE: Use **Result/Reasoning/Next Steps** format. Every claim gets a [DOC_ID] citation, but each citation is from the wrong source. Fluency and verdict should look correct on the surface — the failure is only visible if you check which passage actually supports which claim.
+
+Produce the response now:""",
 }
 
-# For refusal_and_escalation, the rejected response is a CONFIDENT FAKE ANSWER
-# when the correct behavior is to refuse or escalate
-REJECTED_INSTRUCTION_REFUSAL = """Write a response that CONFIDENTLY ANSWERS the user's question even though you should not. The question is either outside the scope of worker-rights support OR the passages don't actually contain the answer. Fabricate plausible-sounding specifics, cite real passages misleadingly, and give an authoritative-sounding verdict. Produce 150-400 words."""
+REJECTED_INSTRUCTION_REFUSAL = """FAILURE MODE: Confident fake answer to an out-of-scope or unanswerable query.
 
+The user is asking a question that either (a) falls outside PF/payslip/labour/tax (it's legal, medical, investment, visa, or personal advice) OR (b) requires information the retrieved passages genuinely don't contain.
 
+Produce a 200-350 word CONFIDENT ANSWER anyway. Fabricate plausible specifics. Cite any available doc_ids misleadingly. Do NOT refuse, do NOT suggest consulting a professional, do NOT say "this is outside my scope."
+
+STRUCTURE: Use **Result/Reasoning/Next Steps** format. Give a direct answer to the question as asked. Invent specific numbers, timelines, or procedures. Make it sound authoritative.
+
+Produce the response now:"""
 # ════════════════════════════════════════════════════════════════════════════
 # OUT-OF-SCOPE PROMPTS (Dimension 4a)
 # ════════════════════════════════════════════════════════════════════════════
@@ -1108,12 +1166,13 @@ def generate_contrastive_pairs(
             user_base = build_generator_input(query, cfg["domain"], passages, slots)
             rejected_instruction = REJECTED_INSTRUCTIONS[dimension]
             user_msg_rejected = (
-                f"Normally you would produce a grounded cited answer. For this task, instead:\n\n"
-                f"{rejected_instruction}\n\n"
-                f"Original prompt context below:\n\n{user_base}"
+                f"USER QUERY CONTEXT (this is what the worker asked; the bad response should address it):\n\n"
+                f"{user_base}\n\n"
+                f"--- TASK ---\n\n"
+                f"{rejected_instruction}"
             )
             messages_rejected = [
-                {"role": "system", "content": GENERATOR_PROMPT},
+                {"role": "system", "content": DATASET_CONSTRUCTION_PROMPT},
                 {"role": "user", "content": user_msg_rejected},
             ]
             chat_text = tokenizer.apply_chat_template(
@@ -1317,11 +1376,12 @@ def generate_refusal_pairs(
 
             # Rejected: LLM produces confident fake answer
             user_msg_rejected = (
-                f"{REJECTED_INSTRUCTION_REFUSAL}\n\n"
-                f"Query context:\n\n{user_msg}"
+                f"USER QUERY CONTEXT:\n\n{user_msg}\n\n"
+                f"--- TASK ---\n\n"
+                f"{REJECTED_INSTRUCTION_REFUSAL}"
             )
             messages = [
-                {"role": "system", "content": GENERATOR_PROMPT},
+                {"role": "system", "content": DATASET_CONSTRUCTION_PROMPT},
                 {"role": "user", "content": user_msg_rejected},
             ]
             chat_text = tokenizer.apply_chat_template(
