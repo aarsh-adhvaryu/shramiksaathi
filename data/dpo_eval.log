@@ -1,0 +1,68 @@
+======================================================================
+Stage 2.3 — DPO Held-out Evaluation
+======================================================================
+[Data] 20 prompts | 311 KB docs
+
+[Model] Loading base meta-llama/Llama-3.1-8B-Instruct in 4-bit
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:43<02:11, 43.74s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:22<01:21, 40.81s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [01:24<00:23, 23.03s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:24<00:00, 14.16s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:24<00:00, 21.24s/it]
+        Loaded in 91.5s | VRAM 5.70GB
+
+[Model] Attaching SFT LoRA from /teamspace/studios/this_studio/shramiksaathi/out/lora_v2
+
+[Run] SFT-only
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [28.4s]
+  [2/20] pf_02  cites=1  fab=0  verdict=False  [34.1s]
+  [3/20] pf_03  cites=2  fab=0  verdict=True  [36.5s]
+  [4/20] pf_04  cites=2  fab=0  verdict=False  [22.8s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [19.4s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [29.3s]
+  [7/20] payslip_02  cites=2  fab=0  verdict=True  [30.6s]
+  [8/20] payslip_03  cites=2  fab=0  verdict=True  [18.5s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [19.0s]
+  [10/20] payslip_05  cites=4  fab=0  verdict=False  [36.7s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [25.6s]
+  [12/20] labour_02  cites=1  fab=0  verdict=False  [27.0s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [30.7s]
+  [14/20] labour_04  cites=3  fab=0  verdict=True  [39.1s]
+  [15/20] labour_05  cites=2  fab=0  verdict=True  [34.0s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [23.3s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [28.5s]
+  [18/20] tax_03  cites=3  fab=0  verdict=True  [41.3s]
+  [19/20] tax_04  cites=1  fab=0  verdict=True  [20.6s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [37.2s]
+[Run] SFT-only total 9.7min
+
+[Model] Loading dpo_beta_0.05 from /teamspace/studios/this_studio/shramiksaathi/out/dpo_beta_050
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.91s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.95s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.93s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.40s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.60s/it]
+
+[Run] dpo_beta_0.05
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [25.3s]
+  [2/20] pf_02  cites=2  fab=0  verdict=False  [37.9s]
+  [3/20] pf_03  cites=2  fab=0  verdict=True  [29.9s]
+  [4/20] pf_04  cites=3  fab=0  verdict=False  [21.9s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [18.7s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [28.8s]
+  [7/20] payslip_02  cites=2  fab=0  verdict=True  [22.7s]
+  [8/20] payslip_03  cites=2  fab=0  verdict=True  [21.1s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [20.2s]
+  [10/20] payslip_05  cites=3  fab=0  verdict=True  [34.9s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [32.0s]
+  [12/20] labour_02  cites=1  fab=0  verdict=True  [26.3s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [30.2s]
+  [14/20] labour_04  cites=2  fab=0  verdict=True  [36.5s]
+  [15/20] labour_05  cites=1  fab=0  verdict=True  [29.7s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [31.6s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [28.9s]
+  [18/20] tax_03  cites=2  fab=0  verdict=True  [42.1s]
+  [19/20] tax_04  cites=2  fab=0  verdict=True  [24.0s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [21.4s]
+[Run] dpo_beta_0.05 total 9.4min
+
+[Model] Loading dpo_beta_0.10 from /teamspace/studios/this_studio/shramiksaathi/out/dpo_beta_100
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/shramiksaathi/scripts/eval_dpo.py", line 443, in <module>
+    main()
+  File "/teamspace/studios/this_studio/shramiksaathi/scripts/eval_dpo.py", line 296, in main
+    del sft_model
+        ^^^^^^^^^
+UnboundLocalError: cannot access local variable 'sft_model' where it is not associated with a value
