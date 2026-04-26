@@ -1,3 +1,7 @@
+from pathlib import Path
+from pathlib import Path
+from pathlib import Path
+from pathlib import Path
 """
 Cross-domain ReAct Retrieval Loop with Tools (FINAL)
 LLM-driven: Thought → Action(Tool) → Observation → repeat or done.
@@ -135,7 +139,7 @@ def react_retrieve(
     # Lazy import to avoid circular imports
     from tools import PolicyStore, parse_payslip, format_payslip_result
 
-    policy_store = PolicyStore(store_path="../index/chunk_store.json")
+    policy_store = PolicyStore(store_path=str(Path(__file__).resolve().parent.parent / "index" / "chunk_store.json"))
 
     # Build context
     filled = {k: v for k, v in slots.items() if v is not None}

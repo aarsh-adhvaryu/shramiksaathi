@@ -4,65 +4,154 @@ Stage 2.3 — DPO Held-out Evaluation
 [Data] 20 prompts | 311 KB docs
 
 [Model] Loading base meta-llama/Llama-3.1-8B-Instruct in 4-bit
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:43<02:11, 43.74s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:22<01:21, 40.81s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [01:24<00:23, 23.03s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:24<00:00, 14.16s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:24<00:00, 21.24s/it]
-        Loaded in 91.5s | VRAM 5.70GB
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.07s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.03s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:06<00:01,  1.99s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.44s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.65s/it]
+        Loaded in 10.9s | VRAM 5.70GB
 
 [Model] Attaching SFT LoRA from /teamspace/studios/this_studio/shramiksaathi/out/lora_v2
 
 [Run] SFT-only
-  [1/20] pf_01  cites=2  fab=0  verdict=True  [28.4s]
-  [2/20] pf_02  cites=1  fab=0  verdict=False  [34.1s]
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [28.9s]
+  [2/20] pf_02  cites=1  fab=0  verdict=False  [34.2s]
   [3/20] pf_03  cites=2  fab=0  verdict=True  [36.5s]
-  [4/20] pf_04  cites=2  fab=0  verdict=False  [22.8s]
-  [5/20] pf_05  cites=1  fab=0  verdict=False  [19.4s]
-  [6/20] payslip_01  cites=3  fab=0  verdict=True  [29.3s]
-  [7/20] payslip_02  cites=2  fab=0  verdict=True  [30.6s]
-  [8/20] payslip_03  cites=2  fab=0  verdict=True  [18.5s]
-  [9/20] payslip_04  cites=1  fab=0  verdict=False  [19.0s]
-  [10/20] payslip_05  cites=4  fab=0  verdict=False  [36.7s]
-  [11/20] labour_01  cites=1  fab=0  verdict=True  [25.6s]
-  [12/20] labour_02  cites=1  fab=0  verdict=False  [27.0s]
-  [13/20] labour_03  cites=2  fab=0  verdict=True  [30.7s]
+  [4/20] pf_04  cites=2  fab=0  verdict=False  [23.0s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [19.7s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [29.2s]
+  [7/20] payslip_02  cites=2  fab=0  verdict=True  [30.1s]
+  [8/20] payslip_03  cites=2  fab=0  verdict=True  [18.4s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [18.9s]
+  [10/20] payslip_05  cites=4  fab=0  verdict=False  [36.4s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [25.7s]
+  [12/20] labour_02  cites=1  fab=0  verdict=False  [27.1s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [30.4s]
   [14/20] labour_04  cites=3  fab=0  verdict=True  [39.1s]
-  [15/20] labour_05  cites=2  fab=0  verdict=True  [34.0s]
-  [16/20] tax_01  cites=2  fab=0  verdict=False  [23.3s]
-  [17/20] tax_02  cites=1  fab=0  verdict=True  [28.5s]
-  [18/20] tax_03  cites=3  fab=0  verdict=True  [41.3s]
-  [19/20] tax_04  cites=1  fab=0  verdict=True  [20.6s]
-  [20/20] tax_05  cites=1  fab=0  verdict=True  [37.2s]
+  [15/20] labour_05  cites=2  fab=0  verdict=True  [33.9s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [23.2s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [28.0s]
+  [18/20] tax_03  cites=3  fab=0  verdict=True  [40.9s]
+  [19/20] tax_04  cites=1  fab=0  verdict=True  [20.9s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [37.3s]
 [Run] SFT-only total 9.7min
 
 [Model] Loading dpo_beta_0.05 from /teamspace/studios/this_studio/shramiksaathi/out/dpo_beta_050
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.91s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.95s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.93s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.40s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.60s/it]
+
+[Model] Loading base meta-llama/Llama-3.1-8B-Instruct in 4-bit
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.94s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.97s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.94s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.41s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.61s/it]
+        Loaded in 6.9s | VRAM 5.71GB
 
 [Run] dpo_beta_0.05
-  [1/20] pf_01  cites=2  fab=0  verdict=True  [25.3s]
-  [2/20] pf_02  cites=2  fab=0  verdict=False  [37.9s]
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [24.9s]
+  [2/20] pf_02  cites=2  fab=0  verdict=False  [37.8s]
   [3/20] pf_03  cites=2  fab=0  verdict=True  [29.9s]
   [4/20] pf_04  cites=3  fab=0  verdict=False  [21.9s]
-  [5/20] pf_05  cites=1  fab=0  verdict=False  [18.7s]
-  [6/20] payslip_01  cites=3  fab=0  verdict=True  [28.8s]
-  [7/20] payslip_02  cites=2  fab=0  verdict=True  [22.7s]
-  [8/20] payslip_03  cites=2  fab=0  verdict=True  [21.1s]
-  [9/20] payslip_04  cites=1  fab=0  verdict=False  [20.2s]
-  [10/20] payslip_05  cites=3  fab=0  verdict=True  [34.9s]
-  [11/20] labour_01  cites=1  fab=0  verdict=True  [32.0s]
-  [12/20] labour_02  cites=1  fab=0  verdict=True  [26.3s]
-  [13/20] labour_03  cites=2  fab=0  verdict=True  [30.2s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [18.8s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [28.3s]
+  [7/20] payslip_02  cites=2  fab=0  verdict=True  [23.2s]
+  [8/20] payslip_03  cites=2  fab=0  verdict=True  [21.4s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [20.3s]
+  [10/20] payslip_05  cites=3  fab=0  verdict=True  [35.1s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [31.7s]
+  [12/20] labour_02  cites=1  fab=0  verdict=True  [26.8s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [30.0s]
   [14/20] labour_04  cites=2  fab=0  verdict=True  [36.5s]
-  [15/20] labour_05  cites=1  fab=0  verdict=True  [29.7s]
-  [16/20] tax_01  cites=2  fab=0  verdict=False  [31.6s]
-  [17/20] tax_02  cites=1  fab=0  verdict=True  [28.9s]
-  [18/20] tax_03  cites=2  fab=0  verdict=True  [42.1s]
-  [19/20] tax_04  cites=2  fab=0  verdict=True  [24.0s]
-  [20/20] tax_05  cites=1  fab=0  verdict=True  [21.4s]
+  [15/20] labour_05  cites=1  fab=0  verdict=True  [29.4s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [32.1s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [29.0s]
+  [18/20] tax_03  cites=2  fab=0  verdict=True  [42.4s]
+  [19/20] tax_04  cites=2  fab=0  verdict=True  [23.7s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [21.8s]
 [Run] dpo_beta_0.05 total 9.4min
 
 [Model] Loading dpo_beta_0.10 from /teamspace/studios/this_studio/shramiksaathi/out/dpo_beta_100
-Traceback (most recent call last):
-  File "/teamspace/studios/this_studio/shramiksaathi/scripts/eval_dpo.py", line 443, in <module>
-    main()
-  File "/teamspace/studios/this_studio/shramiksaathi/scripts/eval_dpo.py", line 296, in main
-    del sft_model
-        ^^^^^^^^^
-UnboundLocalError: cannot access local variable 'sft_model' where it is not associated with a value
+
+[Model] Loading base meta-llama/Llama-3.1-8B-Instruct in 4-bit
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.92s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  2.00s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.97s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.43s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.63s/it]
+        Loaded in 7.0s | VRAM 5.71GB
+
+[Run] dpo_beta_0.10
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [25.2s]
+  [2/20] pf_02  cites=1  fab=0  verdict=False  [30.7s]
+  [3/20] pf_03  cites=2  fab=0  verdict=True  [25.8s]
+  [4/20] pf_04  cites=3  fab=0  verdict=False  [22.5s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [18.7s]
+  [6/20] payslip_01  cites=3  fab=0  verdict=True  [34.2s]
+  [7/20] payslip_02  cites=1  fab=0  verdict=True  [27.5s]
+  [8/20] payslip_03  cites=1  fab=0  verdict=True  [19.8s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [19.1s]
+  [10/20] payslip_05  cites=3  fab=0  verdict=True  [32.7s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [32.7s]
+  [12/20] labour_02  cites=1  fab=0  verdict=True  [25.9s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [24.2s]
+  [14/20] labour_04  cites=2  fab=0  verdict=True  [36.7s]
+  [15/20] labour_05  cites=2  fab=0  verdict=True  [32.8s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [22.3s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [28.6s]
+  [18/20] tax_03  cites=3  fab=0  verdict=True  [58.7s]
+  [19/20] tax_04  cites=1  fab=0  verdict=True  [19.2s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [21.6s]
+[Run] dpo_beta_0.10 total 9.3min
+
+[Model] Loading dpo_beta_0.20 from /teamspace/studios/this_studio/shramiksaathi/out/dpo_beta_200
+
+[Model] Loading base meta-llama/Llama-3.1-8B-Instruct in 4-bit
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.92s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.96s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.93s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.40s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.60s/it]
+        Loaded in 6.8s | VRAM 5.71GB
+
+[Run] dpo_beta_0.20
+  [1/20] pf_01  cites=2  fab=0  verdict=True  [28.6s]
+  [2/20] pf_02  cites=1  fab=0  verdict=False  [30.6s]
+  [3/20] pf_03  cites=2  fab=0  verdict=True  [29.9s]
+  [4/20] pf_04  cites=3  fab=0  verdict=False  [21.7s]
+  [5/20] pf_05  cites=1  fab=0  verdict=False  [18.2s]
+  [6/20] payslip_01  cites=2  fab=0  verdict=True  [23.6s]
+  [7/20] payslip_02  cites=4  fab=2  verdict=True  [45.1s]
+  [8/20] payslip_03  cites=1  fab=0  verdict=True  [20.2s]
+  [9/20] payslip_04  cites=1  fab=0  verdict=False  [19.3s]
+  [10/20] payslip_05  cites=3  fab=0  verdict=True  [36.8s]
+  [11/20] labour_01  cites=1  fab=0  verdict=True  [32.5s]
+  [12/20] labour_02  cites=1  fab=0  verdict=True  [31.7s]
+  [13/20] labour_03  cites=2  fab=0  verdict=True  [24.1s]
+  [14/20] labour_04  cites=2  fab=0  verdict=True  [38.7s]
+  [15/20] labour_05  cites=2  fab=0  verdict=True  [33.1s]
+  [16/20] tax_01  cites=2  fab=0  verdict=False  [25.1s]
+  [17/20] tax_02  cites=1  fab=0  verdict=True  [29.0s]
+  [18/20] tax_03  cites=3  fab=0  verdict=True  [44.6s]
+  [19/20] tax_04  cites=1  fab=0  verdict=True  [19.3s]
+  [20/20] tax_05  cites=1  fab=0  verdict=True  [25.7s]
+[Run] dpo_beta_0.20 total 9.6min
+
+==============================================================================
+SUMMARY (n=20)
+==============================================================================
+Metric                       sft_only  dpo_beta_0.05  dpo_beta_0.10  dpo_beta_0.20
+citation_coverage               1.000          1.000          1.000          1.000
+fabrication_rate                0.000          0.000          0.000          0.050
+expected_cites_hit              0.800          0.850          0.750          0.700
+verdict_accuracy                0.650          0.750          0.750          0.750
+grounded_clean                  0.650          0.750          0.750          0.700
+key_facts_mean                  0.675          0.775          0.725          0.700
+fabrication_count                   0              0              0              1
+
+Per-domain grounded_clean:
+Domain           sft_only  dpo_beta_0.05  dpo_beta_0.10  dpo_beta_0.20
+pf                   0.40           0.40           0.40           0.40
+payslip              0.60           0.80           0.80           0.60
+labour               0.80           1.00           1.00           1.00
+tax                  0.80           0.80           0.80           0.80
+
+==============================================================================
+DECISION
+==============================================================================
+SFT-only grounded_clean: 0.650
+Best DPO: dpo_beta_0.05 with 0.750
+
+✓ WINNER: dpo_beta_0.05 (beats SFT by +0.100)
+
+  To push this adapter to HuggingFace, run:
+    python scripts/push_dpo_winner.py dpo_beta_0.05
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/dpo_eval_results.json
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/dpo_eval_report.md
+
+==============================================================================
+Stage 2.3 complete. Winner: dpo_beta_0.05
+==============================================================================
