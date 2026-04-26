@@ -47,7 +47,7 @@ REPORT_PATH = ROOT / "data" / "dpo_eval_report.md"
 
 MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
 
-# ── Generator prompt (copy from src/pipeline.py — same as Stage 1.3 eval) ─
+# ── Generator prompt (same as Stage 1.3 eval) ─────────────────────────────
 GENERATOR_PROMPT = """You are ShramikSaathi, an Indian worker rights support copilot.
 You help workers with PF/EPFO, payslip audit, labour rights, and income tax queries.
 
@@ -229,6 +229,24 @@ def run_system(label, model, tokenizer, prompts, kb):
     return results
 
 
+# ── Load base model once (helper) ─────────────────────────────────────────
+
+def load_base_model(tokenizer):
+    bnb = BitsAndBytesConfig(
+        load_in_4bit=True, bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True,
+    )
+    print(f"\n[Model] Loading base {MODEL_ID} in 4-bit")
+    t0 = time.time()
+    model = AutoModelForCausalLM.from_pretrained(
+        MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
+        device_map="auto", attn_implementation="sdpa",
+    )
+    model.eval()
+    print(f"        Loaded in {time.time()-t0:.1f}s | VRAM {torch.cuda.memory_allocated()/1e9:.2f}GB")
+    return model
+
+
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main():
@@ -253,64 +271,39 @@ def main():
         print(f"[!] Missing doc_ids: {sorted(missing)}")
         return
 
-    # Tokenizer (shared)
+    # Tokenizer (shared across all runs)
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # Base model (4-bit) — loaded ONCE, adapters swapped in/out
-    bnb = BitsAndBytesConfig(
-        load_in_4bit=True, bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True,
-    )
-    print(f"\n[Model] Loading base {MODEL_ID} in 4-bit")
-    t0 = time.time()
-    base_model = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
-        device_map="auto", attn_implementation="sdpa",
-    )
-    base_model.eval()
-    print(f"        Loaded in {time.time()-t0:.1f}s | VRAM {torch.cuda.memory_allocated()/1e9:.2f}GB")
-
     all_results = {}
 
-    # ── System 1: SFT-only LoRA ──
+    # ── System 1: SFT-only LoRA ──────────────────────────────────────────
+    base_model = load_base_model(tokenizer)
     print(f"\n[Model] Attaching SFT LoRA from {SFT_ADAPTER}")
-    sft_model = PeftModel.from_pretrained(base_model, str(SFT_ADAPTER), adapter_name="sft")
-    sft_model.set_adapter("sft")
+    sft_model = PeftModel.from_pretrained(base_model, str(SFT_ADAPTER))
     sft_model.eval()
     all_results["sft_only"] = run_system("SFT-only", sft_model, tokenizer, prompts, kb)
 
-    # ── Systems 2-4: DPO adapters (each loaded fresh on top of base) ──
-    # Note: we unload SFT first to avoid adapter stacking confusion.
-    # Each DPO adapter was trained ON TOP of SFT, so it already incorporates SFT weights.
+    # Cleanup SFT model before DPO runs
+    del sft_model
+    del base_model
+    torch.cuda.empty_cache()
+
+    # ── Systems 2-4: DPO adapters (each loaded fresh on top of base) ─────
     for dpo_label, dpo_path in DPO_ADAPTERS.items():
-        # Unload previous adapter
-        try:
-            sft_model.delete_adapter(dpo_label) if dpo_label in sft_model.peft_config else None
-        except Exception:
-            pass
-
         print(f"\n[Model] Loading {dpo_label} from {dpo_path}")
-        # Reload base cleanly — simplest way to avoid adapter state issues
-        del sft_model
-        torch.cuda.empty_cache()
-
-        dpo_model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
-            device_map="auto", attn_implementation="sdpa",
-        )
-        dpo_model.eval()
-        dpo_model = PeftModel.from_pretrained(dpo_model, str(dpo_path))
+        base_model = load_base_model(tokenizer)
+        dpo_model = PeftModel.from_pretrained(base_model, str(dpo_path))
         dpo_model.eval()
 
         all_results[dpo_label] = run_system(dpo_label, dpo_model, tokenizer, prompts, kb)
 
-        # Free before next
         del dpo_model
+        del base_model
         torch.cuda.empty_cache()
 
-    # ── Summaries ──
+    # ── Summaries ────────────────────────────────────────────────────────
     summaries = {k: summarize(v) for k, v in all_results.items()}
     per_domain = {k: by_domain(v, prompts) for k, v in all_results.items()}
 
@@ -342,7 +335,7 @@ def main():
             row += f"{v:>15.2f}"
         print(row)
 
-    # ── Pick winner ──
+    # ── Pick winner ──────────────────────────────────────────────────────
     print(f"\n{'=' * 78}")
     print("DECISION")
     print(f"{'=' * 78}")
@@ -371,7 +364,7 @@ def main():
         print(f"\n✗ SFT-only wins. DPO regressed by {best_dpo_score - sft_score:+.3f}.")
         print(f"  Keep SFT-only. Discard DPO adapters.")
 
-    # ── Save ──
+    # ── Save ─────────────────────────────────────────────────────────────
     out = {
         "n_prompts":   len(prompts),
         "winner":      winner,
@@ -384,7 +377,7 @@ def main():
         json.dump(out, f, indent=2, default=str)
     print(f"\n[Save] {OUT_PATH}")
 
-    # ── Markdown report ──
+    # ── Markdown report ──────────────────────────────────────────────────
     lines = [
         "# Stage 2.3 — DPO Held-out Evaluation Report\n",
         f"- Prompts: {len(prompts)}",
