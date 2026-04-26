@@ -1,0 +1,101 @@
+Loaded 66 evaluation examples
+
+Running keyword baseline...
+
+============================================================
+  KEYWORD BASELINE
+============================================================
+
+  Overall Accuracy: 0.818
+
+  Per-domain metrics:
+  Domain       Prec    Rec     F1  Support
+  --------------------------------------
+  pf          0.607  1.000  0.756       17
+  payslip     0.929  0.812  0.867       16
+  labour      1.000  0.688  0.815       16
+  tax         1.000  0.765  0.867       17
+
+  Confusion Matrix (rows=true, cols=predicted):
+                   pf  payslip   labour      tax
+          pf       17        0        0        0
+     payslip        3       13        0        0
+      labour        4        1       11        0
+         tax        4        0        0       13
+
+  Failures (12):
+    [payslip → pf] EPF matching contribution not added by company in my offer breakdown
+    [labour → pf] can I go to labour court against toxic employer retaining my relieving lett
+    [labour → pf] working in retail shop, forcing 11 hour shifts straight
+    [labour → payslip] resignation not accepted by manager, what steps can i take?
+    [tax → pf] do i need landlord pan matching if rent is 12000 per month?
+    [tax → pf] 87A rebate kitna h agar income exactly 7 lakh hai
+    [payslip → pf] salary se kitna EPF katega agar basic 18000 hai
+    [labour → pf] ek factory worker ko OT double rate milna chahiye ya 1.5x
+    [tax → pf] PF nikalne par TDS kitna lagega, service 4 saal hai
+    [labour → pf] relieving letter nahi de raha company, kya legal action le sakta hu
+
+Running LLM router...
+  ... processed 10/66
+  ... processed 20/66
+  ... processed 30/66
+  ... processed 40/66
+  ... processed 50/66
+  ... processed 60/66
+
+============================================================
+  LLM ROUTER (zero-shot)
+============================================================
+
+  Overall Accuracy: 0.909
+
+  Per-domain metrics:
+  Domain       Prec    Rec     F1  Support
+  --------------------------------------
+  pf          0.882  0.882  0.882       17
+  payslip     0.929  0.812  0.867       16
+  labour      0.941  1.000  0.970       16
+  tax         0.889  0.941  0.914       17
+
+  Confusion Matrix (rows=true, cols=predicted):
+                   pf  payslip   labour      tax
+          pf       15        1        0        1
+     payslip        1       13        1        1
+      labour        0        0       16        0
+         tax        1        0        0       16
+
+  Failures (6):
+    [pf → tax] tds kat liya mere PF claim se, 3 saal kaam kiya tha, amount 70 hazar tha
+    [payslip → tax] kya bangalore me PT professional tax kata dena mandatory hai har month?
+    [payslip → labour] meri company ne ESI band kar diya boli 22000 se above salary ho gayi
+    [tax → pf] PF nikalne par TDS kitna lagega, service 4 saal hai
+    [pf → payslip] can employer deduct employer PF share from my salary CTC
+    [payslip → pf] my new company is not contributing EPF saying my basic is above 15000
+
+============================================================
+  COMPARISON: BASELINE vs LLM
+============================================================
+
+  Metric                      Baseline        LLM      Delta
+  -------------------------------------------------------
+  Overall Accuracy               0.818      0.909     +0.091
+  pf F1                          0.756      0.882     +0.126
+  payslip F1                     0.867      0.867     +0.000
+  labour F1                      0.815      0.970     +0.155
+  tax F1                         0.867      0.914     +0.047
+
+  Queries FIXED by LLM (10):
+    [tax ← baseline said pf] do i need landlord pan matching if rent is 12000 per month?
+    [labour ← baseline said pf] working in retail shop, forcing 11 hour shifts straight
+    [labour ← baseline said payslip] resignation not accepted by manager, what steps can i take?
+    [tax ← baseline said pf] 87A rebate kitna h agar income exactly 7 lakh hai
+    [tax ← baseline said pf] form 15G submit karna hai pf withdrawal ke liye, income nil hai
+    [labour ← baseline said pf] relieving letter nahi de raha company, kya legal action le sakta hu
+    [labour ← baseline said pf] can I go to labour court against toxic employer retaining my relieving
+    [payslip ← baseline said pf] EPF matching contribution not added by company in my offer breakdown
+
+  Queries BROKEN by LLM (4):
+    [payslip ← LLM said tax] kya bangalore me PT professional tax kata dena mandatory hai har month
+    [payslip ← LLM said labour] meri company ne ESI band kar diya boli 22000 se above salary ho gayi
+    [pf ← LLM said tax] tds kat liya mere PF claim se, 3 saal kaam kiya tha, amount 70 hazar t
+    [pf ← LLM said payslip] can employer deduct employer PF share from my salary CTC

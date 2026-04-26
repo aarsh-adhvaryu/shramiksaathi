@@ -1,0 +1,159 @@
+Loaded 45 evaluation examples
+  pf: 14
+  payslip: 9
+  labour: 11
+  tax: 11
+
+Running regex baseline...
+
+============================================================
+  REGEX/KEYWORD BASELINE
+============================================================
+
+  Overall:
+    Slot Precision:   0.923
+    Slot Recall:      0.865
+    Value Accuracy:   0.885
+    Intent Accuracy:  0.756
+
+  Per-domain:
+  Domain       Prec    Rec  ValAcc  Intent    N
+  ------------------------------------------
+  pf          0.909  0.769   0.833   0.357   14
+  payslip     1.000  0.810   0.824   1.000    9
+  labour      0.828  0.960   0.958   0.818   11
+  tax         1.000  0.962   0.920   1.000   11
+
+  Failures (22 queries with issues):
+
+    [pf] working in wipro currently, my pf balance needs to transfer but uan st
+        uan_status: expected=inactive, got=active
+
+    [pf] I have been unemployed for 2.5 months after leaving my last job. My KY
+        months_unemployed: expected=2, got=None (MISSED)
+
+    [pf] aadhar name mismatch kyc reject ho raha, employer bhi respond nahi kar
+        employer_name: expected=None, got=bhi respond nahi (HALLUCINATED)
+
+    [pf] tds deducted on pf withdrawal, service was only 3.5 years total, no pa
+        service_years: expected=3, got=5
+
+    [pf] employer changed, want to transfer PF from hdfc bank old account to ne
+        employment_status: expected=employed, got=None (MISSED)
+        employer_name: expected=None, got=changed (HALLUCINATED)
+
+    [pf] partial advance form 31 for illness, hospitalized for 45 days, service
+        employment_status: expected=employed, got=None (MISSED)
+
+    [payslip] basic is around 18500 and esi they cut is around 500, verify esi
+        esi_deducted: expected=500, got=None (MISSED)
+        basic_salary: expected=18500, got=None (MISSED)
+
+    [payslip] basic salary 20000, epf deducted is 1200, want to check if epf is corr
+        epf_deducted: expected=1200, got=None (MISSED)
+
+    [payslip] complete salary audit, basic 15000, gross 28000, working in Maharashtr
+        state: expected=Maharashtra, got=Madhya Pradesh
+
+    [payslip] company taking professional tax in Delhi but I heard Delhi has no PT
+        state: expected=Delhi, got=Madhya Pradesh
+
+    [labour] fired without notice, worked 3 years in a private company, want to kno
+        state: expected=None, got=Madhya Pradesh (HALLUCINATED)
+
+    [labour] offer letter says 60 days notice. I want to leave in 15 days. what pen
+        termination_reason: expected=resignation, got=None (MISSED)
+        state: expected=None, got=Andhra Pradesh (HALLUCINATED)
+
+Running LLM slot extractor...
+  ... processed 10/45
+  ... processed 20/45
+  ... processed 30/45
+  ... processed 40/45
+
+============================================================
+  LLM SLOT EXTRACTOR
+============================================================
+
+  Overall:
+    Slot Precision:   0.956
+    Slot Recall:      0.973
+    Value Accuracy:   0.981
+    Intent Accuracy:  0.933
+
+  Per-domain:
+  Domain       Prec    Rec  ValAcc  Intent    N
+  ------------------------------------------
+  pf          0.900  0.923   0.972   0.929   14
+  payslip     1.000  1.000   1.000   0.889    9
+  labour      0.962  1.000   1.000   1.000   11
+  tax         1.000  1.000   0.962   0.909   11
+
+  Failures (9 queries with issues):
+
+    [pf] working in wipro currently, my pf balance needs to transfer but uan st
+        employer_name: expected=None, got=wipro (HALLUCINATED)
+
+    [pf] tds deducted on pf withdrawal, service was only 3.5 years total, no pa
+        kyc_status: expected=None, got=incomplete (HALLUCINATED)
+
+    [pf] employer changed, want to transfer PF from hdfc bank old account to ne
+        employment_status: expected=employed, got=None (MISSED)
+        employer_name: expected=None, got=hdfc bank (HALLUCINATED)
+
+    [pf] partial advance form 31 for illness, hospitalized for 45 days, service
+        employment_status: expected=employed, got=None (MISSED)
+
+    [pf] UAN not generated yet, new joiner since 3 months, company deducting pf
+        employer_name: expected=None, got=company (HALLUCINATED)
+
+    [labour] 8 years service, basic was 22000 at time of leaving. how much gratuity
+        termination_reason: expected=None, got=resignation (HALLUCINATED)
+
+    [pf] want to transfer my old pf from previous employer to current one, uan 
+        employment_status: expected=employed, got=None (MISSED)
+
+    [tax] rent is 18000 per month, mumbai, old regime, income 12 lakh. how much 
+        rent_paid: expected=18000, got=180000
+
+    [pf] my company hasn't deposited PF for 5 months, name infosys bangalore
+        employer_name: expected=infosys, got=infosys bangalore
+
+============================================================
+  COMPARISON: BASELINE vs LLM
+============================================================
+
+  Metric                           Baseline        LLM      Delta
+  ------------------------------------------------------------
+  Overall Precision                   0.923      0.956     +0.033
+  Overall Recall                      0.865      0.973     +0.108
+  Overall Value Accuracy              0.885      0.981     +0.096
+  Overall Intent Accuracy             0.756      0.933     +0.177
+
+  pf precision                        0.909      0.900     -0.009
+  pf recall                           0.769      0.923     +0.154
+  pf value accuracy                   0.833      0.972     +0.139
+
+  payslip precision                   1.000      1.000     +0.000
+  payslip recall                      0.810      1.000     +0.190
+  payslip value accuracy              0.824      1.000     +0.176
+
+  labour precision                    0.828      0.962     +0.134
+  labour recall                       0.960      1.000     +0.040
+  labour value accuracy               0.958      1.000     +0.042
+
+  tax precision                       1.000      1.000     +0.000
+  tax recall                          0.962      1.000     +0.038
+  tax value accuracy                  0.920      0.962     +0.042
+
+  Queries FIXED by LLM (15):
+    pregnant employee, private company, 70 days worked this year, am i eligible
+    employer terminated me after 2.5 years, no cause given, no compensation pai
+    basic is around 18500 and esi they cut is around 500, verify esi
+    company taking professional tax in Delhi but I heard Delhi has no PT
+    I have been unemployed for 2.5 months after leaving my last job. My KYC is 
+    aadhar name mismatch kyc reject ho raha, employer bhi respond nahi kar raha
+
+  Queries BROKEN by LLM (2):
+    UAN not generated yet, new joiner since 3 months, company deducting pf
+    rent is 18000 per month, mumbai, old regime, income 12 lakh. how much HRA e

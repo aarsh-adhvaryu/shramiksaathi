@@ -1,0 +1,71 @@
+Loaded 110 evaluation examples
+  pf: 29 (17 sufficient, 12 insufficient)
+  payslip: 22 (14 sufficient, 8 insufficient)
+  labour: 17 (13 sufficient, 4 insufficient)
+  tax: 42 (11 sufficient, 31 insufficient)
+
+Running always-proceed baseline...
+
+============================================================
+  ALWAYS-PROCEED BASELINE
+============================================================
+
+  Overall (110 examples):
+    Gate Accuracy:          0.5
+    False-Sufficient Rate:  1.0  ← dangerous error
+    False-Insufficient Rate: 0.0  ← annoying error
+
+  Per-domain:
+  Domain        Acc  FS Rate  FI Rate  MissSlot    N
+  -----------------------------------------------
+  pf          0.586    1.000    0.000     0.000   29
+  payslip     0.636    1.000    0.000     0.000   22
+  labour      0.765    1.000    0.000     0.000   17
+  tax         0.262    1.000    0.000     0.000   42
+
+  FALSE SUFFICIENT errors (55) — gate said proceed, should have blocked:
+    [pf] intent=full_withdrawal | filled=['intent'] | should ask: employment_status
+    [pf] intent=partial_withdrawal | filled=['intent'] | should ask: employment_status
+    [pf] intent=transfer | filled=['intent'] | should ask: uan_status
+    [pf] intent=kyc_issue | filled=['intent'] | should ask: kyc_status
+    [pf] intent=employer_complaint | filled=['intent'] | should ask: incident_type
+    [pf] intent=tds_query | filled=['intent'] | should ask: service_years
+    [payslip] intent=check_deductions | filled=['intent'] | should ask: basic_salary
+    [payslip] intent=full_audit | filled=['intent'] | should ask: basic_salary
+
+Running rule-based gate...
+
+============================================================
+  RULE-BASED SUFFICIENCY GATE
+============================================================
+
+  Overall (110 examples):
+    Gate Accuracy:          0.991
+    False-Sufficient Rate:  0.0  ← dangerous error
+    False-Insufficient Rate: 0.018  ← annoying error
+
+  Per-domain:
+  Domain        Acc  FS Rate  FI Rate  MissSlot    N
+  -----------------------------------------------
+  pf          1.000    0.000    0.000     1.000   29
+  payslip     0.955    0.000    0.071     1.000   22
+  labour      1.000    0.000    0.000     1.000   17
+  tax         1.000    0.000    0.000     1.000   42
+
+  FALSE INSUFFICIENT errors (1) — gate blocked, should have proceeded:
+    [payslip] intent=check_deductions | filled=['intent', 'gross_salary', 'state'] | gate asked for: ['basic_salary']
+
+============================================================
+  COMPARISON: ALWAYS-PROCEED BASELINE vs RULE-BASED GATE
+============================================================
+
+  Metric                                Baseline       Gate      Delta
+  -----------------------------------------------------------------
+  Gate Accuracy                            0.500      0.991     +0.491
+  False-Sufficient Rate (danger)           1.000      0.000     -1.000
+  False-Insufficient Rate (annoy)          0.000      0.018     +0.018
+
+  Key insight:
+    Baseline sends 100% of incomplete queries to retrieval (all of them).
+    Our gate reduces this to 0.0%.
+    This prevents hallucinated eligibility decisions from incomplete context.
