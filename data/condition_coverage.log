@@ -1,0 +1,95 @@
+============================================================
+Condition Coverage Score — Novel Metric Evaluation
+============================================================
+[Data] 20 total prompts | 17 have reasoning intents
+
+Running eligibility reasoner on 17 prompts...
+[ConditionParser] FAQ_WD_023: 4 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+  [1/17] pf_01  coverage=0.83  total=7  resolved=5  decision=ANSWER
+[ConditionParser] FAQ_WD_023: 4 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+  [2/17] pf_02  coverage=0.83  total=7  resolved=5  decision=ANSWER
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+[ConditionParser] FORM_15G_INSTRUCTIONS: 4 LLM-extracted conditions
+  [3/17] pf_03  coverage=0.33  total=6  resolved=2  decision=ASK
+[ConditionParser] FAQ_WD_024: 4 LLM-extracted conditions
+[ConditionParser] FORM_13_INSTRUCTIONS: 4 LLM-extracted conditions
+[ConditionParser] CIRC_UAN_AUTO_TRANSFER: 4 LLM-extracted conditions
+  [4/17] pf_04  coverage=0.60  total=5  resolved=3  decision=ASK
+[ConditionParser] FAQ_CLAIM_133: 2 LLM-extracted conditions
+[ConditionParser] KYC_AADHAAR_GUIDE: 4 LLM-extracted conditions
+  [5/17] pf_05  coverage=0.67  total=3  resolved=2  decision=ANSWER
+[ConditionParser] EPF_ACT_S6_CONTRIB: 4 LLM-extracted conditions
+[ConditionParser] EPF_PARA_26A: 2 LLM-extracted conditions
+[ConditionParser] TOOL_PAYSLIP_AUDIT: 4 LLM-extracted conditions
+  [6/17] payslip_01  coverage=0.50  total=7  resolved=3  decision=ANSWER
+[ConditionParser] EPF_ACT_S6_CONTRIB: 4 LLM-extracted conditions
+[ConditionParser] EPF_PARA_26A: 2 LLM-extracted conditions
+[ConditionParser] TOOL_PAYSLIP_AUDIT: 4 LLM-extracted conditions
+  [7/17] payslip_02  coverage=0.50  total=7  resolved=3  decision=ANSWER
+[ConditionParser] ESI_WAGE_LIMIT: 4 LLM-extracted conditions
+[ConditionParser] TOOL_PAYSLIP_AUDIT: 4 LLM-extracted conditions
+  [8/17] payslip_03  coverage=0.83  total=7  resolved=5  decision=ANSWER
+[ConditionParser] MIN_WAGE_MAHARASHTRA_2024: 2 LLM-extracted conditions
+  [9/17] payslip_04  coverage=1.00  total=1  resolved=1  decision=ANSWER
+[ConditionParser] EPF_ACT_S6_CONTRIB: 4 LLM-extracted conditions
+[ConditionParser] ESI_WAGE_LIMIT: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KARNATAKA: 4 LLM-extracted conditions
+[ConditionParser] TOOL_PAYSLIP_AUDIT: 4 LLM-extracted conditions
+  [10/17] payslip_05  coverage=0.86  total=11  resolved=6  decision=ANSWER
+[ConditionParser] GRATUITY_ACT_S4_ELIG: 4 LLM-extracted conditions
+  [11/17] labour_01  coverage=1.00  total=2  resolved=1  decision=ANSWER
+[ConditionParser] MATERNITY_BENEFIT_ACT_2017: 4 LLM-extracted conditions
+  [12/17] labour_02  coverage=0.50  total=4  resolved=2  decision=ASK
+[ConditionParser] WRONGFUL_TERMINATION_REMEDIES: 4 LLM-extracted conditions
+[ConditionParser] RELIEVING_LETTER_LEGAL_OBLIGATION: 4 LLM-extracted conditions
+[ConditionParser] STANDING_ORDERS_ACT_NOTICE_PERIOD: 4 LLM-extracted conditions
+  [13/17] labour_04  coverage=0.50  total=4  resolved=2  decision=ANSWER
+[ConditionParser] GRATUITY_ACT_S4_ELIG: 4 LLM-extracted conditions
+[ConditionParser] GRATUITY_COURT_RULING_4Y8M: 4 LLM-extracted conditions
+  [14/17] labour_05  coverage=1.00  total=1  resolved=1  decision=ANSWER
+[ConditionParser] ITA_SECTION_80C: 4 LLM-extracted conditions
+[ConditionParser] FINANCE_ACT_2023_NEW_REGIME: 4 LLM-extracted conditions
+  [15/17] tax_01  coverage=0.33  total=3  resolved=1  decision=ANSWER
+[ConditionParser] ITA_SECTION_10_13A: 4 LLM-extracted conditions
+  [16/17] tax_02  coverage=1.00  total=2  resolved=1  decision=ANSWER
+[ConditionParser] ITA_SECTION_192A_TDS_PF: 4 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+  [17/17] tax_04  coverage=1.00  total=2  resolved=2  decision=ANSWER
+
+============================================================
+  CONDITION COVERAGE SCORE RESULTS
+============================================================
+  Reasoning prompts evaluated: 17
+  Baseline (no reasoner):  0.000
+  ShramikSaathi:           0.722
+  Delta:                   +0.722
+
+  Per-domain coverage:
+  Domain       Baseline       Ours     N
+  pf              0.000      0.652     5
+  payslip         0.000      0.738     5
+  labour          0.000      0.750     4
+  tax             0.000      0.777     3
+
+  Per-query breakdown:
+    ✓ pf_01           coverage=0.83  decision=ANSWER  total=7
+    ✓ pf_02           coverage=0.83  decision=ANSWER  total=7
+    ⚠ pf_03           coverage=0.33  decision=ASK  total=6
+    ✓ pf_04           coverage=0.60  decision=ASK  total=5
+    ✓ pf_05           coverage=0.67  decision=ANSWER  total=3
+    ✓ payslip_01      coverage=0.50  decision=ANSWER  total=7
+    ✓ payslip_02      coverage=0.50  decision=ANSWER  total=7
+    ✓ payslip_03      coverage=0.83  decision=ANSWER  total=7
+    ✓ payslip_04      coverage=1.00  decision=ANSWER  total=1
+    ✓ payslip_05      coverage=0.86  decision=ANSWER  total=11
+    ✓ labour_01       coverage=1.00  decision=ANSWER  total=2
+    ✓ labour_02       coverage=0.50  decision=ASK  total=4
+    ✓ labour_04       coverage=0.50  decision=ANSWER  total=4
+    ✓ labour_05       coverage=1.00  decision=ANSWER  total=1
+    ⚠ tax_01          coverage=0.33  decision=ANSWER  total=3
+    ✓ tax_02          coverage=1.00  decision=ANSWER  total=2
+    ✓ tax_04          coverage=1.00  decision=ANSWER  total=2
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/condition_coverage_results.json

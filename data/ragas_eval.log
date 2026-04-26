@@ -1,0 +1,72 @@
+============================================================
+RAGAS-style Eval: Faithfulness + Answer Relevance
+============================================================
+[Data] 20 prompts | Systems: ['sft_only', 'dpo_beta_0.05']
+
+[Eval] Scoring sft_only...
+  [1/20] pf_01  faith=0.80  rel=1.00
+  [2/20] pf_02  faith=0.80  rel=0.80
+  [3/20] pf_03  faith=0.80  rel=1.00
+  [4/20] pf_04  faith=1.00  rel=1.00
+  [5/20] pf_05  faith=0.80  rel=1.00
+  [6/20] payslip_01  faith=0.80  rel=1.00
+  [7/20] payslip_02  faith=0.80  rel=1.00
+  [8/20] payslip_03  faith=0.80  rel=1.00
+  [9/20] payslip_04  faith=1.00  rel=1.00
+  [10/20] payslip_05  faith=0.80  rel=1.00
+  [11/20] labour_01  faith=0.80  rel=1.00
+  [12/20] labour_02  faith=0.80  rel=0.40
+  [13/20] labour_03  faith=0.80  rel=0.80
+  [14/20] labour_04  faith=0.80  rel=1.00
+  [15/20] labour_05  faith=0.80  rel=1.00
+  [16/20] tax_01  faith=1.00  rel=1.00
+  [17/20] tax_02  faith=0.80  rel=1.00
+  [18/20] tax_03  faith=0.80  rel=1.00
+  [19/20] tax_04  faith=0.80  rel=1.00
+  [20/20] tax_05  faith=0.80  rel=1.00
+
+[Eval] Scoring dpo_beta_0.05...
+  [1/20] pf_01  faith=0.40  rel=1.00
+  [2/20] pf_02  faith=0.80  rel=1.00
+  [3/20] pf_03  faith=0.80  rel=0.80
+  [4/20] pf_04  faith=1.00  rel=1.00
+  [5/20] pf_05  faith=0.80  rel=1.00
+  [6/20] payslip_01  faith=0.80  rel=1.00
+  [7/20] payslip_02  faith=0.80  rel=1.00
+  [8/20] payslip_03  faith=0.80  rel=1.00
+  [9/20] payslip_04  faith=1.00  rel=1.00
+  [10/20] payslip_05  faith=1.00  rel=1.00
+  [11/20] labour_01  faith=0.80  rel=1.00
+  [12/20] labour_02  faith=0.40  rel=0.80
+  [13/20] labour_03  faith=0.80  rel=0.80
+  [14/20] labour_04  faith=0.80  rel=1.00
+  [15/20] labour_05  faith=0.80  rel=0.80
+  [16/20] tax_01  faith=1.00  rel=1.00
+  [17/20] tax_02  faith=0.80  rel=1.00
+  [18/20] tax_03  faith=0.80  rel=1.00
+  [19/20] tax_04  faith=0.80  rel=1.00
+  [20/20] tax_05  faith=0.80  rel=1.00
+
+============================================================
+  RAGAS RESULTS
+============================================================
+  Metric                       sft_only  dpo_beta_0.05
+  faithfulness                    0.830          0.800
+  answer_relevance                0.950          0.960
+
+  Per-domain faithfulness:
+  pf                  0.840          0.760
+  payslip             0.840          0.880
+  labour              0.800          0.720
+  tax                 0.840          0.840
+
+  Delta (dpo_beta_0.05 vs sft_only):
+    faithfulness: -0.030
+    answer_relevance: +0.010
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/ragas_eval_results.json
+Traceback (most recent call last):
+  File "/teamspace/studios/this_studio/shramiksaathi/eval/ragas_eval_runner.py", line 212, in <module>
+    PYEOFcat > eval/ragas_eval_runner.py << 'PYEOF'
+    ^^^^^^^^
+NameError: name 'PYEOFcat' is not defined

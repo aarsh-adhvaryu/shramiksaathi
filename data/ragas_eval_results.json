@@ -1,0 +1,342 @@
+{
+  "systems": [
+    "sft_only",
+    "dpo_beta_0.05"
+  ],
+  "summaries": {
+    "sft_only": {
+      "faithfulness": 0.83,
+      "answer_relevance": 0.95
+    },
+    "dpo_beta_0.05": {
+      "faithfulness": 0.8,
+      "answer_relevance": 0.96
+    }
+  },
+  "all_scores": {
+    "sft_only": [
+      {
+        "prompt_id": "pf_01",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, but the claim about being unemployed for 4 months is not supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing eligibility, steps for withdrawal, and relevant details."
+      },
+      {
+        "prompt_id": "pf_02",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific service duration of 3 years, which is not mentioned in the provided passages.",
+        "answer_relevance": 0.8,
+        "relevance_reason": "The response directly addresses the user's question about PF withdrawal eligibility but misses the specific detail about the 3-year service requirement for full withdrawal."
+      },
+      {
+        "prompt_id": "pf_03",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the implication that the total income is above Rs. 2.50 lakh in the last sentence of the 'Next Steps' section.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about TDS applicable on PF withdrawal, including eligibility, calculation, and next steps."
+      },
+      {
+        "prompt_id": "pf_04",
+        "domain": "pf",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All claims in the response are directly supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about transferring their old PF account to the new establishment with active UAN and KYC done."
+      },
+      {
+        "prompt_id": "pf_05",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the employer's approval in Method 1, which is not mentioned in the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by providing step-by-step instructions to resolve the KYC rejection issue due to Aadhaar and PAN name mismatch."
+      },
+      {
+        "prompt_id": "payslip_01",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific EPF deduction amount of \u20b93,000, which is not directly supported by the passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by verifying the EPF deduction and providing a detailed explanation of the calculation."
+      },
+      {
+        "prompt_id": "payslip_02",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific calculation of \u20b92160 as the expected EPF contribution, which is not directly supported by the passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing a detailed explanation and clear next steps."
+      },
+      {
+        "prompt_id": "payslip_03",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific ESI deduction amount of \u20b9143, which is not explicitly mentioned in the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about the correctness of ESI deduction and provides additional relevant information."
+      },
+      {
+        "prompt_id": "payslip_04",
+        "domain": "payslip",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All claims in the response are directly supported by the provided passage [MIN_WAGE_MAHARASHTRA_2024].",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about whether their gross salary meets the minimum wage requirements in Maharashtra."
+      },
+      {
+        "prompt_id": "payslip_05",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the EPF deduction calculation which is based on a different wage than stated in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing a detailed audit of their payslip and highlighting the correct and incorrect deductions, along with clear next steps and warnings."
+      },
+      {
+        "prompt_id": "labour_01",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passages, but the warning about simple interest is not explicitly mentioned in the passage, and the interest rate is also not mentioned in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing eligibility criteria, calculation, and next steps for gratuity."
+      },
+      {
+        "prompt_id": "labour_02",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the claim that the employee has been working at the private IT firm for 3 years, which is not mentioned in the passage.",
+        "answer_relevance": 0.4,
+        "relevance_reason": "The response partially addresses the query by mentioning maternity leave entitlement, but it fails to directly address the manager's statement of only 12 weeks leave allowed, which is the main concern of the user."
+      },
+      {
+        "prompt_id": "labour_03",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passages, but the response does not directly address the calculation of the buy-out amount as per the NOTICE_PERIOD_BUYOUT_RULE passage.",
+        "answer_relevance": 0.8,
+        "relevance_reason": "The response directly addresses the query, providing relevant information and guidance, but omits specific details on the process of negotiating a notice buy-out with the employer."
+      },
+      {
+        "prompt_id": "labour_04",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, but the response incorrectly assumes the employee is a 'permanent workman' without specifying this category, which is not directly supported by the passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing detailed information on their rights and next steps following wrongful termination without notice period pay or warning."
+      },
+      {
+        "prompt_id": "labour_05",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the warning/caveat about the maximum amount being subject to a maximum of \u20b920 Lakhs, which is not explicitly mentioned in the passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, including the eligibility condition, next steps, and warning/caveat, providing a comprehensive answer."
+      },
+      {
+        "prompt_id": "tax_01",
+        "domain": "tax",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All claims in the response are directly supported by the provided passages, accurately stating the ineligibility for 80C deduction under the new tax regime and suggesting alternative tax-saving options.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about claiming 80C deduction under the new tax regime, providing a clear reason, eligibility condition, and next steps."
+      },
+      {
+        "prompt_id": "tax_02",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passage, except for the specific basic salary value used in the calculation, which is not mentioned in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by calculating the HRA exemption and providing relevant warnings and caveats."
+      },
+      {
+        "prompt_id": "tax_03",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, but the response does not directly reference the passages for the warning about refunds being typically credited within 20-45 days, which is not explicitly stated in the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing a clear explanation and actionable steps to resolve the delayed ITR refund issue."
+      },
+      {
+        "prompt_id": "tax_04",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passages, but the response incorrectly states that the service period is a condition for TDS applicability, when in fact it is a condition for exemption.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing the exact TDS percentage and relevant details."
+      },
+      {
+        "prompt_id": "tax_05",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passage, but the claim about the employer's decision to provide Form 16 only in June of the next year not being in compliance with tax laws is not explicitly stated in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing a clear explanation of the tax laws and offering actionable next steps."
+      }
+    ],
+    "dpo_beta_0.05": [
+      {
+        "prompt_id": "pf_01",
+        "domain": "pf",
+        "faithfulness": 0.4,
+        "faithfulness_reason": "Several claims lack passage support, such as the statement that the member has completed 7 years of service, which contradicts the FAQ_WD_023 passage that mentions a dispute in case of employer not attesting the claim form.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing clear eligibility criteria and next steps for full PF withdrawal."
+      },
+      {
+        "prompt_id": "pf_02",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, but the warning about TDS being applicable if withdrawal exceeds Rs.50,000 is not directly supported by the passage, which only mentions TDS if service < 5 years AND withdrawal exceeds Rs.50,000.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing a clear eligibility check and step-by-step instructions for full PF withdrawal."
+      },
+      {
+        "prompt_id": "pf_03",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the warning about Form 15G eligibility, which is not directly supported by the passages as it incorrectly assumes the user's age and income.",
+        "answer_relevance": 0.8,
+        "relevance_reason": "The response directly addresses the query, explaining TDS applicability and providing next steps, but misses the specific TDS percentage that will be charged."
+      },
+      {
+        "prompt_id": "pf_04",
+        "domain": "pf",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All claims in the response are directly supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about transferring their old PF account to the new company, including eligibility, next steps, and warnings."
+      },
+      {
+        "prompt_id": "pf_05",
+        "domain": "pf",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific mention of 'Method 2: e-KYC Portal on EPFO website or UMANG app for self-validation without employer if details match exactly' which is not directly supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about the EPFO portal KYC rejection due to Aadhaar and PAN name mismatch."
+      },
+      {
+        "prompt_id": "payslip_01",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the warning about ESI eligibility which is based on a different piece of information.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by providing a detailed calculation and explanation of the EPF deduction."
+      },
+      {
+        "prompt_id": "payslip_02",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific calculation of \u20b9360 under-deduction, which is not directly supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about whether the employer's EPF deduction of \u20b91800 from \u20b918000 is correct."
+      },
+      {
+        "prompt_id": "payslip_03",
+        "domain": "payslip",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the expected deduction of \u20b9142 which is not explicitly mentioned in the TOOL_PAYSLIP_AUDIT passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by confirming the ESI deduction and explaining the reasoning behind it."
+      },
+      {
+        "prompt_id": "payslip_04",
+        "domain": "payslip",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All claims in the response are directly supported by the provided passage [MIN_WAGE_MAHARASHTRA_2024].",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing the minimum wage, eligibility condition, and next steps."
+      },
+      {
+        "prompt_id": "payslip_05",
+        "domain": "payslip",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All factual claims in the response are directly supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, including EPF, ESI, and Professional Tax deductions, and provides clear next steps and warnings."
+      },
+      {
+        "prompt_id": "labour_01",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passage, but the calculation of the monthly salary from the last drawn salary is not explicitly mentioned in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, including eligibility, calculation, and next steps for claiming gratuity."
+      },
+      {
+        "prompt_id": "labour_02",
+        "domain": "labour",
+        "faithfulness": 0.4,
+        "faithfulness_reason": "Several claims lack passage support, such as the completion of 3 years of employment and the employer type being private, which are not mentioned in the provided passage.",
+        "answer_relevance": 0.8,
+        "relevance_reason": "The response directly addresses the query but misses the specific question about the 12-week leave allowance, instead providing general information on maternity leave entitlement."
+      },
+      {
+        "prompt_id": "labour_03",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the specific mention of Section 14 of the Specific Relief Act 1963, which is not directly related to the notice buy-out rule.",
+        "answer_relevance": 0.8,
+        "relevance_reason": "The response directly addresses the query, providing relevant information and next steps, but misses the specific question of whether paying basic salary can buy out the notice period."
+      },
+      {
+        "prompt_id": "labour_04",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, but the response fails to mention the specific notice period required for termination, which is mentioned in the [STANDING_ORDERS_ACT_NOTICE_PERIOD] passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing detailed information on their rights and next steps following wrongful termination."
+      },
+      {
+        "prompt_id": "labour_05",
+        "domain": "labour",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, except for the warning/caveat regarding the employer's operating days, which is not explicitly mentioned in the passages.",
+        "answer_relevance": 0.8,
+        "relevance_reason": "The response directly addresses the user's question about gratuity eligibility and provides relevant information, but lacks a clear statement confirming the gratuity amount calculation is applicable in this specific case."
+      },
+      {
+        "prompt_id": "tax_01",
+        "domain": "tax",
+        "faithfulness": 1.0,
+        "faithfulness_reason": "All factual claims in the response are directly supported by the provided passages.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about claiming 80C deduction under the new tax regime, providing a clear explanation and alternatives."
+      },
+      {
+        "prompt_id": "tax_02",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passage, except for the specific basic salary value used in the calculation, which is not mentioned in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by calculating the HRA exemption and providing relevant warnings and caveats."
+      },
+      {
+        "prompt_id": "tax_03",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by passages, but the claim about refund interest accrual rate is not directly supported by the provided passage, although it is mentioned in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question by identifying the likely cause of the delayed refund, providing eligibility for refund re-issue, and offering clear next steps to resolve the issue."
+      },
+      {
+        "prompt_id": "tax_04",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passages, but the warning statement about service period exceeding 5 years is not directly supported by CIRC_2024_TDS, which only mentions 'service >= 5 years' without specifying the exact TDS consequence.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question about the exact TDS percentage for withdrawing a total of 4 lakhs from PF after 3.5 years of service."
+      },
+      {
+        "prompt_id": "tax_05",
+        "domain": "tax",
+        "faithfulness": 0.8,
+        "faithfulness_reason": "Most claims are supported by the passage, but the warning about employer penalty is not explicitly mentioned in the passage.",
+        "answer_relevance": 1.0,
+        "relevance_reason": "The response directly and completely addresses the user's question, providing a clear explanation of the eligibility condition for Form 16 and suggesting alternative steps for filing the Income Tax Return."
+      }
+    ]
+  }
+}

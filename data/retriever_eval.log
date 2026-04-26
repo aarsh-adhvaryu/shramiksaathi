@@ -1,0 +1,46 @@
+============================================================
+Retriever Eval: BM25 vs FAISS + MiniLM
+============================================================
+[Data] 20 prompts | 311 KB docs
+
+[BM25] Building index...
+
+[FAISS] Loading index + encoder...
+
+============================================================
+  BM25 BASELINE
+============================================================
+  Queries evaluated: 20
+  Recall@5:  0.658
+  MRR@5:     0.668
+
+  Per-domain:
+  Domain       Recall@5      MRR@5     N
+  pf              0.267      0.307     5
+  payslip         0.733      0.750     5
+  labour          0.733      0.900     5
+  tax             0.900      0.717     5
+
+============================================================
+  FAISS + MiniLM (OURS)
+============================================================
+  Queries evaluated: 20
+  Recall@5:  0.692
+  MRR@5:     0.679
+
+  Per-domain:
+  Domain       Recall@5      MRR@5     N
+  pf              0.367      0.367     5
+  payslip         0.467      0.450     5
+  labour          0.933      0.900     5
+  tax             1.000      1.000     5
+
+============================================================
+  COMPARISON: BM25 vs FAISS
+============================================================
+  Metric                     BM25      FAISS      Delta
+  --------------------------------------------------
+  recall_at_5               0.658      0.692     +0.034
+  mrr_at_5                  0.668      0.679     +0.011
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/retriever_eval_results.json

@@ -1,169 +1,167 @@
 """
-Retriever Evaluation — BM25 vs FAISS comparison
-Metrics: Domain Precision@5, Recall of key docs, Hinglish robustness
-
-Uses router_eval.jsonl queries (which have expected domains) to measure
-whether each retriever returns domain-relevant documents.
+Retriever Eval: BM25 baseline vs FAISS + MiniLM
+Gold passages from eval_heldout.jsonl (passage_doc_ids)
+Metrics: Recall@5, MRR@5
 """
-
-import os
-import sys
-import json
+import os, sys, json
+from pathlib import Path
 from collections import defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-from bm25_retriever import BM25Retriever
-from search_kb import SearchKB
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
 
-EVAL_FILE = os.path.join(os.path.dirname(__file__), "router_eval.jsonl")
+import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
+from rank_bm25 import BM25Okapi
+
+EVAL_PATH  = ROOT / "data" / "eval_heldout.jsonl"
+KB_PATH    = ROOT / "data" / "kb.jsonl"
+INDEX_PATH = ROOT / "index" / "faiss_index.bin"
+STORE_PATH = ROOT / "index" / "chunk_store.json"
+OUT_PATH   = ROOT / "data" / "retriever_eval_results.json"
+
 TOP_K = 5
 
 
-def load_eval_data(path):
-    with open(path) as f:
-        return [json.loads(line) for line in f if line.strip()]
+def load_data():
+    prompts = [json.loads(l) for l in open(EVAL_PATH) if l.strip()]
+    kb_docs = []
+    with open(KB_PATH) as f:
+        for line in f:
+            if line.strip():
+                kb_docs.append(json.loads(line))
+    return prompts, kb_docs
 
 
-def domain_precision_at_k(retriever, examples, top_k=TOP_K):
-    """
-    For each query, retrieve top-k passages.
-    Domain Precision@k = fraction of retrieved passages whose domain matches expected.
-    """
-    domain_stats = defaultdict(
-        lambda: {"total_retrieved": 0, "domain_match": 0, "queries": 0}
-    )
-    all_match = 0
-    all_total = 0
-    failures = []
-
-    for ex in examples:
-        query = ex["query"]
-        expected_domain = ex["expected_domain"]
-        results = retriever.search(query, top_k=top_k)
-
-        domain_stats[expected_domain]["queries"] += 1
-        matches = 0
-
-        for r in results:
-            domain_stats[expected_domain]["total_retrieved"] += 1
-            all_total += 1
-            if r.get("domain") == expected_domain:
-                matches += 1
-                domain_stats[expected_domain]["domain_match"] += 1
-                all_match += 1
-
-        if matches == 0 and results:
-            failures.append(
-                {
-                    "query": query,
-                    "expected_domain": expected_domain,
-                    "retrieved_domains": [r.get("domain", "?") for r in results],
-                }
-            )
-
-    overall = all_match / all_total if all_total else 0
-
-    per_domain = {}
-    for d, s in domain_stats.items():
-        prec = s["domain_match"] / s["total_retrieved"] if s["total_retrieved"] else 0
-        per_domain[d] = {
-            "precision": round(prec, 3),
-            "queries": s["queries"],
-            "retrieved": s["total_retrieved"],
-            "matched": s["domain_match"],
-        }
-
-    return {
-        "overall_domain_precision": round(overall, 3),
-        "per_domain": per_domain,
-        "failures": failures,
-    }
+def get_gold_doc_ids(prompt):
+    return [d for d in prompt["passage_doc_ids"] if d != "TOOL_PAYSLIP_AUDIT"]
 
 
-def print_results(name, results):
+def eval_bm25(prompts, kb_docs):
+    print("\n[BM25] Building index...")
+    doc_id_list = [d["doc_id"] for d in kb_docs]
+    tokenized = [d["content"].lower().split() for d in kb_docs]
+    bm25 = BM25Okapi(tokenized)
+
+    results = []
+    for p in prompts:
+        gold = set(get_gold_doc_ids(p))
+        if not gold:
+            continue
+        query_tokens = p["query"].lower().split()
+        scores = bm25.get_scores(query_tokens)
+        top_indices = np.argsort(scores)[::-1][:TOP_K]
+        retrieved = [doc_id_list[i] for i in top_indices]
+
+        hits = [d for d in retrieved if d in gold]
+        recall = len(hits) / len(gold) if gold else 0
+        mrr = 0.0
+        for rank, d in enumerate(retrieved, 1):
+            if d in gold:
+                mrr = 1.0 / rank
+                break
+
+        results.append({
+            "id": p["id"], "domain": p["domain"],
+            "gold": sorted(gold), "retrieved": retrieved,
+            "recall": recall, "mrr": mrr,
+        })
+    return results
+
+
+def eval_faiss(prompts, kb_docs):
+    print("\n[FAISS] Loading index + encoder...")
+    encoder = SentenceTransformer("all-MiniLM-L6-v2")
+
+    with open(STORE_PATH) as f:
+        chunk_store = json.load(f)
+
+    index = faiss.read_index(str(INDEX_PATH))
+    # Build ordered doc_id list matching index order
+    doc_id_list = [c["doc_id"] for c in chunk_store]
+
+    results = []
+    for p in prompts:
+        gold = set(get_gold_doc_ids(p))
+        if not gold:
+            continue
+        q_vec = encoder.encode([p["query"]], normalize_embeddings=False).astype("float32")
+        distances, indices = index.search(q_vec, TOP_K)
+        retrieved = [doc_id_list[i] for i in indices[0] if i < len(doc_id_list)]
+
+        hits = [d for d in retrieved if d in gold]
+        recall = len(hits) / len(gold) if gold else 0
+        mrr = 0.0
+        for rank, d in enumerate(retrieved, 1):
+            if d in gold:
+                mrr = 1.0 / rank
+                break
+
+        results.append({
+            "id": p["id"], "domain": p["domain"],
+            "gold": sorted(gold), "retrieved": retrieved,
+            "recall": recall, "mrr": mrr,
+        })
+    return results
+
+
+def summarize(results, label):
+    n = len(results)
+    mean_recall = sum(r["recall"] for r in results) / n
+    mean_mrr = sum(r["mrr"] for r in results) / n
     print(f"\n{'=' * 60}")
-    print(f"  {name}")
+    print(f"  {label}")
     print(f"{'=' * 60}")
-    print(
-        f"\n  Overall Domain Precision@{TOP_K}: {results['overall_domain_precision']}"
-    )
+    print(f"  Queries evaluated: {n}")
+    print(f"  Recall@{TOP_K}:  {mean_recall:.3f}")
+    print(f"  MRR@{TOP_K}:     {mean_mrr:.3f}")
 
+    by_domain = defaultdict(list)
+    for r in results:
+        by_domain[r["domain"]].append(r)
     print(f"\n  Per-domain:")
-    print(
-        f"  {'Domain':<10} {'Prec':>6} {'Matched':>8} {'Retrieved':>10} {'Queries':>8}"
-    )
-    print(f"  {'-' * 44}")
-    for d in sorted(results["per_domain"].keys()):
-        m = results["per_domain"][d]
-        print(
-            f"  {d:<10} {m['precision']:>6.3f} {m['matched']:>8} {m['retrieved']:>10} {m['queries']:>8}"
-        )
+    print(f"  {'Domain':<10} {'Recall@5':>10} {'MRR@5':>10} {'N':>5}")
+    for dom in ["pf", "payslip", "labour", "tax"]:
+        if dom in by_domain:
+            dr = by_domain[dom]
+            print(f"  {dom:<10} {sum(r['recall'] for r in dr)/len(dr):>10.3f} {sum(r['mrr'] for r in dr)/len(dr):>10.3f} {len(dr):>5}")
 
-    if results["failures"]:
-        print(f"\n  Zero domain-match queries ({len(results['failures'])}):")
-        for f in results["failures"][:8]:
-            print(f"    [{f['expected_domain']}] {f['query'][:65]}")
-            print(f"      Retrieved: {f['retrieved_domains']}")
+    return {"label": label, "n": n, "recall_at_5": round(mean_recall, 3), "mrr_at_5": round(mean_mrr, 3)}
 
 
-def print_comparison(bm25_results, faiss_results):
+def main():
+    print("=" * 60)
+    print("Retriever Eval: BM25 vs FAISS + MiniLM")
+    print("=" * 60)
+
+    prompts, kb_docs = load_data()
+    print(f"[Data] {len(prompts)} prompts | {len(kb_docs)} KB docs")
+
+    bm25_results = eval_bm25(prompts, kb_docs)
+    faiss_results = eval_faiss(prompts, kb_docs)
+
+    bm25_summary = summarize(bm25_results, "BM25 BASELINE")
+    faiss_summary = summarize(faiss_results, "FAISS + MiniLM (OURS)")
+
     print(f"\n{'=' * 60}")
-    print(f"  COMPARISON: BM25 vs FAISS")
+    print("  COMPARISON: BM25 vs FAISS")
     print(f"{'=' * 60}")
+    print(f"  {'Metric':<20} {'BM25':>10} {'FAISS':>10} {'Delta':>10}")
+    print(f"  {'-' * 50}")
+    for metric in ["recall_at_5", "mrr_at_5"]:
+        b = bm25_summary[metric]
+        f = faiss_summary[metric]
+        print(f"  {metric:<20} {b:>10.3f} {f:>10.3f} {f-b:>+10.3f}")
 
-    print(f"\n  {'Metric':<30} {'BM25':>10} {'FAISS':>10} {'Delta':>10}")
-    print(f"  {'-' * 60}")
-
-    bl = bm25_results["overall_domain_precision"]
-    fl = faiss_results["overall_domain_precision"]
-    print(f"  {'Overall Domain Prec@5':<30} {bl:>10.3f} {fl:>10.3f} {fl - bl:>+10.3f}")
-
-    for d in sorted(
-        set(
-            list(bm25_results["per_domain"].keys())
-            + list(faiss_results["per_domain"].keys())
-        )
-    ):
-        bl_p = bm25_results["per_domain"].get(d, {}).get("precision", 0)
-        fl_p = faiss_results["per_domain"].get(d, {}).get("precision", 0)
-        print(
-            f"  {f'{d} precision':<30} {bl_p:>10.3f} {fl_p:>10.3f} {fl_p - bl_p:>+10.3f}"
-        )
-
-    # Show queries where BM25 got zero domain matches but FAISS got some
-    bm25_fail_queries = {f["query"] for f in bm25_results["failures"]}
-    faiss_fail_queries = {f["query"] for f in faiss_results["failures"]}
-    fixed_by_faiss = bm25_fail_queries - faiss_fail_queries
-
-    if fixed_by_faiss:
-        print(
-            f"\n  Queries where FAISS found domain docs but BM25 didn't ({len(fixed_by_faiss)}):"
-        )
-        for q in list(fixed_by_faiss)[:6]:
-            print(f"    {q[:75]}")
+    out = {
+        "bm25": {"summary": bm25_summary, "per_query": bm25_results},
+        "faiss": {"summary": faiss_summary, "per_query": faiss_results},
+    }
+    with open(OUT_PATH, "w") as f:
+        json.dump(out, f, indent=2)
+    print(f"\n[Save] {OUT_PATH}")
 
 
 if __name__ == "__main__":
-    examples = load_eval_data(EVAL_FILE)
-    print(f"Loaded {len(examples)} evaluation queries")
-
-    print("\nInitializing BM25...")
-    STORE_PATH = os.path.join(
-        os.path.dirname(__file__), "..", "index", "chunk_store.json"
-    )
-    INDEX_PATH = os.path.join(
-        os.path.dirname(__file__), "..", "index", "faiss_index.bin"
-    )
-
-    bm25 = BM25Retriever(store_path=STORE_PATH)
-    faiss_kb = SearchKB(index_path=INDEX_PATH, store_path=STORE_PATH)
-
-    print("\nRunning BM25 evaluation...")
-    bm25_results = domain_precision_at_k(bm25, examples)
-    print_results("BM25 BASELINE RETRIEVER", bm25_results)
-
-    print("\nRunning FAISS evaluation...")
-    faiss_results = domain_precision_at_k(faiss_kb, examples)
-    print_results("FAISS + MiniLM RETRIEVER", faiss_results)
-
-    print_comparison(bm25_results, faiss_results)
+    main()
