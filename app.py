@@ -26,7 +26,6 @@ kb = SearchKB(
     index_path=str(ROOT / "index" / "faiss_index_finetuned.bin"),
     store_path=str(ROOT / "index" / "chunk_store.json"),
     model_name=str(ROOT / "out" / "retriever_finetuned"),
-    model_name=str(ROOT / "out" / "retriever_finetuned"),
 )
 
 ALL_KB_DOC_IDS = set()
