@@ -1,0 +1,312 @@
+======================================================================
+ShramikSaathi — 4-Config System-Level Ablation
+======================================================================
+[Data] 20 prompts | 311 KB docs
+[BM25] Building index...
+Loading FAISS index from /teamspace/studios/this_studio/shramiksaathi/index/faiss_index.bin ...
+Loading chunk store from /teamspace/studios/this_studio/shramiksaathi/index/chunk_store.json ...
+Loading encoder: all-MiniLM-L6-v2 ...
+SearchKB ready: 311 chunks indexed.
+
+[Model] Loading raw LLaMA base (no adapter) for configs A/B/C...
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.09s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.08s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:06<00:02,  2.06s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.51s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.72s/it]
+        VRAM: 5.79GB
+
+======================================================================
+Config A — Vanilla RAG (BM25 + raw LLaMA)
+======================================================================
+  [1/20] pf_01  gc=False  cites=3  fab=1  [23.9s]
+  [2/20] pf_02  gc=False  cites=5  fab=0  [18.6s]
+  [3/20] pf_03  gc=True  cites=2  fab=0  [19.3s]
+  [4/20] pf_04  gc=False  cites=5  fab=0  [26.3s]
+  [5/20] pf_05  gc=False  cites=1  fab=0  [25.9s]
+  [6/20] payslip_01  gc=True  cites=2  fab=0  [16.1s]
+  [7/20] payslip_02  gc=False  cites=4  fab=0  [23.6s]
+  [8/20] payslip_03  gc=False  cites=3  fab=0  [17.5s]
+  [9/20] payslip_04  gc=False  cites=1  fab=0  [14.4s]
+  [10/20] payslip_05  gc=True  cites=3  fab=0  [25.9s]
+  [11/20] labour_01  gc=True  cites=1  fab=0  [20.0s]
+  [12/20] labour_02  gc=True  cites=1  fab=0  [22.0s]
+  [13/20] labour_03  gc=True  cites=4  fab=0  [24.9s]
+  [14/20] labour_04  gc=True  cites=5  fab=0  [30.8s]
+  [15/20] labour_05  gc=True  cites=6  fab=0  [21.9s]
+  [16/20] tax_01  gc=False  cites=4  fab=0  [19.3s]
+  [17/20] tax_02  gc=True  cites=2  fab=0  [17.9s]
+  [18/20] tax_03  gc=True  cites=3  fab=0  [29.5s]
+  [19/20] tax_04  gc=False  cites=1  fab=0  [21.7s]
+  [20/20] tax_05  gc=True  cites=1  fab=0  [16.0s]
+
+======================================================================
+Config B — + Pre-retrieval (FAISS + slots + raw LLaMA)
+======================================================================
+  [1/20] pf_01  gc=True  cites=2  fab=0  [23.2s]
+  [2/20] pf_02  gc=True  cites=4  fab=0  [22.4s]
+  [3/20] pf_03  gc=True  cites=3  fab=0  [21.6s]
+  [4/20] pf_04  gc=False  cites=3  fab=0  [24.8s]
+  [5/20] pf_05  gc=True  cites=1  fab=0  [19.7s]
+  [6/20] payslip_01  gc=True  cites=1  fab=0  [19.4s]
+  [7/20] payslip_02  gc=True  cites=2  fab=0  [21.0s]
+  [8/20] payslip_03  gc=True  cites=4  fab=0  [20.3s]
+  [9/20] payslip_04  gc=False  cites=1  fab=0  [14.4s]
+  [10/20] payslip_05  gc=False  cites=6  fab=3  [31.4s]
+  [11/20] labour_01  gc=True  cites=2  fab=0  [21.4s]
+  [12/20] labour_02  gc=True  cites=4  fab=0  [21.6s]
+  [13/20] labour_03  gc=True  cites=5  fab=0  [26.0s]
+  [14/20] labour_04  gc=True  cites=4  fab=0  [34.3s]
+  [15/20] labour_05  gc=True  cites=4  fab=0  [23.9s]
+  [16/20] tax_01  gc=True  cites=3  fab=0  [17.0s]
+  [17/20] tax_02  gc=True  cites=2  fab=0  [18.1s]
+  [18/20] tax_03  gc=True  cites=3  fab=0  [21.0s]
+  [19/20] tax_04  gc=True  cites=2  fab=0  [24.5s]
+  [20/20] tax_05  gc=False  cites=2  fab=0  [21.7s]
+
+======================================================================
+Config C — + Reasoner (FAISS + reasoner + raw LLaMA)
+======================================================================
+[ConditionParser] NEWS_EPFO_NIDHI_APKE_NIKAT: 4 LLM-extracted conditions
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] RO_HELPLINE_NATIONAL: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] FAQ_CLAIM_133: 2 LLM-extracted conditions
+  [1/20] pf_01  gc=False  cov=1.00  cites=2  fab=0  [19.3s]
+[ConditionParser] FAQ_WD_022: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL: 4 LLM-extracted conditions
+[ConditionParser] FAQ_WITHDRAWAL: 4 LLM-extracted conditions
+[ConditionParser] EPF_ACT_S68_S69: 2 LLM-extracted conditions
+  [2/20] pf_02  gc=True  cov=0.80  cites=4  fab=0  [22.8s]
+[ConditionParser] TDS_PRACTICAL_GUIDE_2024: 2 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_192A_TDS_PF: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] FAQ_WITHDRAWAL: 4 LLM-extracted conditions
+  [3/20] pf_03  gc=True  cov=0.33  cites=1  fab=0  [19.3s]
+[ConditionParser] TRANSFER_JOB_CHANGE_STEP_BY_STEP_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] NEWS_AUTO_TRANSFER_UAN_2023: 4 LLM-extracted conditions
+[ConditionParser] KYC_BANK_GUIDE: 4 LLM-extracted conditions
+[ConditionParser] FORM_13_INSTRUCTIONS: 4 LLM-extracted conditions
+  [4/20] pf_04  gc=False  cov=0.75  cites=2  fab=0  [23.2s]
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION: 2 LLM-extracted conditions
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] FAQ_CLAIM_129: 1 LLM-extracted conditions
+[ConditionParser] FAQ_CLAIM_133: 2 LLM-extracted conditions
+[ConditionParser] KYC_AADHAAR_GUIDE: 4 LLM-extracted conditions
+  [5/20] pf_05  gc=True  cov=1.00  cites=2  fab=0  [19.7s]
+[ConditionParser] PROF_TAX_MAHARASHTRA: 4 LLM-extracted conditions
+[ConditionParser] CONTRIB_RATES_COMPLETE: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_TAMIL_NADU: 4 LLM-extracted conditions
+[ConditionParser] EPF_PARA_26A: 2 LLM-extracted conditions
+[ConditionParser] EPF_ACT_S6_CONTRIB: 4 LLM-extracted conditions
+  [6/20] payslip_01  gc=True  cov=0.83  cites=3  fab=0  [17.1s]
+[ConditionParser] IW_INTERNATIONAL_WORKERS_GUIDE: 4 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_PUNJAB_2024: 4 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_DELHI_2024: 2 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KERALA: 4 LLM-extracted conditions
+[ConditionParser] PMGKY_SCHEME: 4 LLM-extracted conditions
+  [7/20] payslip_02  gc=False  cov=0.30  cites=3  fab=0  [23.2s]
+[ConditionParser] PROF_TAX_KERALA: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_TAMIL_NADU: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_WEST_BENGAL: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_GUJARAT: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KARNATAKA: 4 LLM-extracted conditions
+  [8/20] payslip_03  gc=True  cov=0.75  cites=5  fab=0  [28.7s]
+[ConditionParser] MIN_WAGE_MAHARASHTRA_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_UTTAR_PRADESH_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_DELHI_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_RAJASTHAN_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_TAMIL_NADU_2024: 4 LLM-extracted conditions
+  [9/20] payslip_04  gc=False  cov=0.67  cites=1  fab=0  [16.8s]
+[ConditionParser] GAZETTE_INTEREST_RATE_2023_24: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KARNATAKA: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KERALA: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_TAMIL_NADU: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: ITA_SECTION_80C (tax not in ['payslip', 'pf'])
+  [10/20] payslip_05  gc=True  cov=1.00  cites=2  fab=0  [33.6s]
+[ConditionParser] GRATUITY_ACT_S4_ELIG: 4 LLM-extracted conditions
+[ConditionParser] GRATUITY_COURT_RULING_4Y8M: 4 LLM-extracted conditions
+[ConditionParser] TERMINATION_MISCONDUCT_GRATUITY: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: PROF_TAX_KERALA (payslip not in ['labour'])
+[ConditionParser] Skipping off-domain: EPS_COMPLETE_GUIDE (pf not in ['labour'])
+  [11/20] labour_01  gc=True  cov=1.00  cites=3  fab=0  [22.4s]
+[ConditionParser] MATERNITY_BENEFIT_ACT_2017: 4 LLM-extracted conditions
+[ConditionParser] NOTICE_PERIOD_GARDEN_LEAVE: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: FAQ_WD_022 (pf not in ['labour'])
+[ConditionParser] Skipping off-domain: FAQ_MEM_048 (pf not in ['labour'])
+[ConditionParser] Skipping off-domain: EPF_ACT_S68_S69 (pf not in ['labour'])
+  [12/20] labour_02  gc=True  cov=0.40  cites=1  fab=0  [20.6s]
+  [13/20] labour_03  gc=True  cov=0.00  cites=5  fab=0  [25.7s]
+[ConditionParser] NOTICE_PERIOD_WAIVER_BY_EMPLOYER: 5 LLM-extracted conditions
+[ConditionParser] RELIEVING_LETTER_LEGAL_OBLIGATION: 4 LLM-extracted conditions
+[ConditionParser] STANDING_ORDERS_ACT_NOTICE_PERIOD: 4 LLM-extracted conditions
+[ConditionParser] NOTICE_PERIOD_BUYOUT_RULE: 4 LLM-extracted conditions
+[ConditionParser] ID_ACT_S25F_RETRENCHMENT: 4 LLM-extracted conditions
+  [14/20] labour_04  gc=True  cov=0.50  cites=5  fab=0  [32.6s]
+[ConditionParser] GRATUITY_COURT_RULING_4Y8M: 4 LLM-extracted conditions
+[ConditionParser] GRATUITY_ACT_S4_ELIG: 4 LLM-extracted conditions
+[ConditionParser] TERMINATION_MISCONDUCT_GRATUITY: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: FAQ_EPS_097 (pf not in ['labour'])
+[ConditionParser] Skipping off-domain: PROF_TAX_TAMIL_NADU (payslip not in ['labour'])
+  [15/20] labour_05  gc=False  cov=1.00  cites=4  fab=0  [22.2s]
+[ConditionParser] NEW_REGIME_SLAB_TABLE_SURCHARGE: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_80C: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_80G_DONATION: 4 LLM-extracted conditions
+[ConditionParser] ITA_OLD_REGIME_SLABS: 4 LLM-extracted conditions
+[ConditionParser] FINANCE_ACT_2023_NEW_REGIME: 4 LLM-extracted conditions
+  [16/20] tax_01  gc=True  cov=0.29  cites=4  fab=0  [19.8s]
+[ConditionParser] ITA_SECTION_10_13A: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: PROF_TAX_TAMIL_NADU (payslip not in ['tax', 'pf'])
+[ConditionParser] Skipping off-domain: PROF_TAX_WEST_BENGAL (payslip not in ['tax', 'pf'])
+[ConditionParser] Skipping off-domain: PROF_TAX_KERALA (payslip not in ['tax', 'pf'])
+[ConditionParser] Skipping off-domain: PROF_TAX_KARNATAKA (payslip not in ['tax', 'pf'])
+  [17/20] tax_02  gc=True  cov=1.00  cites=1  fab=0  [26.3s]
+  [18/20] tax_03  gc=False  cov=0.00  cites=4  fab=0  [21.8s]
+[ConditionParser] TDS_PRACTICAL_GUIDE_2024: 2 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_192A_TDS_PF: 4 LLM-extracted conditions
+[ConditionParser] KYC_PAN_GUIDE: 4 LLM-extracted conditions
+  [19/20] tax_04  gc=True  cov=1.00  cites=4  fab=0  [21.5s]
+  [20/20] tax_05  gc=True  cov=0.00  cites=2  fab=0  [20.9s]
+
+[Model] Loading DPO model for config D...
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.03s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.07s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:06<00:02,  2.05s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.51s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.71s/it]
+        VRAM: 5.97GB
+
+======================================================================
+Config D — Full ShramikSaathi (FAISS + reasoner + DPO)
+======================================================================
+[ConditionParser] NEWS_EPFO_NIDHI_APKE_NIKAT: 4 LLM-extracted conditions
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] RO_HELPLINE_NATIONAL: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] FAQ_CLAIM_133: 2 LLM-extracted conditions
+  [1/20] pf_01  gc=True  cov=1.00  cites=2  fab=0  [32.1s]
+[ConditionParser] FAQ_WD_022: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL: 4 LLM-extracted conditions
+[ConditionParser] FAQ_WITHDRAWAL: 4 LLM-extracted conditions
+[ConditionParser] EPF_ACT_S68_S69: 2 LLM-extracted conditions
+  [2/20] pf_02  gc=True  cov=0.80  cites=4  fab=0  [33.7s]
+[ConditionParser] TDS_PRACTICAL_GUIDE_2024: 2 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_192A_TDS_PF: 4 LLM-extracted conditions
+[ConditionParser] WD_FORM31_PARTIAL_PRACTICAL_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] FAQ_WITHDRAWAL: 4 LLM-extracted conditions
+  [3/20] pf_03  gc=True  cov=0.33  cites=1  fab=0  [31.3s]
+[ConditionParser] TRANSFER_JOB_CHANGE_STEP_BY_STEP_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] NEWS_AUTO_TRANSFER_UAN_2023: 4 LLM-extracted conditions
+[ConditionParser] KYC_BANK_GUIDE: 4 LLM-extracted conditions
+[ConditionParser] FORM_13_INSTRUCTIONS: 4 LLM-extracted conditions
+  [4/20] pf_04  gc=False  cov=0.75  cites=2  fab=0  [38.4s]
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION: 2 LLM-extracted conditions
+[ConditionParser] KYC_REJECTION_REASONS_RESOLUTION_chunk_1: 4 LLM-extracted conditions
+[ConditionParser] FAQ_CLAIM_129: 1 LLM-extracted conditions
+[ConditionParser] FAQ_CLAIM_133: 2 LLM-extracted conditions
+[ConditionParser] KYC_AADHAAR_GUIDE: 4 LLM-extracted conditions
+  [5/20] pf_05  gc=False  cov=1.00  cites=1  fab=0  [41.6s]
+[ConditionParser] PROF_TAX_MAHARASHTRA: 4 LLM-extracted conditions
+[ConditionParser] CONTRIB_RATES_COMPLETE: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_TAMIL_NADU: 4 LLM-extracted conditions
+[ConditionParser] EPF_PARA_26A: 2 LLM-extracted conditions
+[ConditionParser] EPF_ACT_S6_CONTRIB: 4 LLM-extracted conditions
+  [6/20] payslip_01  gc=True  cov=0.83  cites=3  fab=0  [34.7s]
+[ConditionParser] IW_INTERNATIONAL_WORKERS_GUIDE: 4 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_PUNJAB_2024: 4 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_DELHI_2024: 2 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KERALA: 4 LLM-extracted conditions
+[ConditionParser] PMGKY_SCHEME: 4 LLM-extracted conditions
+  [7/20] payslip_02  gc=False  cov=0.30  cites=2  fab=0  [35.4s]
+[ConditionParser] PROF_TAX_KERALA: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_TAMIL_NADU: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_WEST_BENGAL: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_GUJARAT: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KARNATAKA: 4 LLM-extracted conditions
+  [8/20] payslip_03  gc=True  cov=0.75  cites=1  fab=0  [30.6s]
+[ConditionParser] MIN_WAGE_MAHARASHTRA_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_UTTAR_PRADESH_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_DELHI_2024: 4 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_RAJASTHAN_2024: 2 LLM-extracted conditions
+[ConditionParser] MIN_WAGE_TAMIL_NADU_2024: 4 LLM-extracted conditions
+  [9/20] payslip_04  gc=False  cov=1.00  cites=1  fab=0  [30.2s]
+[ConditionParser] GAZETTE_INTEREST_RATE_2023_24: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KARNATAKA: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_KERALA: 4 LLM-extracted conditions
+[ConditionParser] PROF_TAX_TAMIL_NADU: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: ITA_SECTION_80C (tax not in ['payslip', 'pf'])
+  [10/20] payslip_05  gc=False  cov=1.00  cites=3  fab=1  [40.2s]
+[ConditionParser] GRATUITY_ACT_S4_ELIG: 4 LLM-extracted conditions
+[ConditionParser] GRATUITY_COURT_RULING_4Y8M: 4 LLM-extracted conditions
+[ConditionParser] TERMINATION_MISCONDUCT_GRATUITY: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: PROF_TAX_KERALA (payslip not in ['labour'])
+[ConditionParser] Skipping off-domain: EPS_COMPLETE_GUIDE (pf not in ['labour'])
+  [11/20] labour_01  gc=True  cov=1.00  cites=3  fab=0  [47.3s]
+[ConditionParser] MATERNITY_BENEFIT_ACT_2017: 4 LLM-extracted conditions
+[ConditionParser] NOTICE_PERIOD_GARDEN_LEAVE: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: FAQ_WD_022 (pf not in ['labour'])
+[ConditionParser] Skipping off-domain: FAQ_MEM_048 (pf not in ['labour'])
+[ConditionParser] Skipping off-domain: EPF_ACT_S68_S69 (pf not in ['labour'])
+  [12/20] labour_02  gc=False  cov=0.40  cites=3  fab=0  [33.6s]
+  [13/20] labour_03  gc=True  cov=0.00  cites=3  fab=0  [42.4s]
+[ConditionParser] NOTICE_PERIOD_WAIVER_BY_EMPLOYER: 5 LLM-extracted conditions
+[ConditionParser] RELIEVING_LETTER_LEGAL_OBLIGATION: 4 LLM-extracted conditions
+[ConditionParser] STANDING_ORDERS_ACT_NOTICE_PERIOD: 4 LLM-extracted conditions
+[ConditionParser] NOTICE_PERIOD_BUYOUT_RULE: 4 LLM-extracted conditions
+[ConditionParser] ID_ACT_S25F_RETRENCHMENT: 4 LLM-extracted conditions
+  [14/20] labour_04  gc=True  cov=0.50  cites=4  fab=0  [43.6s]
+[ConditionParser] GRATUITY_COURT_RULING_4Y8M: 4 LLM-extracted conditions
+[ConditionParser] GRATUITY_ACT_S4_ELIG: 4 LLM-extracted conditions
+[ConditionParser] TERMINATION_MISCONDUCT_GRATUITY: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: FAQ_EPS_097 (pf not in ['labour'])
+[ConditionParser] Skipping off-domain: PROF_TAX_TAMIL_NADU (payslip not in ['labour'])
+  [15/20] labour_05  gc=True  cov=1.00  cites=2  fab=0  [31.2s]
+[ConditionParser] NEW_REGIME_SLAB_TABLE_SURCHARGE: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_80C: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_80G_DONATION: 4 LLM-extracted conditions
+[ConditionParser] ITA_OLD_REGIME_SLABS: 4 LLM-extracted conditions
+[ConditionParser] FINANCE_ACT_2023_NEW_REGIME: 4 LLM-extracted conditions
+  [16/20] tax_01  gc=True  cov=0.29  cites=2  fab=0  [19.0s]
+[ConditionParser] ITA_SECTION_10_13A: 4 LLM-extracted conditions
+[ConditionParser] Skipping off-domain: PROF_TAX_TAMIL_NADU (payslip not in ['tax', 'pf'])
+[ConditionParser] Skipping off-domain: PROF_TAX_WEST_BENGAL (payslip not in ['tax', 'pf'])
+[ConditionParser] Skipping off-domain: PROF_TAX_KERALA (payslip not in ['tax', 'pf'])
+[ConditionParser] Skipping off-domain: PROF_TAX_KARNATAKA (payslip not in ['tax', 'pf'])
+  [17/20] tax_02  gc=True  cov=1.00  cites=1  fab=0  [31.3s]
+  [18/20] tax_03  gc=True  cov=0.00  cites=3  fab=0  [36.3s]
+[ConditionParser] TDS_PRACTICAL_GUIDE_2024: 2 LLM-extracted conditions
+[ConditionParser] CIRC_2024_TDS: 4 LLM-extracted conditions
+[ConditionParser] ITA_SECTION_192A_TDS_PF: 4 LLM-extracted conditions
+[ConditionParser] KYC_PAN_GUIDE: 4 LLM-extracted conditions
+  [19/20] tax_04  gc=True  cov=1.00  cites=2  fab=0  [29.8s]
+  [20/20] tax_05  gc=True  cov=0.00  cites=2  fab=0  [31.7s]
+
+==============================================================================
+ABLATION RESULTS (n=20)
+==============================================================================
+Metric                    A: Vanilla RAG  B: +PreRetrieval      C: +Reasoner    D: Full System
+----------------------------------------------------------------------------------------------
+citation_coverage                  1.000             1.000             1.000             1.000
+fabrication_rate                   0.050             0.050             0.000             0.050
+verdict_accuracy                   0.550             0.800             0.700             0.750
+grounded_clean                     0.550             0.800             0.700             0.700
+condition_coverage                 0.000             0.000             0.631             0.647
+
+Deltas from Config A:
+Config                     grounded_clean      cond_coverage
+A: Vanilla RAG                     +0.000             +0.000
+B: +PreRetrieval                   +0.250             +0.000
+C: +Reasoner                       +0.150             +0.631
+D: Full System                     +0.150             +0.647
+
+Per-domain grounded_clean:
+Domain        A: Vanilla RAG  B: +PreRetrieval      C: +Reasoner    D: Full System
+pf                      0.20              0.80              0.60              0.60
+payslip                 0.40              0.60              0.60              0.40
+labour                  1.00              1.00              0.80              0.80
+tax                     0.60              0.80              0.80              1.00
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/ablation_results.json
+
+==============================================================================
+Ablation complete.
+==============================================================================
