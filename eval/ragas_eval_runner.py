@@ -209,7 +209,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-PYEOFcat > eval/ragas_eval_runner.py << 'PYEOF'
 """
 RAGAS-style Evaluation: Faithfulness + Answer Relevance
 Uses Groq LLaMA as judge LLM (no OpenAI dependency).

@@ -62,8 +62,8 @@ Running regex baseline...
         state: expected=None, got=Madhya Pradesh (HALLUCINATED)
 
     [labour] offer letter says 60 days notice. I want to leave in 15 days. what pen
-        termination_reason: expected=resignation, got=None (MISSED)
         state: expected=None, got=Andhra Pradesh (HALLUCINATED)
+        termination_reason: expected=resignation, got=None (MISSED)
 
 Running LLM slot extractor...
   ... processed 10/45
@@ -148,11 +148,11 @@ Running LLM slot extractor...
 
   Queries FIXED by LLM (15):
     pregnant employee, private company, 70 days worked this year, am i eligible
+    basic salary 20000, epf deducted is 1200, want to check if epf is correct
     employer terminated me after 2.5 years, no cause given, no compensation pai
+    offer letter says 60 days notice. I want to leave in 15 days. what penalty 
+    complete salary audit, basic 15000, gross 28000, working in Maharashtra
     basic is around 18500 and esi they cut is around 500, verify esi
-    company taking professional tax in Delhi but I heard Delhi has no PT
-    I have been unemployed for 2.5 months after leaving my last job. My KYC is 
-    aadhar name mismatch kyc reject ho raha, employer bhi respond nahi kar raha
 
   Queries BROKEN by LLM (2):
     UAN not generated yet, new joiner since 3 months, company deducting pf

@@ -1,8 +1,8 @@
 {
   "n_prompts": 17,
   "baseline_mean_coverage": 0.0,
-  "our_mean_coverage": 0.722,
-  "delta": 0.722,
+  "our_mean_coverage": 0.714,
+  "delta": 0.714,
   "baseline_results": [
     {
       "id": "pf_01",
@@ -163,11 +163,11 @@
       "id": "pf_01",
       "domain": "pf",
       "intent": "full_withdrawal",
-      "coverage": 0.83,
-      "conditions_total": 7,
-      "conditions_resolved": 5,
+      "coverage": 0.8,
+      "conditions_total": 6,
+      "conditions_resolved": 4,
       "decision": "ANSWER",
-      "met": 3,
+      "met": 2,
       "failed": 2,
       "warnings": 1,
       "unresolved": 1
@@ -176,11 +176,11 @@
       "id": "pf_02",
       "domain": "pf",
       "intent": "full_withdrawal",
-      "coverage": 0.83,
-      "conditions_total": 7,
-      "conditions_resolved": 5,
+      "coverage": 0.8,
+      "conditions_total": 6,
+      "conditions_resolved": 4,
       "decision": "ANSWER",
-      "met": 4,
+      "met": 3,
       "failed": 1,
       "warnings": 1,
       "unresolved": 1
@@ -216,12 +216,12 @@
       "domain": "pf",
       "intent": "kyc_issue",
       "coverage": 0.67,
-      "conditions_total": 3,
+      "conditions_total": 4,
       "conditions_resolved": 2,
       "decision": "ANSWER",
       "met": 1,
       "failed": 1,
-      "warnings": 0,
+      "warnings": 1,
       "unresolved": 1
     },
     {
@@ -258,8 +258,8 @@
       "conditions_total": 7,
       "conditions_resolved": 5,
       "decision": "ANSWER",
-      "met": 4,
-      "failed": 1,
+      "met": 3,
+      "failed": 2,
       "warnings": 1,
       "unresolved": 1
     },
@@ -281,12 +281,12 @@
       "domain": "payslip",
       "intent": "full_audit",
       "coverage": 0.86,
-      "conditions_total": 11,
+      "conditions_total": 10,
       "conditions_resolved": 6,
       "decision": "ANSWER",
       "met": 3,
       "failed": 3,
-      "warnings": 4,
+      "warnings": 3,
       "unresolved": 1
     },
     {
@@ -345,14 +345,14 @@
       "id": "tax_01",
       "domain": "tax",
       "intent": "deductions_80c",
-      "coverage": 0.33,
-      "conditions_total": 3,
+      "coverage": 0.25,
+      "conditions_total": 4,
       "conditions_resolved": 1,
       "decision": "ANSWER",
       "met": 0,
       "failed": 1,
       "warnings": 0,
-      "unresolved": 2
+      "unresolved": 3
     },
     {
       "id": "tax_02",

@@ -85,17 +85,17 @@ Running LLM router...
   tax F1                         0.867      0.914     +0.047
 
   Queries FIXED by LLM (10):
-    [tax ← baseline said pf] do i need landlord pan matching if rent is 12000 per month?
-    [labour ← baseline said pf] working in retail shop, forcing 11 hour shifts straight
-    [labour ← baseline said payslip] resignation not accepted by manager, what steps can i take?
-    [tax ← baseline said pf] 87A rebate kitna h agar income exactly 7 lakh hai
-    [tax ← baseline said pf] form 15G submit karna hai pf withdrawal ke liye, income nil hai
-    [labour ← baseline said pf] relieving letter nahi de raha company, kya legal action le sakta hu
     [labour ← baseline said pf] can I go to labour court against toxic employer retaining my relieving
+    [labour ← baseline said pf] ek factory worker ko OT double rate milna chahiye ya 1.5x
+    [payslip ← baseline said pf] salary se kitna EPF katega agar basic 18000 hai
     [payslip ← baseline said pf] EPF matching contribution not added by company in my offer breakdown
+    [tax ← baseline said pf] do i need landlord pan matching if rent is 12000 per month?
+    [labour ← baseline said payslip] resignation not accepted by manager, what steps can i take?
+    [labour ← baseline said pf] working in retail shop, forcing 11 hour shifts straight
+    [labour ← baseline said pf] relieving letter nahi de raha company, kya legal action le sakta hu
 
   Queries BROKEN by LLM (4):
-    [payslip ← LLM said tax] kya bangalore me PT professional tax kata dena mandatory hai har month
-    [payslip ← LLM said labour] meri company ne ESI band kar diya boli 22000 se above salary ho gayi
     [pf ← LLM said tax] tds kat liya mere PF claim se, 3 saal kaam kiya tha, amount 70 hazar t
     [pf ← LLM said payslip] can employer deduct employer PF share from my salary CTC
+    [payslip ← LLM said labour] meri company ne ESI band kar diya boli 22000 se above salary ho gayi
+    [payslip ← LLM said tax] kya bangalore me PT professional tax kata dena mandatory hai har month
