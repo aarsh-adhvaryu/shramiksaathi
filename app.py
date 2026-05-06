@@ -1,11 +1,13 @@
 """
-ShramikSaathi — Gradio Demo
-Pipeline: Groq (router/slots/ReAct) + Local DPO model (generator)
+ShramikSaathi — Optimized Fully Local Demo
+3 LLM calls per query: (1) Router+Slots, (2) Batched Reasoner, (3) Generator
+Target: ~30-50s per query on A100
 """
 
-import os, sys, json, time
+import os, sys, json, re, time
 from pathlib import Path
-from dotenv import load_dotenv
+
+os.environ.setdefault("GROQ_API_KEY", "dummy_not_used")
 
 import torch
 import gradio as gr
@@ -14,22 +16,23 @@ from peft import PeftModel
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
-load_dotenv(ROOT / ".env")
 
-from cross_domain_router import llm_route
-from slot_extractor import extract_slots, merge_slots
 from sufficiency_gate import check_sufficiency
-from eligibility_reasoner import run_eligibility_reasoner
-from react_loop import react_retrieve
 from search_kb import SearchKB
 
-# ── Load KB ────────────────────────────────────────────────────────────────
+DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+)\]')
+
 kb = SearchKB(
     index_path=str(ROOT / "index" / "faiss_index.bin"),
     store_path=str(ROOT / "index" / "chunk_store.json"),
 )
 
-# ── Load local DPO model ──────────────────────────────────────────────────
+ALL_KB_DOC_IDS = set()
+with open(ROOT / "data" / "kb.jsonl") as f:
+    for line in f:
+        if line.strip():
+            ALL_KB_DOC_IDS.add(json.loads(line)["doc_id"])
+
 MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
 DPO_ADAPTER = str(ROOT / "out" / "dpo_beta_050")
 
@@ -47,54 +50,88 @@ base_model = AutoModelForCausalLM.from_pretrained(
     MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
     device_map="auto", attn_implementation="sdpa",
 )
-model = PeftModel.from_pretrained(base_model, DPO_ADAPTER)
-model.eval()
-print(f"[Model] Loaded in {time.time()-t0:.1f}s | VRAM {torch.cuda.memory_allocated()/1e9:.2f}GB")
+dpo_model = PeftModel.from_pretrained(base_model, DPO_ADAPTER)
+dpo_model.eval()
+print("[Model] Loaded in " + str(round(time.time()-t0, 1)) + "s")
 
 
-# ── Generator prompt ──────────────────────────────────────────────────────
-GENERATOR_PROMPT = """You are ShramikSaathi, an Indian worker rights support copilot.
-You help workers with PF/EPFO, payslip audit, labour rights, and income tax queries.
+def llm_call(messages, max_tokens=200):
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=2048).to(dpo_model.device)
+    with torch.no_grad():
+        out = dpo_model.generate(
+            **inputs, max_new_tokens=max_tokens, do_sample=False,
+            temperature=None, top_p=None,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+    gen = out[0][inputs["input_ids"].shape[1]:]
+    return tokenizer.decode(gen, skip_special_tokens=True).strip()
 
-You will be given:
-1. The user's query
-2. The detected domain
-3. Retrieved KB passages with doc_ids and dates
-4. An eligibility reasoning trace (if applicable)
-5. Filled slots
 
-Your job: produce a clear, cited, structured answer.
+# ── CALL 1: Combined Router + Slot Extraction ──
+
+ROUTER_SLOTS_PROMPT = """You are a classifier and slot extractor for an Indian worker rights system.
+
+Given the user query, output a JSON object with:
+1. "domain": one of ["pf", "payslip", "labour", "tax"]
+2. All relevant slots extracted from the query
+
+SLOT SCHEMAS BY DOMAIN:
+
+pf: intent (full_withdrawal/partial_withdrawal/transfer/kyc_issue/tds_query/employer_complaint/pension), employment_status (employed/unemployed/retired), months_unemployed (int), service_years (int), uan_status (active/inactive), kyc_status (complete/incomplete)
+
+payslip: intent (verify_epf/verify_esi/check_deductions/full_audit/check_bonus), basic_salary (int), gross_salary (int), epf_deducted (int), esi_deducted (int), state (string)
+
+labour: intent (gratuity/wrongful_termination/maternity_benefit/overtime_pay/notice_period), employment_years (int), termination_reason (resignation/employer_terminated/retrenched), last_drawn_salary (int), employer_type (private/government/factory)
+
+tax: intent (tds_on_salary/tds_on_pf/hra_exemption/deductions_80c/itr_filing), annual_income (int), tax_regime (old_regime/new_regime), service_years (int), pf_withdrawal_amount (int)
+
+Output ONLY valid compact JSON. No explanation."""
+
+
+def combined_route_and_extract(query, chat_history=None):
+    context = ""
+    if chat_history:
+        recent = chat_history[-4:]
+        parts = []
+        for h in recent:
+            parts.append(h["role"] + ": " + h["content"])
+        context = "\n".join(parts) + "\n\n"
+
+    raw = llm_call([
+        {"role": "system", "content": ROUTER_SLOTS_PROMPT},
+        {"role": "user", "content": context + "Query: " + query},
+    ], max_tokens=300)
+
+    raw = re.sub(r"```json|```", "", raw).strip()
+    try:
+        data = json.loads(raw)
+        domain = data.pop("domain", "pf")
+        if domain not in ("pf", "payslip", "labour", "tax"):
+            domain = "pf"
+        return domain, data
+    except json.JSONDecodeError:
+        return "pf", {"intent": "general"}
+
+
+# ── CALL 2: Batched Reasoner ──
+
+REASONER_PROMPT = """You are an eligibility condition extractor for Indian worker rights.
+
+Given MULTIPLE passages, extract ALL eligibility conditions as a JSON array.
+Each condition: {"field": "slot_name", "operator": "gte/lte/eq/in/not_null", "value": threshold, "mandatory": true/false, "doc_id": "DOC_ID"}
+
+VALID SLOT NAMES: employment_status, months_unemployed, service_years, uan_status, kyc_status, basic_salary, gross_salary, employment_years, termination_reason, last_drawn_salary, annual_income, tax_regime, pf_withdrawal_amount
 
 RULES:
-- Every factual claim must cite its doc_id in brackets e.g. [GRATUITY_ACT_S4_ELIG]
-- CITATION RULE: Only cite doc_ids that appear verbatim in the RETRIEVED PASSAGES section.
-  Never invent new doc_ids, suffixes, or section numbers.
-- If eligibility reasoning is provided, include the condition trace in your answer
-- If decision is ANSWER + eligible=True  → confirm eligibility, give next steps
-- If decision is ANSWER + eligible=False → clearly state not eligible, explain why
-- If decision is ESCALATE → say KB lacks info, suggest appropriate grievance portal
-- Keep answers structured: result first, then steps, then warnings/caveats
-- Never make up information not in the passages
-- Use simple language — the user may not know legal terminology"""
+- Output ONLY a JSON array, no explanation
+- Maximum 8 conditions total across all passages
+- Mark TDS/warning conditions as mandatory: false
+- Use exact field names from the list above"""
 
-INTENT_SUBDOMAINS = {
-    "full_withdrawal": ["withdrawal"], "partial_withdrawal": ["withdrawal"],
-    "transfer": ["transfer"], "kyc_issue": ["kyc", "uan"],
-    "tds_query": ["taxation"], "employer_complaint": ["employer", "grievance"],
-    "pension": ["pension"], "nomination_update": ["nomination"],
-    "verify_epf": ["epf_deduction", "tool_output"],
-    "verify_esi": ["esi_deduction", "tool_output"],
-    "check_deductions": ["professional_tax", "epf_deduction", "esi_deduction", "tool_output"],
-    "check_minimum_wage": ["minimum_wage"],
-    "full_audit": ["epf_deduction", "esi_deduction", "professional_tax", "wage_structure", "tool_output"],
-    "check_bonus": ["bonuses"],
-    "gratuity": ["gratuity"], "wrongful_termination": ["termination"],
-    "maternity_benefit": ["maternity"], "overtime_pay": ["overtime"],
-    "notice_period": ["termination"],
-    "tds_on_salary": ["tds_salary"], "tds_on_pf": ["tds_pf"],
-    "hra_exemption": ["hra"], "deductions_80c": ["deductions"],
-    "refund_status": ["refund"], "form16": ["tds_salary"],
-    "itr_filing": ["tds_salary", "deductions"],
+RELATED_DOMAINS = {
+    "pf": ["pf", "tax"], "tax": ["tax", "pf"],
+    "payslip": ["payslip", "pf"], "labour": ["labour"],
 }
 
 REASONING_INTENTS = {
@@ -104,72 +141,193 @@ REASONING_INTENTS = {
     "tds_on_salary", "tds_on_pf", "hra_exemption", "deductions_80c",
 }
 
+VALUE_ALIASES = {
+    "verified": "complete", "approved": "complete", "done": "complete",
+    "not_complete": "incomplete", "pending": "incomplete",
+    "activated": "active", "enabled": "active",
+    "terminated": "employer_terminated", "fired": "employer_terminated",
+    "resigned": "resignation", "quit": "resignation",
+    "old": "old_regime", "new": "new_regime",
+}
 
-def filter_passages_for_reasoner(passages, intent):
-    subs = INTENT_SUBDOMAINS.get(intent)
-    if not subs:
-        return passages
-    filtered = [p for p in passages if p.get("subdomain", "") in subs]
-    return filtered if filtered else passages
+
+def normalize(val):
+    s = str(val).lower().strip()
+    return VALUE_ALIASES.get(s, s)
+
+
+def evaluate_condition(slot_val, operator, threshold):
+    try:
+        if operator == "gte": return float(slot_val) >= float(threshold)
+        if operator == "lte": return float(slot_val) <= float(threshold)
+        if operator == "gt": return float(slot_val) > float(threshold)
+        if operator == "lt": return float(slot_val) < float(threshold)
+        if operator == "eq": return normalize(slot_val) == normalize(threshold)
+        if operator == "in": return normalize(slot_val) in [normalize(v) for v in threshold]
+        if operator == "not_null": return slot_val is not None
+    except (ValueError, TypeError):
+        return False
+    return False
+
+
+def batched_reasoner(passages, slots, domain, intent):
+    allowed = RELATED_DOMAINS.get(domain, [domain])
+    relevant = [p for p in passages if p.get("domain", "general") in allowed or p.get("domain") == "general"]
+    if not relevant:
+        relevant = passages[:3]
+
+    passage_text = ""
+    for i, p in enumerate(relevant[:5]):
+        did = p.get("doc_id", "?")
+        content = p.get("content", "")[:400]
+        passage_text += "\n[" + did + "]\n" + content + "\n"
+
+    raw = llm_call([
+        {"role": "system", "content": REASONER_PROMPT},
+        {"role": "user", "content": "Domain: " + domain + "\nIntent: " + intent + "\n\nPASSAGES:" + passage_text},
+    ], max_tokens=300)
+
+    raw = re.sub(r"```json|```", "", raw).strip()
+    conditions = []
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            conditions = [c for c in parsed if isinstance(c, dict) and "field" in c]
+    except json.JSONDecodeError:
+        pass
+
+    met, failed, warnings, unresolved = [], [], [], []
+    for c in conditions:
+        field = c.get("field", "")
+        slot_val = slots.get(field)
+        mandatory = c.get("mandatory", True)
+
+        if slot_val is None:
+            if mandatory:
+                unresolved.append(c)
+            continue
+
+        result = evaluate_condition(slot_val, c.get("operator", "eq"), c.get("value"))
+        c["slot_value"] = slot_val
+        if not mandatory:
+            warnings.append(c)
+        elif result:
+            met.append(c)
+        else:
+            failed.append(c)
+
+    total = len(met) + len(failed) + len(unresolved)
+    resolved = len(met) + len(failed)
+    coverage = round(resolved / total, 2) if total > 0 else 1.0
+
+    if failed:
+        decision, eligible = "ANSWER", False
+    elif unresolved:
+        decision, eligible = "ASK", None
+    elif not conditions:
+        decision, eligible = "ANSWER", True
+    else:
+        decision, eligible = "ANSWER", True
+
+    question = None
+    if decision == "ASK" and unresolved:
+        field = unresolved[0].get("field", "unknown")
+        questions = {
+            "employment_status": "Are you currently employed, unemployed, or retired?",
+            "service_years": "How many total years have you contributed to PF?",
+            "months_unemployed": "How many months have you been unemployed?",
+            "uan_status": "Is your UAN currently active?",
+            "kyc_status": "Is your KYC complete on the EPFO portal?",
+            "employment_years": "How many years have you worked with this employer?",
+            "termination_reason": "Did you resign, were you fired, or retrenched?",
+            "annual_income": "What is your total annual income?",
+            "tax_regime": "Are you on the old or new tax regime?",
+        }
+        question = questions.get(field, "Could you provide your " + field.replace("_", " ") + "?")
+
+    return {
+        "decision": decision, "eligible": eligible, "coverage": coverage,
+        "met": met, "failed": failed, "warnings": warnings, "unresolved": unresolved,
+        "question": question,
+    }
+
+
+# ── CALL 3: Generator ──
+
+GENERATOR_PROMPT = """You are ShramikSaathi, an Indian worker rights support copilot.
+You help workers with PF/EPFO, payslip audit, labour rights, and income tax queries.
+
+RULES:
+- Every factual claim must cite its doc_id in brackets e.g. [GRATUITY_ACT_S4_ELIG]
+- Only cite doc_ids from the RETRIEVED PASSAGES section
+- Never invent doc_ids
+- Keep answers structured: result first, then steps, then warnings
+- Use simple language"""
+
+INTENT_SUBDOMAINS = {
+    "full_withdrawal": ["withdrawal"], "partial_withdrawal": ["withdrawal"],
+    "transfer": ["transfer"], "kyc_issue": ["kyc", "uan"],
+    "tds_query": ["taxation"], "employer_complaint": ["employer", "grievance"],
+    "verify_epf": ["epf_deduction", "tool_output"], "verify_esi": ["esi_deduction", "tool_output"],
+    "check_deductions": ["professional_tax", "epf_deduction", "esi_deduction", "tool_output"],
+    "full_audit": ["epf_deduction", "esi_deduction", "professional_tax", "wage_structure", "tool_output"],
+    "gratuity": ["gratuity"], "wrongful_termination": ["termination"],
+    "maternity_benefit": ["maternity"], "overtime_pay": ["overtime"],
+    "notice_period": ["termination"],
+    "tds_on_salary": ["tds_salary"], "tds_on_pf": ["tds_pf"],
+    "hra_exemption": ["hra"], "deductions_80c": ["deductions"],
+}
 
 
 def build_generator_input(query, domain, passages, reasoning, slots):
     passages_text = kb.format_for_prompt(passages)
     reasoning_text = ""
     if reasoning:
-        lines = [
-            "ELIGIBILITY REASONING TRACE:",
-            f"  Decision: {reasoning.get('decision', '')}",
-        ]
+        lines = ["ELIGIBILITY REASONING TRACE:",
+                 "  Decision: " + str(reasoning.get("decision", ""))]
         if reasoning.get("eligible") is not None:
-            lines.append(f"  Eligible: {reasoning['eligible']}")
-        lines.append(f"  Coverage: {reasoning.get('coverage', 0)}")
+            lines.append("  Eligible: " + str(reasoning["eligible"]))
+        lines.append("  Coverage: " + str(reasoning.get("coverage", 0)))
         for c in reasoning.get("met", []):
-            lines.append(f"    ✓ {c.get('field','?')} {c.get('operator','?')} {c.get('value','?')} [{c.get('doc_id','?')}]")
+            lines.append("    V " + c.get("field", "?") + " " + c.get("operator", "?") + " " + str(c.get("value", "?")) + " [" + c.get("doc_id", "?") + "]")
         for c in reasoning.get("failed", []):
-            lines.append(f"    ✗ {c.get('field','?')} {c.get('operator','?')} {c.get('value','?')} [{c.get('doc_id','?')}]")
+            lines.append("    X " + c.get("field", "?") + " " + c.get("operator", "?") + " " + str(c.get("value", "?")) + " [" + c.get("doc_id", "?") + "]")
         for c in reasoning.get("warnings", []):
-            lines.append(f"    ⚠ {c.get('field','?')} {c.get('operator','?')} {c.get('value','?')} [{c.get('doc_id','?')}]")
+            lines.append("    ! " + c.get("field", "?") + " " + c.get("operator", "?") + " " + str(c.get("value", "?")) + " [" + c.get("doc_id", "?") + "]")
         for c in reasoning.get("unresolved", []):
-            lines.append(f"    ? {c.get('field','?')} — slot missing")
+            lines.append("    ? " + c.get("field", "?") + " -- slot missing")
         reasoning_text = "\n".join(lines)
-
     filled = {k: v for k, v in slots.items() if v is not None}
-    return f"""USER QUERY:
-{query}
-
-DOMAIN: {domain}
-
-RETRIEVED PASSAGES:
-{passages_text}
-
-{reasoning_text}
-
-SLOTS FILLED:
-{json.dumps(filled, indent=2)}
-
-Produce the final answer now."""
+    return ("USER QUERY:\n" + query + "\n\nDOMAIN: " + domain
+            + "\n\nRETRIEVED PASSAGES:\n" + passages_text
+            + "\n\n" + reasoning_text
+            + "\n\nSLOTS FILLED:\n" + json.dumps(filled, indent=2)
+            + "\n\nProduce the final answer now.")
 
 
-def local_generate(system_prompt, user_content):
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_content},
-    ]
-    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=3072).to(model.device)
-    with torch.no_grad():
-        out = model.generate(
-            **inputs, max_new_tokens=600, do_sample=False,
-            temperature=None, top_p=None,
-            pad_token_id=tokenizer.eos_token_id,
-        )
-    gen = out[0][inputs["input_ids"].shape[1]:]
-    return tokenizer.decode(gen, skip_special_tokens=True).strip()
+def score_response(response, retrieved_doc_ids):
+    cited = set(DOC_ID_RE.findall(response))
+    fabricated = cited - ALL_KB_DOC_IDS
+    grounded = cited.intersection(set(retrieved_doc_ids))
+    return {
+        "total_citations": len(cited),
+        "grounded_citations": len(grounded),
+        "fabricated_citations": len(fabricated),
+        "cited_doc_ids": sorted(cited),
+        "fabricated_doc_ids": sorted(fabricated),
+        "fabrication_free": len(fabricated) == 0,
+    }
+
+
+def merge_slots(old, new):
+    merged = dict(old)
+    for k, v in new.items():
+        if v is not None:
+            merged[k] = v
+    return merged
 
 
 def run_query(user_query, session_state):
-    """Full pipeline: Groq pre-retrieval + local DPO generator."""
     if session_state is None:
         session_state = {"slots": {}, "history": [], "turn": 0, "domain": None}
 
@@ -177,129 +335,159 @@ def run_query(user_query, session_state):
     slots = session_state.get("slots", {})
     domain = session_state.get("domain", None)
     turn = session_state.get("turn", 0) + 1
+    total_start = time.time()
+    trace = []
 
-    meta_lines = []
-
-    # Step 1: Router (Groq)
-    router_result = llm_route(user_query)
-    new_domain = router_result["domain"]
-    confidence = router_result["confidence"]
+    # CALL 1: Combined Router + Slots (~5-10s)
+    t0 = time.time()
+    new_domain, new_slots = combined_route_and_extract(user_query, history)
+    dt1 = time.time() - t0
 
     if domain is not None and new_domain != domain:
         slots = {}
-        meta_lines.append(f"Domain switch: {domain} → {new_domain}")
-
     domain = new_domain
-    meta_lines.append(f"Router → {domain} (conf={confidence})")
-
-    # Step 2: Slot Extraction (Groq)
-    new_slots = extract_slots(user_query, domain, chat_history=history)
     slots = merge_slots(slots, new_slots)
     intent = slots.get("intent", "general")
     filled = {k: v for k, v in slots.items() if v is not None}
-    meta_lines.append(f"Intent: {intent} | Slots: {filled}")
 
-    # Step 3: Sufficiency Gate
+    trace.append("### Call 1: Router + Slots (" + str(round(dt1, 1)) + "s)")
+    trace.append("**Domain:** " + domain + " | **Intent:** " + intent + " | **Slots:** " + str(len(filled)))
+    if filled:
+        trace.append("```")
+        for k, v in filled.items():
+            trace.append("  " + k + ": " + str(v))
+        trace.append("```")
+
+    # Sufficiency Gate (instant)
     gate = check_sufficiency(slots, domain)
+    trace.append("\n### Sufficiency Gate")
     if not gate["sufficient"]:
         question = gate["question"]
-        meta_lines.append(f"Gate blocked — missing: {gate['missing']}")
+        trace.append("**BLOCKED** | Missing: " + str(gate["missing"]))
         history.append({"role": "user", "content": user_query})
         history.append({"role": "assistant", "content": question})
         state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
-        return question, state, "\n".join(meta_lines)
+        return question, state, "\n".join(trace), "**Gate blocked** -- collecting more info."
+    trace.append("**PASSED**")
 
-    # Step 4: ReAct Retrieval (Groq)
-    meta_lines.append("Gate passed — retrieving...")
-    passages = react_retrieve(user_query, domain, intent, slots, kb)
+    # FAISS Retrieval (instant)
+    t0 = time.time()
+    passages = kb.search(user_query, top_k=5)
     doc_ids = [p.get("doc_id", "?") for p in passages]
-    meta_lines.append(f"Retrieved {len(passages)} passages: {doc_ids}")
+    trace.append("\n### FAISS Retrieval (" + str(round(time.time()-t0, 2)) + "s)")
+    trace.append("Doc IDs: " + ", ".join(doc_ids))
 
-    # Step 5: Eligibility Reasoner (Groq)
+    # CALL 2: Batched Reasoner (~10-15s)
     reasoning = None
+    cov = 0.0
     if intent in REASONING_INTENTS:
-        reasoner_passages = filter_passages_for_reasoner(passages, intent)
-        reasoning = run_eligibility_reasoner(reasoner_passages, slots, domain=domain)
-        meta_lines.append(f"Reasoner → {reasoning['decision']} | Coverage: {reasoning['coverage']}")
+        t0 = time.time()
+        reasoning = batched_reasoner(passages, slots, domain, intent)
+        dt2 = time.time() - t0
+        cov = reasoning.get("coverage", 0.0)
+        trace.append("\n### Call 2: Batched Reasoner (" + str(round(dt2, 1)) + "s)")
+        trace.append("**Decision:** " + reasoning["decision"] + " | **Coverage:** " + str(cov))
+        trace.append("Met: " + str(len(reasoning["met"])) + " | Failed: " + str(len(reasoning["failed"])) + " | Unresolved: " + str(len(reasoning["unresolved"])))
 
         if reasoning["decision"] == "ASK":
             question = reasoning["question"]
             history.append({"role": "user", "content": user_query})
             history.append({"role": "assistant", "content": question})
             state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
-            return question, state, "\n".join(meta_lines)
+            return question, state, "\n".join(trace), "**Needs more info** | Coverage: " + str(cov)
+    else:
+        trace.append("\n### Reasoner: *Skipped (informational)*")
 
-    # Step 6: Generate (LOCAL DPO MODEL)
-    meta_lines.append("Generating with local DPO model...")
-    user_content = build_generator_input(user_query, domain, passages, reasoning, slots)
+    # CALL 3: Generator (~15-25s)
     t0 = time.time()
-    answer = local_generate(GENERATOR_PROMPT, user_content)
-    gen_time = time.time() - t0
-    meta_lines.append(f"Generated in {gen_time:.1f}s")
+    user_content = build_generator_input(user_query, domain, passages, reasoning, slots)
+    answer = llm_call([
+        {"role": "system", "content": GENERATOR_PROMPT},
+        {"role": "user", "content": user_content},
+    ], max_tokens=500)
+    dt3 = time.time() - t0
+    trace.append("\n### Call 3: Generator (" + str(round(dt3, 1)) + "s)")
 
+    total_time = time.time() - total_start
+    trace.append("\n**Total: " + str(round(total_time, 1)) + "s**")
+
+    scores = score_response(answer, doc_ids)
     history.append({"role": "user", "content": user_query})
     history.append({"role": "assistant", "content": answer})
-
     state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
-    return answer, state, "\n".join(meta_lines)
+
+    fab_status = "Yes" if scores["fabrication_free"] else "NO -- " + str(scores["fabricated_doc_ids"])
+    eval_parts = [
+        "### Live Evaluation\n",
+        "| Metric | Value |",
+        "|--------|-------|",
+        "| Domain | " + domain + " |",
+        "| Intent | " + intent + " |",
+        "| Slots | " + str(len(filled)) + " |",
+        "| Passages | " + str(len(passages)) + " |",
+        "| Condition Coverage | " + str(round(cov, 2)) + " |",
+        "| Citations | " + str(scores["total_citations"]) + " |",
+        "| Grounded | " + str(scores["grounded_citations"]) + " |",
+        "| Fabricated | " + str(scores["fabricated_citations"]) + " |",
+        "| Fabrication Free | " + fab_status + " |",
+        "| Total Time | " + str(round(total_time, 1)) + "s |",
+        "",
+        "**Cited:** " + (", ".join(scores["cited_doc_ids"]) if scores["cited_doc_ids"] else "None"),
+    ]
+    if reasoning and reasoning.get("decision"):
+        eval_parts.append("\n**Reasoner:** " + reasoning["decision"])
+        if reasoning.get("eligible") is not None:
+            eval_parts.append("**Eligible:** " + str(reasoning["eligible"]))
+
+    return answer, state, "\n".join(trace), "\n".join(eval_parts)
 
 
-# ── Gradio UI ─────────────────────────────────────────────────────────────
-
-with gr.Blocks(
-
-
-) as demo:
-    gr.Markdown("""
-# ShramikSaathi — Indian Worker Rights Copilot
-**Domains:** PF/EPFO • Payslip Audit • Labour Rights • Income Tax
-
-Ask any question about your PF withdrawal, payslip deductions, gratuity, TDS, or labour rights.
-The system extracts your context, verifies eligibility conditions, and gives a cited answer.
-
-*Generator: LLaMA 3.1 8B + DPO (local) | Pre-retrieval: Groq LLaMA 3.1 8B*
-    """)
-
-    chatbot = gr.Chatbot(height=500, label="Conversation")
-    session_state = gr.State(None)
+with gr.Blocks() as demo:
+    gr.Markdown("# ShramikSaathi -- Indian Worker Rights Copilot")
+    gr.Markdown("**Domains:** PF/EPFO | Payslip Audit | Labour Rights | Income Tax")
+    gr.Markdown("*One model, 3 LLM calls per query: LLaMA 3.1 8B + DPO | Fully local*")
 
     with gr.Row():
-        msg = gr.Textbox(
-            placeholder="e.g. I left my job 3 months ago, UAN active, KYC done. Can I withdraw my PF?",
-            label="Your question", scale=5, lines=2,
-        )
-        send_btn = gr.Button("Send", variant="primary", scale=1)
+        with gr.Column(scale=2):
+            chatbot = gr.Chatbot(height=500, label="Conversation")
+            session_state = gr.State(None)
+            with gr.Row():
+                msg = gr.Textbox(
+                    placeholder="Ask about PF, payslip, gratuity, TDS...",
+                    label="Your question", scale=5, lines=2,
+                )
+                send_btn = gr.Button("Send", variant="primary", scale=1)
+            clear_btn = gr.Button("Reset Session")
 
-    with gr.Accordion("Pipeline Debug Info", open=False):
-        meta_display = gr.Textbox(label="Pipeline trace", lines=8, interactive=False)
-
-    with gr.Row():
-        clear_btn = gr.Button("Reset Session")
+        with gr.Column(scale=1):
+            with gr.Tab("Evaluation"):
+                eval_display = gr.Markdown(value="*Send a query to see live evaluation...*")
+            with gr.Tab("Pipeline Trace"):
+                trace_display = gr.Markdown(value="*Send a query to see pipeline trace...*")
 
     gr.Markdown("""
-### Try these examples:
-- *I left my job 3 months ago. My UAN is active and KYC is done. I want to withdraw my full PF balance.*
-- *My basic salary is 20000, EPF deducted is 1200. Is this correct?*
-- *I worked for 6 years and was terminated without notice. Am I eligible for gratuity?*
-- *I earn 8 lakh per year. Can I claim 80C deduction for PPF and ELSS?*
+### Example Queries
+- I worked for 6 years in a private company, terminated without notice. Am I eligible for gratuity?
+- My basic salary is 20000, EPF deducted is 1200. Is this correct?
+- I left my job 3 months ago, unemployed, UAN active, KYC done. Can I withdraw PF?
+- I earn 8 lakh per year on old regime. Can I claim 80C deduction?
     """)
 
     def respond(user_msg, chat_history, state):
         if not user_msg.strip():
-            return "", chat_history or [], state, ""
-        answer, new_state, meta = run_query(user_msg, state)
-        # Append as message dicts
+            return "", chat_history or [], state, "", ""
+        answer, new_state, trace, eval_md = run_query(user_msg, state)
         updated = (chat_history or []) + [
             {"role": "user", "content": user_msg},
             {"role": "assistant", "content": answer},
         ]
-        return "", updated, new_state, meta
+        return "", updated, new_state, eval_md, trace
 
     def reset():
-        return [], None, ""
+        return [], None, "*Send a query to see live evaluation...*", "*Send a query to see pipeline trace...*"
 
-    msg.submit(respond, [msg, chatbot, session_state], [msg, chatbot, session_state, meta_display])
-    send_btn.click(respond, [msg, chatbot, session_state], [msg, chatbot, session_state, meta_display])
-    clear_btn.click(reset, [], [chatbot, session_state, meta_display])
+    msg.submit(respond, [msg, chatbot, session_state], [msg, chatbot, session_state, eval_display, trace_display])
+    send_btn.click(respond, [msg, chatbot, session_state], [msg, chatbot, session_state, eval_display, trace_display])
+    clear_btn.click(reset, [], [chatbot, session_state, eval_display, trace_display])
 
-demo.launch(server_name="0.0.0.0", server_port=7860, share=True, theme=gr.themes.Soft())
+demo.launch(server_name="0.0.0.0", server_port=7860, share=True)
