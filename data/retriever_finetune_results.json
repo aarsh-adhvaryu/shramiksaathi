@@ -1,0 +1,501 @@
+{
+  "n_prompts": 20,
+  "bm25": {
+    "recall_at_5": 0.658,
+    "mrr_at_5": 0.668
+  },
+  "original": {
+    "recall_at_5": 0.692,
+    "mrr_at_5": 0.679
+  },
+  "finetuned": {
+    "recall_at_5": 0.667,
+    "mrr_at_5": 0.725
+  },
+  "per_query": {
+    "original": [
+      {
+        "id": "pf_01",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "NEWS_EPFO_NIDHI_APKE_NIKAT",
+          "KYC_REJECTION_REASONS_RESOLUTION_chunk_1",
+          "RO_HELPLINE_NATIONAL",
+          "WD_FORM31_PARTIAL_PRACTICAL_chunk_1",
+          "FAQ_CLAIM_133"
+        ]
+      },
+      {
+        "id": "pf_02",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "FAQ_WITHDRAWAL",
+          "EPF_ACT_S68_S69",
+          "FAQ_WD_022",
+          "WD_FORM31_PARTIAL_PRACTICAL_chunk_1",
+          "WD_FORM31_PARTIAL_PRACTICAL"
+        ]
+      },
+      {
+        "id": "pf_03",
+        "recall": 0.5,
+        "mrr": 0.5,
+        "retrieved": [
+          "ITA_SECTION_192A_TDS_PF",
+          "CIRC_2024_TDS",
+          "TDS_PRACTICAL_GUIDE_2024",
+          "FAQ_WITHDRAWAL",
+          "WD_FORM31_PARTIAL_PRACTICAL_chunk_1"
+        ]
+      },
+      {
+        "id": "pf_04",
+        "recall": 0.3333333333333333,
+        "mrr": 1.0,
+        "retrieved": [
+          "FORM_13_INSTRUCTIONS",
+          "TRANSFER_JOB_CHANGE_STEP_BY_STEP_chunk_1",
+          "KYC_REJECTION_REASONS_RESOLUTION_chunk_1",
+          "KYC_BANK_GUIDE",
+          "NEWS_AUTO_TRANSFER_UAN_2023"
+        ]
+      },
+      {
+        "id": "pf_05",
+        "recall": 1.0,
+        "mrr": 0.3333333333333333,
+        "retrieved": [
+          "KYC_REJECTION_REASONS_RESOLUTION",
+          "KYC_REJECTION_REASONS_RESOLUTION_chunk_1",
+          "KYC_AADHAAR_GUIDE",
+          "FAQ_CLAIM_129",
+          "FAQ_CLAIM_133"
+        ]
+      },
+      {
+        "id": "payslip_01",
+        "recall": 1.0,
+        "mrr": 0.25,
+        "retrieved": [
+          "PROF_TAX_MAHARASHTRA",
+          "CONTRIB_RATES_COMPLETE",
+          "PROF_TAX_TAMIL_NADU",
+          "EPF_PARA_26A",
+          "EPF_ACT_S6_CONTRIB"
+        ]
+      },
+      {
+        "id": "payslip_02",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "PMGKY_SCHEME",
+          "IW_INTERNATIONAL_WORKERS_GUIDE",
+          "MIN_WAGE_PUNJAB_2024",
+          "MIN_WAGE_DELHI_2024",
+          "PROF_TAX_KERALA"
+        ]
+      },
+      {
+        "id": "payslip_03",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "PROF_TAX_KERALA",
+          "PROF_TAX_TAMIL_NADU",
+          "PROF_TAX_WEST_BENGAL",
+          "PROF_TAX_GUJARAT",
+          "PROF_TAX_KARNATAKA"
+        ]
+      },
+      {
+        "id": "payslip_04",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "MIN_WAGE_MAHARASHTRA_2024",
+          "MIN_WAGE_UTTAR_PRADESH_2024",
+          "MIN_WAGE_DELHI_2024",
+          "MIN_WAGE_RAJASTHAN_2024",
+          "MIN_WAGE_TAMIL_NADU_2024"
+        ]
+      },
+      {
+        "id": "payslip_05",
+        "recall": 0.3333333333333333,
+        "mrr": 1.0,
+        "retrieved": [
+          "PROF_TAX_KARNATAKA",
+          "GAZETTE_INTEREST_RATE_2023_24",
+          "PROF_TAX_KERALA",
+          "PROF_TAX_TAMIL_NADU",
+          "ITA_SECTION_80C"
+        ]
+      },
+      {
+        "id": "labour_01",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "GRATUITY_ACT_S4_ELIG",
+          "GRATUITY_COURT_RULING_4Y8M",
+          "TERMINATION_MISCONDUCT_GRATUITY",
+          "PROF_TAX_KERALA",
+          "EPS_COMPLETE_GUIDE"
+        ]
+      },
+      {
+        "id": "labour_02",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "MATERNITY_BENEFIT_ACT_2017",
+          "NOTICE_PERIOD_GARDEN_LEAVE",
+          "EPF_ACT_S68_S69",
+          "FAQ_WD_022",
+          "FAQ_MEM_048"
+        ]
+      },
+      {
+        "id": "labour_03",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "NOTICE_PERIOD_BUYOUT_RULE",
+          "NOTICE_PERIOD_WAIVER_BY_EMPLOYER",
+          "STANDING_ORDERS_ACT_NOTICE_PERIOD",
+          "NOTICE_PERIOD_GARDEN_LEAVE",
+          "GRATUITY_ACT_S4_ELIG"
+        ]
+      },
+      {
+        "id": "labour_04",
+        "recall": 0.6666666666666666,
+        "mrr": 0.5,
+        "retrieved": [
+          "NOTICE_PERIOD_WAIVER_BY_EMPLOYER",
+          "RELIEVING_LETTER_LEGAL_OBLIGATION",
+          "STANDING_ORDERS_ACT_NOTICE_PERIOD",
+          "NOTICE_PERIOD_BUYOUT_RULE",
+          "ID_ACT_S25F_RETRENCHMENT"
+        ]
+      },
+      {
+        "id": "labour_05",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "GRATUITY_COURT_RULING_4Y8M",
+          "GRATUITY_ACT_S4_ELIG",
+          "TERMINATION_MISCONDUCT_GRATUITY",
+          "FAQ_EPS_097",
+          "PROF_TAX_TAMIL_NADU"
+        ]
+      },
+      {
+        "id": "tax_01",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "ITA_SECTION_80C",
+          "ITA_SECTION_80G_DONATION",
+          "ITA_OLD_REGIME_SLABS",
+          "NEW_REGIME_SLAB_TABLE_SURCHARGE",
+          "FINANCE_ACT_2023_NEW_REGIME"
+        ]
+      },
+      {
+        "id": "tax_02",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "ITA_SECTION_10_13A",
+          "PROF_TAX_TAMIL_NADU",
+          "PROF_TAX_WEST_BENGAL",
+          "PROF_TAX_KERALA",
+          "PROF_TAX_KARNATAKA"
+        ]
+      },
+      {
+        "id": "tax_03",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "ITR_REFUND_DELAY_GRIEVANCE",
+          "ITR_REFUND_STATUS",
+          "ITR_REFUND_OUTSTANDING_DEMAND",
+          "ECR_EMPLOYER_COMPLIANCE",
+          "PASSBOOK_AND_INTEREST"
+        ]
+      },
+      {
+        "id": "tax_04",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "CIRC_2024_TDS",
+          "ITA_SECTION_192A_TDS_PF",
+          "CIRC_2022_TDS",
+          "TDS_PRACTICAL_GUIDE_2024",
+          "KYC_PAN_GUIDE"
+        ]
+      },
+      {
+        "id": "tax_05",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "FORM_16_OVERVIEW",
+          "FORM_31_INSTRUCTIONS",
+          "GAZETTE_EPS_AMDT_2014_PENSION",
+          "NOTICE_PERIOD_BUYOUT_RULE",
+          "GAZETTE_EPF_SCHEME_AMDT_2014"
+        ]
+      }
+    ],
+    "finetuned": [
+      {
+        "id": "pf_01",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "FORM_15G_INSTRUCTIONS",
+          "PROF_TAX_TAMIL_NADU",
+          "FAQ_CLAIM_122",
+          "KYC_PAN_GUIDE",
+          "ITA_OLD_REGIME_SLAB_TABLE"
+        ]
+      },
+      {
+        "id": "pf_02",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "CIRC_2024_TDS",
+          "FAQ_WD_023",
+          "GAZETTE_TDS_AMDT_2022",
+          "TRANSFER_JOB_CHANGE_STEP_BY_STEP_chunk_1",
+          "CIRC_ADVANCE_MEDICAL"
+        ]
+      },
+      {
+        "id": "pf_03",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "CIRC_2024_TDS",
+          "FORM_15G_INSTRUCTIONS",
+          "FAQ_TDS",
+          "FORM_15H_INSTRUCTIONS",
+          "FORM_31_INSTRUCTIONS"
+        ]
+      },
+      {
+        "id": "pf_04",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "FORM_15G_INSTRUCTIONS",
+          "CIRC_2024_TDS",
+          "KYC_PAN_GUIDE",
+          "FORM_31_INSTRUCTIONS",
+          "FORM_15H_INSTRUCTIONS"
+        ]
+      },
+      {
+        "id": "pf_05",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "KYC_REJECTION_REASONS_RESOLUTION",
+          "NEWS_EPF_CLAIM_REJECTION_REASONS_2024",
+          "KYC_PAN_GUIDE",
+          "FORM_15G_INSTRUCTIONS",
+          "RO_HELPLINE_NATIONAL"
+        ]
+      },
+      {
+        "id": "payslip_01",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "EPF_PARA_26A",
+          "EPF_ACT_S6_CONTRIB",
+          "ITA_SECTION_192A",
+          "CIRC_WAGE_CEILING",
+          "CODE_ON_WAGES_2019_BASICS"
+        ]
+      },
+      {
+        "id": "payslip_02",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "MIN_WAGE_PUNJAB_2024",
+          "FORM_15G_INSTRUCTIONS",
+          "MIN_WAGE_UTTAR_PRADESH_2024",
+          "FORM_15H_INSTRUCTIONS",
+          "ITA_SECTION_80C"
+        ]
+      },
+      {
+        "id": "payslip_03",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "ESI_WAGE_LIMIT",
+          "MIN_WAGE_TAMIL_NADU_2024",
+          "ITA_OLD_REGIME_SLAB_TABLE",
+          "PROF_TAX_TAMIL_NADU",
+          "MIN_WAGE_PUNJAB_2024"
+        ]
+      },
+      {
+        "id": "payslip_04",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "MIN_WAGE_MAHARASHTRA_2024",
+          "MIN_WAGE_UTTAR_PRADESH_2024",
+          "MIN_WAGE_PUNJAB_2024",
+          "MIN_WAGE_DELHI_2024",
+          "MIN_WAGE_TAMIL_NADU_2024"
+        ]
+      },
+      {
+        "id": "payslip_05",
+        "recall": 0.0,
+        "mrr": 0.0,
+        "retrieved": [
+          "RO_HELPLINE_NATIONAL",
+          "ITA_SECTION_80C",
+          "RO_RO_MUMBAI",
+          "RO_RO_HYDERABAD",
+          "RO_RO_LUCKNOW"
+        ]
+      },
+      {
+        "id": "labour_01",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "GRATUITY_ACT_S4_ELIG",
+          "TERMINATION_MISCONDUCT_GRATUITY",
+          "GRATUITY_COURT_RULING_4Y8M",
+          "ITA_OLD_REGIME_SLABS",
+          "FAQ_TDS"
+        ]
+      },
+      {
+        "id": "labour_02",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "MATERNITY_BENEFIT_ACT_2017",
+          "ID_ACT_S25F_RETRENCHMENT",
+          "NOTICE_PERIOD_WAIVER_BY_EMPLOYER",
+          "POSH_ACT_2013_ICC",
+          "ID_ACT_S25G_LAST_IN_FIRST_OUT"
+        ]
+      },
+      {
+        "id": "labour_03",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "NOTICE_PERIOD_BUYOUT_RULE",
+          "STANDING_ORDERS_ACT_NOTICE_PERIOD",
+          "NOTICE_PERIOD_WAIVER_BY_EMPLOYER",
+          "TERMINATION_MISCONDUCT_GRATUITY",
+          "FAQ_EPS_077"
+        ]
+      },
+      {
+        "id": "labour_04",
+        "recall": 1.0,
+        "mrr": 0.5,
+        "retrieved": [
+          "ID_ACT_S25F_RETRENCHMENT",
+          "RELIEVING_LETTER_LEGAL_OBLIGATION",
+          "NOTICE_PERIOD_WAIVER_BY_EMPLOYER",
+          "WRONGFUL_TERMINATION_REMEDIES",
+          "STANDING_ORDERS_ACT_NOTICE_PERIOD"
+        ]
+      },
+      {
+        "id": "labour_05",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "GRATUITY_ACT_S4_ELIG",
+          "TERMINATION_MISCONDUCT_GRATUITY",
+          "GRATUITY_COURT_RULING_4Y8M",
+          "ITA_OLD_REGIME_SLABS",
+          "NEW_REGIME_SLAB_TABLE_SURCHARGE"
+        ]
+      },
+      {
+        "id": "tax_01",
+        "recall": 0.5,
+        "mrr": 1.0,
+        "retrieved": [
+          "ITA_SECTION_80C",
+          "ITA_SECTION_44ADA_GIG",
+          "ITA_OLD_REGIME_SLABS",
+          "NEW_REGIME_SLAB_TABLE_SURCHARGE",
+          "FAQ_TDS"
+        ]
+      },
+      {
+        "id": "tax_02",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "ITA_SECTION_10_13A",
+          "PROF_TAX_TAMIL_NADU",
+          "PROF_TAX_WEST_BENGAL",
+          "ITA_OLD_REGIME_SLABS",
+          "MIN_WAGE_TAMIL_NADU_2024"
+        ]
+      },
+      {
+        "id": "tax_03",
+        "recall": 0.3333333333333333,
+        "mrr": 1.0,
+        "retrieved": [
+          "ITR_REFUND_DELAY_GRIEVANCE",
+          "FORM_31_INSTRUCTIONS",
+          "CIRC_2024_TDS",
+          "FORM_19_INSTRUCTIONS",
+          "CIRC_ADVANCE_MEDICAL"
+        ]
+      },
+      {
+        "id": "tax_04",
+        "recall": 0.5,
+        "mrr": 1.0,
+        "retrieved": [
+          "CIRC_2024_TDS",
+          "KYC_PAN_GUIDE",
+          "CIRC_2022_TDS",
+          "GAZETTE_TDS_AMDT_2022",
+          "FORM_15G_INSTRUCTIONS"
+        ]
+      },
+      {
+        "id": "tax_05",
+        "recall": 1.0,
+        "mrr": 1.0,
+        "retrieved": [
+          "FORM_16_OVERVIEW",
+          "FAQ_TDS",
+          "FAQ_EPS_077",
+          "FORM_31_INSTRUCTIONS",
+          "GAZETTE_TDS_AMDT_2022"
+        ]
+      }
+    ]
+  }
+}

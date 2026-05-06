@@ -1,0 +1,45 @@
+/teamspace/studios/this_studio/shramiksaathi/scripts/finetune_retriever.py:16: DeprecationWarning: Importing from 'sentence_transformers.losses' is deprecated and will be removed in a future version. Please use 'sentence_transformers.sentence_transformer.losses' instead.
+  from sentence_transformers import SentenceTransformer, InputExample, losses, evaluation
+/teamspace/studios/this_studio/shramiksaathi/scripts/finetune_retriever.py:16: DeprecationWarning: Importing from 'sentence_transformers.evaluation' is deprecated and will be removed in a future version. Please use 'sentence_transformers.sentence_transformer.evaluation' instead.
+  from sentence_transformers import SentenceTransformer, InputExample, losses, evaluation
+============================================================
+ShramikSaathi — Retriever Fine-tuning
+============================================================
+[Data] 311 KB documents
+[Data] Extracted 194 unique (query, doc_ids) pairs
+[Data] Building triplets with hard negatives...
+[Data] 916 training triplets
+[Train] Loading base encoder...
+[Train] 825 train triplets
+[Train] Fine-tuning for 3 epochs on cuda...
+The `tokenize` method is deprecated, please use `preprocess` instead.
+  Epoch 1/3 | loss=0.0781
+  Epoch 2/3 | loss=0.027
+  Epoch 3/3 | loss=0.0197
+[Train] Done in 0.2 min
+[Train] Saved to /teamspace/studios/this_studio/shramiksaathi/out/retriever_finetuned
+[Index] Encoding 311 documents...
+Batches:   0%|          | 0/10 [00:00<?, ?it/s]Batches:  80%|████████  | 8/10 [00:00<00:00, 73.93it/s]Batches: 100%|██████████| 10/10 [00:00<00:00, 80.42it/s]
+[Index] Saved /teamspace/studios/this_studio/shramiksaathi/index/faiss_index_finetuned.bin (311 vectors, dim=384)
+
+[Eval] Loading original encoder...
+
+============================================================
+RETRIEVER FINE-TUNING RESULTS (n=20)
+============================================================
+Metric          Original    Fine-tuned    Delta
+-------------------------------------------------------
+Recall@5        0.692       0.667         -0.025
+MRR@5           0.679       0.725         0.046
+
+Full comparison:
+             BM25        Original    Fine-tuned
+Recall@5     0.658       0.692       0.667
+MRR@5        0.668       0.679       0.725
+
+[Save] /teamspace/studios/this_studio/shramiksaathi/data/retriever_finetune_results.json
+
+============================================================
+Done. Fine-tuned retriever saved to /teamspace/studios/this_studio/shramiksaathi/out/retriever_finetuned
+New FAISS index at /teamspace/studios/this_studio/shramiksaathi/index/faiss_index_finetuned.bin
+============================================================

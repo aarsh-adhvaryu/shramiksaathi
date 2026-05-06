@@ -23,8 +23,10 @@ from search_kb import SearchKB
 DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+)\]')
 
 kb = SearchKB(
-    index_path=str(ROOT / "index" / "faiss_index.bin"),
+    index_path=str(ROOT / "index" / "faiss_index_finetuned.bin"),
     store_path=str(ROOT / "index" / "chunk_store.json"),
+    model_name=str(ROOT / "out" / "retriever_finetuned"),
+    model_name=str(ROOT / "out" / "retriever_finetuned"),
 )
 
 ALL_KB_DOC_IDS = set()
