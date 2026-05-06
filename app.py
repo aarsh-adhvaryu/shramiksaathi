@@ -77,7 +77,6 @@ RULES:
 - Never make up information not in the passages
 - Use simple language — the user may not know legal terminology"""
 
-# Intent → subdomain mapping (from pipeline.py)
 INTENT_SUBDOMAINS = {
     "full_withdrawal": ["withdrawal"], "partial_withdrawal": ["withdrawal"],
     "transfer": ["transfer"], "kyc_issue": ["kyc", "uan"],
@@ -169,17 +168,7 @@ def local_generate(system_prompt, user_content):
     return tokenizer.decode(gen, skip_special_tokens=True).strip()
 
 
-# ── Session state ─────────────────────────────────────────────────────────
-sessions = {}
-
-
-def get_session(session_id):
-    if session_id not in sessions:
-        sessions[session_id] = {"slots": {}, "history": [], "turn": 0, "domain": None}
-    return sessions[session_id]
-
-
-def run_query(user_query, chat_history, session_state):
+def run_query(user_query, session_state):
     """Full pipeline: Groq pre-retrieval + local DPO generator."""
     if session_state is None:
         session_state = {"slots": {}, "history": [], "turn": 0, "domain": None}
@@ -218,8 +207,7 @@ def run_query(user_query, chat_history, session_state):
         history.append({"role": "user", "content": user_query})
         history.append({"role": "assistant", "content": question})
         state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
-        meta_text = "\n".join(meta_lines)
-        return question, chat_history + [[user_query, question]], state, meta_text
+        return question, state, "\n".join(meta_lines)
 
     # Step 4: ReAct Retrieval (Groq)
     meta_lines.append("Gate passed — retrieving...")
@@ -239,8 +227,7 @@ def run_query(user_query, chat_history, session_state):
             history.append({"role": "user", "content": user_query})
             history.append({"role": "assistant", "content": question})
             state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
-            meta_text = "\n".join(meta_lines)
-            return question, chat_history + [[user_query, question]], state, meta_text
+            return question, state, "\n".join(meta_lines)
 
     # Step 6: Generate (LOCAL DPO MODEL)
     meta_lines.append("Generating with local DPO model...")
@@ -254,15 +241,14 @@ def run_query(user_query, chat_history, session_state):
     history.append({"role": "assistant", "content": answer})
 
     state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
-    meta_text = "\n".join(meta_lines)
-    return answer, chat_history + [[user_query, answer]], state, meta_text
+    return answer, state, "\n".join(meta_lines)
 
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────
 
 with gr.Blocks(
-    title="ShramikSaathi — Indian Worker Rights Copilot",
-    theme=gr.themes.Soft(),
+
+
 ) as demo:
     gr.Markdown("""
 # ShramikSaathi — Indian Worker Rights Copilot
@@ -289,30 +275,31 @@ The system extracts your context, verifies eligibility conditions, and gives a c
 
     with gr.Row():
         clear_btn = gr.Button("Reset Session")
-        examples_btn = gr.Button("Show Examples")
+
+    gr.Markdown("""
+### Try these examples:
+- *I left my job 3 months ago. My UAN is active and KYC is done. I want to withdraw my full PF balance.*
+- *My basic salary is 20000, EPF deducted is 1200. Is this correct?*
+- *I worked for 6 years and was terminated without notice. Am I eligible for gratuity?*
+- *I earn 8 lakh per year. Can I claim 80C deduction for PPF and ELSS?*
+    """)
 
     def respond(user_msg, chat_history, state):
         if not user_msg.strip():
             return "", chat_history or [], state, ""
-        answer, updated_history, new_state, meta = run_query(
-            user_msg, chat_history or [], state
-        )
-        return "", updated_history, new_state, meta
+        answer, new_state, meta = run_query(user_msg, state)
+        # Append as message dicts
+        updated = (chat_history or []) + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": answer},
+        ]
+        return "", updated, new_state, meta
 
     def reset():
         return [], None, ""
-
-    def show_examples():
-        examples = [
-            "I left my job 3 months ago. My UAN is active and KYC is done. I want to withdraw my full PF balance.",
-            "My basic salary is 20000, EPF deducted is 1200. Is this correct?",
-            "I worked for 6 years and was terminated without notice. Am I eligible for gratuity?",
-            "I earn 8 lakh per year. Can I claim 80C deduction for PPF and ELSS?",
-        ]
-        return "\n\n".join(f"**Example {i+1}:** {e}" for i, e in enumerate(examples))
 
     msg.submit(respond, [msg, chatbot, session_state], [msg, chatbot, session_state, meta_display])
     send_btn.click(respond, [msg, chatbot, session_state], [msg, chatbot, session_state, meta_display])
     clear_btn.click(reset, [], [chatbot, session_state, meta_display])
 
-demo.launch(server_name="0.0.0.0", server_port=7860, share=True)
+demo.launch(server_name="0.0.0.0", server_port=7860, share=True, theme=gr.themes.Soft())
