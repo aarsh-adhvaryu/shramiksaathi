@@ -6,7 +6,11 @@ LLM version (zero-shot) + keyword baseline
 import os
 import re
 import json
-# Removed Groq imports to use local LLM callback
+from groq import Groq
+from dotenv import load_dotenv
+
+load_dotenv()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # ── Domain keyword lists (baseline) ───────────────────────────────────────────
 
@@ -192,19 +196,22 @@ OUTPUT: Only a valid JSON object: {"domain": "...", "confidence": 0.0-1.0}
 No explanation, no markdown."""
 
 
-def llm_route(query: str, llm_callback=None) -> dict:
+def llm_route(query: str) -> dict:
     """
     LLM zero-shot router.
     Returns {"domain": str, "confidence": float}
     """
-    if llm_callback is None:
-        return {"domain": "pf", "confidence": 0.0}
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {"role": "system", "content": ROUTER_PROMPT},
+            {"role": "user", "content": query},
+        ],
+        temperature=0.0,
+        max_tokens=50,
+    )
 
-    messages = [
-        {"role": "system", "content": ROUTER_PROMPT},
-        {"role": "user", "content": query},
-    ]
-    raw = llm_callback(messages, max_tokens=50)
+    raw = response.choices[0].message.content.strip()
     raw = re.sub(r"```json|```", "", raw).strip()
 
     try:
@@ -224,10 +231,10 @@ def llm_route(query: str, llm_callback=None) -> dict:
         return {"domain": "pf", "confidence": 0.0}
 
 
-def route(query: str, use_llm: bool = True, llm_callback=None) -> str:
+def route(query: str, use_llm: bool = True) -> str:
     """Main entry point. Returns domain string."""
-    if use_llm and llm_callback:
-        return llm_route(query, llm_callback=llm_callback)["domain"]
+    if use_llm:
+        return llm_route(query)["domain"]
     else:
         return baseline_route(query)
 
@@ -252,6 +259,9 @@ if __name__ == "__main__":
 
     for q in test_queries:
         bl = baseline_route(q)
-        # For testing locally, provide a dummy callback or skip
+        llm = llm_route(q)
+        match = "✓" if bl == llm["domain"] else "✗"
         print(f"\n  Query:    {q[:80]}")
         print(f"  Baseline: {bl}")
+        print(f"  LLM:      {llm['domain']} (conf={llm['confidence']})")
+        print(f"  Match:    {match}")

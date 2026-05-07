@@ -18,7 +18,11 @@ import os
 import json
 import re
 import time
-# Removed Groq to use local LLM callback
+from groq import Groq
+from dotenv import load_dotenv
+
+load_dotenv()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -37,7 +41,25 @@ RELATED_DOMAINS = {
 # GROQ CALL WITH RETRY
 # ══════════════════════════════════════════════════════════════════════════════
 
-# _groq_call removed, replaced with llm_callback injection
+def _groq_call(messages, temperature=0.0, max_tokens=500):
+    """Groq API call with rate limit retry."""
+    for attempt in range(3):
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            if "429" in str(e) or "rate_limit" in str(e).lower():
+                wait = 5 * (attempt + 1)
+                print(f"[Reasoner] Rate limited — waiting {wait}s...")
+                time.sleep(wait)
+            else:
+                raise
+    return None
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -103,7 +125,7 @@ RULES:
 
 
 def parse_conditions(
-    passages: list[dict], domain: str = "general", intent: str = "general", llm_callback=None
+    passages: list[dict], domain: str = "general", intent: str = "general"
 ) -> list[dict]:
     """
     Extract conditions from passages. Processes ONE passage at a time.
@@ -133,7 +155,7 @@ def parse_conditions(
                 continue
 
         # LLM path: extract from content (one passage at a time)
-        extracted = _llm_parse_single(p, domain, intent, llm_callback)
+        extracted = _llm_parse_single(p, domain, intent)
         if extracted:
             print(f"[ConditionParser] {doc_id}: {len(extracted)} LLM-extracted conditions")
         else:
@@ -164,7 +186,7 @@ def _deduplicate_conditions(conditions: list[dict]) -> list[dict]:
 
 
 def _llm_parse_single(
-    passage: dict, domain: str, intent: str = "general", llm_callback=None
+    passage: dict, domain: str, intent: str = "general"
 ) -> list[dict]:
     """Extract conditions from a SINGLE passage via LLM."""
     doc_id = passage.get("doc_id", "UNKNOWN")
@@ -175,14 +197,12 @@ def _llm_parse_single(
 
     prompt = f"Domain: {domain}\nUser intent: {intent}\ndoc_id: {doc_id}\n\n{content}"
 
-    if llm_callback is None:
-        return []
-
-    raw = llm_callback(
+    raw = _groq_call(
         messages=[
             {"role": "system", "content": CONDITION_PARSER_PROMPT},
             {"role": "user", "content": prompt},
         ],
+        temperature=0.0,
         max_tokens=500,
     )
 
@@ -407,13 +427,13 @@ def _question_for(field: str) -> str:
 
 
 def run_eligibility_reasoner(
-    passages: list[dict], slots: dict, domain: str = "general", llm_callback=None
+    passages: list[dict], slots: dict, domain: str = "general"
 ) -> dict:
     """
     Full pipeline: parse → check → resolve.
     """
     intent = slots.get("intent", "general")
-    conditions = parse_conditions(passages, domain=domain, intent=intent, llm_callback=llm_callback)
+    conditions = parse_conditions(passages, domain=domain, intent=intent)
     checked = check_conditions(conditions, slots)
     resolution = resolve_gaps(checked)
     resolution["conditions"] = checked
