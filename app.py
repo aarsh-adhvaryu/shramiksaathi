@@ -1,18 +1,15 @@
 """
-ShramikSaathi — Optimized Fully Local Demo
+ShramikSaathi — Optimized Fully Local Demo (Merged Model)
 3 LLM calls per query: (1) Router+Slots, (2) Batched Reasoner, (3) Generator
-Target: ~30-50s per query on A100
+Uses merged DPO model — no adapter overhead.
 """
 
 import os, sys, json, re, time
 from pathlib import Path
 
-os.environ.setdefault("GROQ_API_KEY", "dummy_not_used")
-
 import torch
 import gradio as gr
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from peft import PeftModel
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -23,9 +20,9 @@ from search_kb import SearchKB
 DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+)\]')
 
 kb = SearchKB(
-    index_path=str(ROOT / "index" / "faiss_index_finetuned.bin"),
+    index_path=str(ROOT / "index" / "faiss_index.bin"),
     store_path=str(ROOT / "index" / "chunk_store.json"),
-    model_name=str(ROOT / "out" / "retriever_finetuned"),
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
 )
 
 ALL_KB_DOC_IDS = set()
@@ -34,38 +31,39 @@ with open(ROOT / "data" / "kb.jsonl") as f:
         if line.strip():
             ALL_KB_DOC_IDS.add(json.loads(line)["doc_id"])
 
-MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
-DPO_ADAPTER = str(ROOT / "out" / "dpo_beta_050")
+MERGED_MODEL = str(ROOT / "out" / "merged_model")
 
-print("[Model] Loading LLaMA 3.1 8B + DPO adapter...")
+print("[Model] Loading merged ShramikSaathi model...")
 t0 = time.time()
 bnb = BitsAndBytesConfig(
     load_in_4bit=True, bnb_4bit_quant_type="nf4",
     bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True,
 )
-tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+tokenizer = AutoTokenizer.from_pretrained(MERGED_MODEL)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-base_model = AutoModelForCausalLM.from_pretrained(
-    MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
+model = AutoModelForCausalLM.from_pretrained(
+    MERGED_MODEL, quantization_config=bnb, torch_dtype=torch.bfloat16,
     device_map="auto", attn_implementation="sdpa",
 )
-dpo_model = PeftModel.from_pretrained(base_model, DPO_ADAPTER)
-dpo_model.eval()
+model.eval()
 print("[Model] Loaded in " + str(round(time.time()-t0, 1)) + "s")
+
 
 
 def llm_call(messages, max_tokens=200):
     text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=2048).to(dpo_model.device)
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096).to(model.device)
     with torch.no_grad():
-        out = dpo_model.generate(
+        out = model.generate(
             **inputs, max_new_tokens=max_tokens, do_sample=False,
             temperature=None, top_p=None,
             pad_token_id=tokenizer.eos_token_id,
         )
     gen = out[0][inputs["input_ids"].shape[1]:]
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     return tokenizer.decode(gen, skip_special_tokens=True).strip()
 
 
@@ -110,6 +108,26 @@ def combined_route_and_extract(query, chat_history=None):
         domain = data.pop("domain", "pf")
         if domain not in ("pf", "payslip", "labour", "tax"):
             domain = "pf"
+        # Keyword fallback for missed intents
+        if domain == "labour" and data.get("intent", "general") == "general":
+            q = query.lower()
+            if "gratuity" in q: data["intent"] = "gratuity"
+            elif "terminat" in q or "fired" in q: data["intent"] = "wrongful_termination"
+            elif "maternity" in q: data["intent"] = "maternity_benefit"
+            elif "overtime" in q: data["intent"] = "overtime_pay"
+            elif "notice" in q: data["intent"] = "notice_period"
+        if domain == "pf" and data.get("intent", "general") == "general":
+            q = query.lower()
+            if "withdraw" in q and ("full" in q or "all" in q or "close" in q): data["intent"] = "full_withdrawal"
+            elif "partial" in q or "advance" in q: data["intent"] = "partial_withdrawal"
+            elif "transfer" in q: data["intent"] = "transfer"
+            elif "kyc" in q: data["intent"] = "kyc_issue"
+            elif "tds" in q: data["intent"] = "tds_query"
+        if domain == "tax" and data.get("intent", "general") == "general":
+            q = query.lower()
+            if "80c" in q or "ppf" in q or "elss" in q: data["intent"] = "deductions_80c"
+            elif "hra" in q: data["intent"] = "hra_exemption"
+            elif "tds" in q: data["intent"] = "tds_on_salary"
         return domain, data
     except json.JSONDecodeError:
         return "pf", {"intent": "general"}
@@ -320,6 +338,18 @@ def score_response(response, retrieved_doc_ids):
     }
 
 
+
+def strip_fabricated_citations(response, retrieved_doc_ids):
+    """Remove any cited [DOC_ID] not in retrieved passages or KB."""
+    valid = set(retrieved_doc_ids) | ALL_KB_DOC_IDS
+    def replacer(match):
+        doc_id = match.group(1)
+        if doc_id in valid:
+            return match.group(0)
+        return ""  # strip fabricated citation
+    return DOC_ID_RE.sub(replacer, response).strip()
+
+
 def merge_slots(old, new):
     merged = dict(old)
     for k, v in new.items():
@@ -332,7 +362,7 @@ def run_query(user_query, session_state):
     if session_state is None:
         session_state = {"slots": {}, "history": [], "turn": 0, "domain": None}
 
-    history = session_state.get("history", [])
+    history = session_state.get("history", [])[-10:]
     slots = session_state.get("slots", {})
     domain = session_state.get("domain", None)
     turn = session_state.get("turn", 0) + 1
@@ -371,9 +401,21 @@ def run_query(user_query, session_state):
         return question, state, "\n".join(trace), "**Gate blocked** -- collecting more info."
     trace.append("**PASSED**")
 
-    # FAISS Retrieval (instant)
+    # FAISS Retrieval with domain filtering
     t0 = time.time()
-    passages = kb.search(user_query, top_k=5)
+    raw_passages = kb.search(user_query, top_k=10)
+    domain_hits = [p for p in raw_passages if p.get("domain") == domain]
+    other_hits = [p for p in raw_passages if p.get("domain") != domain]
+    passages = (domain_hits + other_hits)[:5]
+    if len(domain_hits) < 2:
+        # Retry with domain-specific query boost
+        boosted = kb.search(domain + " " + user_query, top_k=5)
+        boosted_domain = [p for p in boosted if p.get("domain") == domain]
+        seen = {p.get("doc_id") for p in passages}
+        for p in boosted_domain:
+            if p.get("doc_id") not in seen and len(passages) < 5:
+                passages.insert(len(domain_hits), p)
+                seen.add(p.get("doc_id"))
     doc_ids = [p.get("doc_id", "?") for p in passages]
     trace.append("\n### FAISS Retrieval (" + str(round(time.time()-t0, 2)) + "s)")
     trace.append("Doc IDs: " + ", ".join(doc_ids))
@@ -412,6 +454,7 @@ def run_query(user_query, session_state):
     total_time = time.time() - total_start
     trace.append("\n**Total: " + str(round(total_time, 1)) + "s**")
 
+    answer = strip_fabricated_citations(answer, doc_ids)
     scores = score_response(answer, doc_ids)
     history.append({"role": "user", "content": user_query})
     history.append({"role": "assistant", "content": answer})

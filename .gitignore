@@ -44,3 +44,8 @@ data/.dataset_incremental.jsonl
 data/dataset_generation.log
 out/dpo_beta_*/
 out/dpo_beta_*/
+out/merged_model/
+app_backup.py
+out/dpo_beta_050/
+out/dpo_beta_100/
+out/dpo_beta_200/
