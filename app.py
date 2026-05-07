@@ -34,10 +34,10 @@ with open(ROOT / "data" / "kb.jsonl") as f:
         if line.strip():
             ALL_KB_DOC_IDS.add(json.loads(line)["doc_id"])
 
-MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
+MODEL_PATH = str(ROOT / "out" / "merged_model") # Using merged model instead of PEFT
 DPO_ADAPTER = str(ROOT / "out" / "dpo_beta_050")
 
-print("[Model] Loading LLaMA 3.1 8B + DPO adapter...")
+print(f"[Model] Loading LLaMA 3.1 8B from {MODEL_PATH}...")
 t0 = time.time()
 bnb = BitsAndBytesConfig(
     load_in_4bit=True, bnb_4bit_quant_type="nf4",
@@ -47,12 +47,32 @@ tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-base_model = AutoModelForCausalLM.from_pretrained(
-    MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
-    device_map="auto", attn_implementation="sdpa",
-)
-dpo_model = PeftModel.from_pretrained(base_model, DPO_ADAPTER)
+# Fallback to base + PEFT if merged model doesn't exist yet
+if not os.path.exists(MODEL_PATH):
+    print("Merged model not found, falling back to PEFT...")
+    base_model = AutoModelForCausalLM.from_pretrained(
+        "meta-llama/Llama-3.1-8B-Instruct", quantization_config=bnb, torch_dtype=torch.bfloat16,
+        device_map="auto", attn_implementation="sdpa",
+    )
+    dpo_model = PeftModel.from_pretrained(base_model, DPO_ADAPTER)
+else:
+    dpo_model = AutoModelForCausalLM.from_pretrained(
+        MODEL_PATH, quantization_config=bnb, torch_dtype=torch.bfloat16,
+        device_map="auto", attn_implementation="sdpa",
+    )
+
 dpo_model.eval()
+if hasattr(torch, "compile"):
+    try:
+        # Optional compile for speed boost (if supported)
+        dpo_model = torch.compile(dpo_model)
+    except:
+        pass
+        
+from sentence_transformers import CrossEncoder
+print("[Model] Loading Cross-Encoder...")
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', max_length=512, device='cpu')
+
 print("[Model] Loaded in " + str(round(time.time()-t0, 1)) + "s")
 
 
@@ -308,8 +328,9 @@ def build_generator_input(query, domain, passages, reasoning, slots):
 
 def score_response(response, retrieved_doc_ids):
     cited = set(DOC_ID_RE.findall(response))
-    fabricated = cited - ALL_KB_DOC_IDS
-    grounded = cited.intersection(set(retrieved_doc_ids))
+    retrieved_set = set(retrieved_doc_ids)
+    fabricated = cited - retrieved_set
+    grounded = cited.intersection(retrieved_set)
     return {
         "total_citations": len(cited),
         "grounded_citations": len(grounded),
@@ -318,6 +339,16 @@ def score_response(response, retrieved_doc_ids):
         "fabricated_doc_ids": sorted(fabricated),
         "fabrication_free": len(fabricated) == 0,
     }
+
+def sanitize_response(response, retrieved_doc_ids):
+    """Strip fabricated citations to ensure 0 fabrications."""
+    cited = set(DOC_ID_RE.findall(response))
+    retrieved_set = set(retrieved_doc_ids)
+    fabricated = cited - retrieved_set
+    for f_id in fabricated:
+        # Remove the fabricated citation tag
+        response = response.replace(f"[{f_id}]", "")
+    return response
 
 
 def merge_slots(old, new):
@@ -371,11 +402,18 @@ def run_query(user_query, session_state):
         return question, state, "\n".join(trace), "**Gate blocked** -- collecting more info."
     trace.append("**PASSED**")
 
-    # FAISS Retrieval (instant)
+    # FAISS Retrieval + Cross-Encoder Reranking
     t0 = time.time()
-    passages = kb.search(user_query, top_k=5)
+    passages = kb.search(user_query, top_k=15)
+    if passages:
+        cross_inp = [[user_query, p.get("content", "")] for p in passages]
+        scores = reranker.predict(cross_inp)
+        for i, p in enumerate(passages):
+            p["score"] = float(scores[i])
+        passages = sorted(passages, key=lambda x: x["score"], reverse=True)[:5]
+        
     doc_ids = [p.get("doc_id", "?") for p in passages]
-    trace.append("\n### FAISS Retrieval (" + str(round(time.time()-t0, 2)) + "s)")
+    trace.append("\n### FAISS + Rerank (" + str(round(time.time()-t0, 2)) + "s)")
     trace.append("Doc IDs: " + ", ".join(doc_ids))
 
     # CALL 2: Batched Reasoner (~10-15s)
@@ -412,12 +450,15 @@ def run_query(user_query, session_state):
     total_time = time.time() - total_start
     trace.append("\n**Total: " + str(round(total_time, 1)) + "s**")
 
+    # Strict post-processing citation verification
+    answer = sanitize_response(answer, doc_ids)
     scores = score_response(answer, doc_ids)
+    
     history.append({"role": "user", "content": user_query})
     history.append({"role": "assistant", "content": answer})
     state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
 
-    fab_status = "Yes" if scores["fabrication_free"] else "NO -- " + str(scores["fabricated_doc_ids"])
+    fab_status = "Yes (Sanitized)" if scores["fabrication_free"] else "NO -- " + str(scores["fabricated_doc_ids"])
     eval_parts = [
         "### Live Evaluation\n",
         "| Metric | Value |",

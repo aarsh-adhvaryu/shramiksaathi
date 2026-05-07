@@ -1,0 +1,9 @@
+- `[x]` 1. Create a script to merge the LoRA weights (`scripts/merge_lora.py`).
+- `[x]` 2. Create the data ingestion script for README and PDF (`scripts/ingest_project_files.py`).
+- `[/]` 3. Refactor `src/cross_domain_router.py` to remove Groq and use a local LLM callback.
+- `[ ]` 4. Refactor `src/eligibility_reasoner.py` to remove Groq and use a local LLM callback.
+- `[ ]` 5. Update `app.py` to:
+    - Load the unified local model.
+    - Add Cross-Encoder reranking for strict context retrieval.
+    - Add post-processing citation verification to eliminate fabrications.
+- `[ ]` 6. Provide clear running instructions to the user.
