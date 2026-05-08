@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from sufficiency_gate import check_sufficiency
 from search_kb import SearchKB
+from tools import parse_payslip, format_payslip_result
 
 DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+(?:,\s*[A-Z][A-Z0-9_]+)*)\]')
 
@@ -363,7 +364,7 @@ INTENT_SUBDOMAINS = {
 }
 
 
-def build_generator_input(query, domain, passages, reasoning, slots):
+def build_generator_input(query, domain, passages, reasoning, slots, tool_context=""):
     passages_text = kb.format_for_prompt(passages)
     reasoning_text = ""
     if reasoning:
@@ -382,10 +383,16 @@ def build_generator_input(query, domain, passages, reasoning, slots):
             lines.append("    ? " + c.get("field", "?") + " -- slot missing")
         reasoning_text = "\n".join(lines)
     filled = {k: v for k, v in slots.items() if v is not None}
+
+    payslip_text = ""
+    if domain == "payslip":
+        payslip_text = "\n\n" + format_payslip_result(parse_payslip(slots))
+
     return ("USER QUERY:\n" + query + "\n\nDOMAIN: " + domain
             + "\n\nRETRIEVED PASSAGES:\n" + passages_text
             + "\n\n" + reasoning_text
-            + "\n\nSLOTS FILLED:\n" + json.dumps(filled, indent=2)
+                        + "\n\nSLOTS FILLED:\n" + json.dumps(filled, indent=2)
+            + ("\n\nTOOL OUTPUT:\n" + tool_context if tool_context else "")
             + "\n\nProduce the final answer now.")
 
 
@@ -529,9 +536,26 @@ def run_query(user_query, session_state):
     else:
         trace.append("\n### Reasoner: *Skipped (informational)*")
 
+    # Tool: ParsePayslip (deterministic, payslip domain only)
+    tool_context = ""
+    if domain == "payslip":
+        try:
+            payslip_result = parse_payslip(slots)
+            tool_context = format_payslip_result(payslip_result)
+            trace.append("\n### Tool: ParsePayslip (0.0s)")
+            for calc in payslip_result.get("calculations", []):
+                trace.append("  " + calc.get("component", "?") + ": " + calc.get("explanation", ""))
+                if "reported" in calc:
+                    trace.append("    Reported: " + str(calc["reported"]) + " | Expected: " + str(calc["expected"]) + " | " + calc.get("status", ""))
+            if payslip_result.get("anomalies"):
+                for a in payslip_result["anomalies"]:
+                    trace.append("  ! " + a)
+        except Exception as e:
+            trace.append("\n### Tool: ParsePayslip -- error: " + str(e))
+
     # CALL 3: Generator (~15-25s)
     t0 = time.time()
-    user_content = build_generator_input(user_query, domain, passages, reasoning, slots)
+    user_content = build_generator_input(user_query, domain, passages, reasoning, slots, tool_context)
     answer = llm_call([
         {"role": "system", "content": GENERATOR_PROMPT},
         {"role": "user", "content": user_content},
