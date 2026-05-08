@@ -10,6 +10,7 @@ from pathlib import Path
 import torch
 import gradio as gr
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import PeftModel
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -17,7 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from sufficiency_gate import check_sufficiency
 from search_kb import SearchKB
 
-DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+)\]')
+DOC_ID_RE = re.compile(r'\[([A-Z][A-Z0-9_]+(?:,\s*[A-Z][A-Z0-9_]+)*)\]')
 
 kb = SearchKB(
     index_path=str(ROOT / "index" / "faiss_index.bin"),
@@ -31,28 +32,34 @@ with open(ROOT / "data" / "kb.jsonl") as f:
         if line.strip():
             ALL_KB_DOC_IDS.add(json.loads(line)["doc_id"])
 
-MERGED_MODEL = str(ROOT / "out" / "merged_model")
+MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
+DPO_ADAPTER = str(ROOT / "out" / "dpo_beta_050")
 
-print("[Model] Loading merged ShramikSaathi model...")
+print("[Model] Loading LLaMA 3.1 8B + DPO adapter (toggle mode)...")
 t0 = time.time()
 bnb = BitsAndBytesConfig(
     load_in_4bit=True, bnb_4bit_quant_type="nf4",
     bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=True,
 )
-tokenizer = AutoTokenizer.from_pretrained(MERGED_MODEL)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-model = AutoModelForCausalLM.from_pretrained(
-    MERGED_MODEL, quantization_config=bnb, torch_dtype=torch.bfloat16,
+base_model = AutoModelForCausalLM.from_pretrained(
+    MODEL_ID, quantization_config=bnb, torch_dtype=torch.bfloat16,
     device_map="auto", attn_implementation="sdpa",
 )
+model = PeftModel.from_pretrained(base_model, DPO_ADAPTER)
 model.eval()
 print("[Model] Loaded in " + str(round(time.time()-t0, 1)) + "s")
 
 
 
-def llm_call(messages, max_tokens=200):
+def llm_call(messages, max_tokens=200, use_dpo=False):
+    if use_dpo:
+        model.enable_adapter_layers()
+    else:
+        model.disable_adapter_layers()
     text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096).to(model.device)
     with torch.no_grad():
@@ -277,7 +284,9 @@ GENERATOR_PROMPT = """You are ShramikSaathi, an Indian worker rights support cop
 You help workers with PF/EPFO, payslip audit, labour rights, and income tax queries.
 
 RULES:
-- Every factual claim must cite its doc_id in brackets e.g. [GRATUITY_ACT_S4_ELIG]
+- EVERY factual claim MUST cite its doc_id in brackets e.g. [GRATUITY_ACT_S4_ELIG]
+- You MUST cite at least 2 different doc_ids from the retrieved passages
+- Cite the specific passage that supports each claim
 - Only cite doc_ids from the RETRIEVED PASSAGES section
 - Never invent doc_ids
 - Keep answers structured: result first, then steps, then warnings
@@ -325,7 +334,12 @@ def build_generator_input(query, domain, passages, reasoning, slots):
 
 
 def score_response(response, retrieved_doc_ids):
-    cited = set(DOC_ID_RE.findall(response))
+    raw_matches = DOC_ID_RE.findall(response)
+    cited = set()
+    for m in raw_matches:
+        for doc_id in re.split(r",\s*", m):
+            if doc_id.strip():
+                cited.add(doc_id.strip())
     fabricated = cited - ALL_KB_DOC_IDS
     grounded = cited.intersection(set(retrieved_doc_ids))
     return {
@@ -371,13 +385,27 @@ def run_query(user_query, session_state):
 
     # CALL 1: Combined Router + Slots (~5-10s)
     t0 = time.time()
-    new_domain, new_slots = combined_route_and_extract(user_query, history)
+    # Short follow-ups (< 6 words) are answers to previous questions — keep domain
+    is_followup = domain is not None and len(user_query.split()) < 6
+    if is_followup:
+        new_domain = domain
+        new_slots = combined_route_and_extract(user_query, history)[1]
+        new_slots.pop("intent", None)  # keep original intent
+    else:
+        new_domain, new_slots = combined_route_and_extract(user_query, history)
     dt1 = time.time() - t0
 
-    if domain is not None and new_domain != domain:
+    if domain is not None and new_domain != domain and not is_followup:
         slots = {}
     domain = new_domain
     slots = merge_slots(slots, new_slots)
+    # Domain-aware slot aliasing
+    if domain == "labour":
+        if slots.get("service_years") and not slots.get("employment_years"):
+            slots["employment_years"] = slots["service_years"]
+    elif domain == "pf":
+        if slots.get("employment_years") and not slots.get("service_years"):
+            slots["service_years"] = slots["employment_years"]
     intent = slots.get("intent", "general")
     filled = {k: v for k, v in slots.items() if v is not None}
 
@@ -397,13 +425,17 @@ def run_query(user_query, session_state):
         trace.append("**BLOCKED** | Missing: " + str(gate["missing"]))
         history.append({"role": "user", "content": user_query})
         history.append({"role": "assistant", "content": question})
-        state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
+        state = {"slots": slots, "history": history, "turn": turn, "domain": domain, "passages": passages if "passages" in dir() else []}
         return question, state, "\n".join(trace), "**Gate blocked** -- collecting more info."
     trace.append("**PASSED**")
 
     # FAISS Retrieval with domain filtering
     t0 = time.time()
-    raw_passages = kb.search(user_query, top_k=10)
+    cached_passages = session_state.get("passages", []) if session_state else []
+    if is_followup and cached_passages:
+        raw_passages = cached_passages + kb.search(user_query, top_k=5)
+    else:
+        raw_passages = kb.search(user_query, top_k=10)
     domain_hits = [p for p in raw_passages if p.get("domain") == domain]
     other_hits = [p for p in raw_passages if p.get("domain") != domain]
     passages = (domain_hits + other_hits)[:5]
@@ -436,7 +468,7 @@ def run_query(user_query, session_state):
             question = reasoning["question"]
             history.append({"role": "user", "content": user_query})
             history.append({"role": "assistant", "content": question})
-            state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
+            state = {"slots": slots, "history": history, "turn": turn, "domain": domain, "passages": passages if "passages" in dir() else []}
             return question, state, "\n".join(trace), "**Needs more info** | Coverage: " + str(cov)
     else:
         trace.append("\n### Reasoner: *Skipped (informational)*")
@@ -447,7 +479,7 @@ def run_query(user_query, session_state):
     answer = llm_call([
         {"role": "system", "content": GENERATOR_PROMPT},
         {"role": "user", "content": user_content},
-    ], max_tokens=500)
+    ], max_tokens=500, use_dpo=True)
     dt3 = time.time() - t0
     trace.append("\n### Call 3: Generator (" + str(round(dt3, 1)) + "s)")
 
@@ -458,7 +490,7 @@ def run_query(user_query, session_state):
     scores = score_response(answer, doc_ids)
     history.append({"role": "user", "content": user_query})
     history.append({"role": "assistant", "content": answer})
-    state = {"slots": slots, "history": history, "turn": turn, "domain": domain}
+    state = {"slots": slots, "history": history, "turn": turn, "domain": domain, "passages": passages if "passages" in dir() else []}
 
     fab_status = "Yes" if scores["fabrication_free"] else "NO -- " + str(scores["fabricated_doc_ids"])
     eval_parts = [
