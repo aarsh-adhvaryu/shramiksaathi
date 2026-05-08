@@ -32,6 +32,62 @@ with open(ROOT / "data" / "kb.jsonl") as f:
         if line.strip():
             ALL_KB_DOC_IDS.add(json.loads(line)["doc_id"])
 
+# Pre-cached eligibility rules (deterministic, no LLM call)
+with open(ROOT / "data" / "eligibility_rules.json") as f:
+    ELIGIBILITY_RULES = json.load(f)
+
+def fast_reasoner(slots, domain, intent):
+    conditions = ELIGIBILITY_RULES.get(domain, {}).get(intent, [])
+    if not conditions:
+        return {"decision": "ANSWER", "eligible": True, "coverage": 1.0,
+                "met": [], "failed": [], "warnings": [], "unresolved": [], "question": None}
+    met, failed, warnings, unresolved = [], [], [], []
+    for c in conditions:
+        field = c.get("field", "")
+        slot_val = slots.get(field)
+        mandatory = c.get("mandatory", True)
+        if slot_val is None:
+            if mandatory:
+                unresolved.append(dict(c))
+            continue
+        result = evaluate_condition(slot_val, c.get("operator", "eq"), c.get("value"))
+        entry = dict(c)
+        entry["slot_value"] = slot_val
+        if not mandatory:
+            warnings.append(entry)
+        elif result:
+            met.append(entry)
+        else:
+            failed.append(entry)
+    total = len(met) + len(failed) + len(unresolved)
+    resolved = len(met) + len(failed)
+    coverage = round(resolved / total, 2) if total > 0 else 1.0
+    if failed:
+        decision, eligible = "ANSWER", False
+    elif unresolved:
+        decision, eligible = "ASK", None
+    else:
+        decision, eligible = "ANSWER", True
+    question = None
+    if decision == "ASK" and unresolved:
+        field = unresolved[0].get("field", "unknown")
+        questions = {
+            "employment_status": "Are you currently employed, unemployed, or retired?",
+            "service_years": "How many total years have you contributed to PF?",
+            "months_unemployed": "How many months have you been unemployed?",
+            "uan_status": "Is your UAN currently active?",
+            "kyc_status": "Is your KYC complete on the EPFO portal?",
+            "employment_years": "How many years have you worked with this employer?",
+            "termination_reason": "Did you resign, were you fired, or retrenched?",
+            "annual_income": "What is your total annual income?",
+            "tax_regime": "Are you on the old or new tax regime?",
+            "basic_salary": "What is your monthly basic salary?",
+            "gross_salary": "What is your monthly gross salary?",
+        }
+        question = questions.get(field, "Could you provide your " + field.replace("_", " ") + "?")
+    return {"decision": decision, "eligible": eligible, "coverage": coverage,
+            "met": met, "failed": failed, "warnings": warnings, "unresolved": unresolved, "question": question}
+
 MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
 DPO_ADAPTER = str(ROOT / "out" / "dpo_beta_050")
 
@@ -457,7 +513,7 @@ def run_query(user_query, session_state):
     cov = 0.0
     if intent in REASONING_INTENTS:
         t0 = time.time()
-        reasoning = batched_reasoner(passages, slots, domain, intent)
+        reasoning = fast_reasoner(slots, domain, intent)
         dt2 = time.time() - t0
         cov = reasoning.get("coverage", 0.0)
         trace.append("\n### Call 2: Batched Reasoner (" + str(round(dt2, 1)) + "s)")

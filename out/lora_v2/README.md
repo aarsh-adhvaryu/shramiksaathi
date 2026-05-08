@@ -1,6 +1,6 @@
 ---
-base_model: meta-llama/Llama-3.1-8B-Instruct
-library_name: peft
+library_name: transformers
+tags: []
 ---
 
 # Model Card for Model ID
@@ -15,7 +15,7 @@ library_name: peft
 
 <!-- Provide a longer summary of what this model is. -->
 
-
+This is the model card of a 🤗 transformers model that has been pushed on the Hub. This model card has been automatically generated.
 
 - **Developed by:** [More Information Needed]
 - **Funded by [optional]:** [More Information Needed]
@@ -197,6 +197,3 @@ Carbon emissions can be estimated using the [Machine Learning Impact calculator]
 ## Model Card Contact
 
 [More Information Needed]
-### Framework versions
-
-- PEFT 0.13.2
